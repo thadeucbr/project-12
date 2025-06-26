@@ -1,6 +1,6 @@
 services:
   backend:
-    image: node:20-alpine
+    image: node:18
     container_name: llm-backend
     working_dir: /app
     volumes:
@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: node:20-alpine
+    image: node:18
     container_name: llm-frontend
     working_dir: /app
     volumes:
