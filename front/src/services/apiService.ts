@@ -76,7 +76,6 @@ Com base nisso, reescreva um prompt completo, estruturado, eficaz e pronto para 
       .map(byte => byte.toString(16).padStart(2, '0'))
       .join('');
 
-    console.log('Front-End Signature Validation:', { payload, signature, timestamp });
     return { signature, timestamp };
   }
 
@@ -107,25 +106,18 @@ Com base nisso, reescreva um prompt completo, estruturado, eficaz e pronto para 
 
       if (!response.ok) {
         const errorBody = await response.text();
-        console.error('API responded with an error:', {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorBody,
-        });
         throw new Error(`Erro na API: ${response.status} - ${response.statusText}`);
       }
 
       const data = await response.json();
 
       if (!data.output) {
-        console.error('API response missing "output" field:', data);
         throw new Error('Resposta da API não contém o campo "output"');
       }
 
       return data.output;
     } catch (error) {
       clearTimeout(timeoutId);
-      console.error('Error during API request:', error);
       throw error;
     }
   }
@@ -147,8 +139,6 @@ Com base nisso, reescreva um prompt completo, estruturado, eficaz e pronto para 
         enhancedPrompt: enhancedPrompt.trim(),
       };
     } catch (error) {
-      console.error('Erro ao aprimorar prompt:', error);
-
       return {
         success: false,
         error: error.message || 'Erro desconhecido',
