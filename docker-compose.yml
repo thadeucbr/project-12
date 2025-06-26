@@ -1,0 +1,28 @@
+services:
+  backend:
+    image: node:20-alpine
+    container_name: llm-backend
+    working_dir: /app
+    volumes:
+      - ./back:/app
+      - /app/node_modules
+    env_file:
+      - ./back/.env
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    command: sh -c "npm install && npm run build && npm start"
+    restart: unless-stopped
+
+  frontend:
+    image: node:20-alpine
+    container_name: llm-frontend
+    working_dir: /app
+    volumes:
+      - ./front:/app
+      - /app/node_modules
+    env_file:
+      - ./front/.env
+    ports:
+      - "8080:8080"
+    command: sh -c "npm install && npm run dev"
+    restart: unless-stopped
