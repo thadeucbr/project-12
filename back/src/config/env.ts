@@ -27,4 +27,6 @@ export const env = {
   CORS_ORIGINS: (process.env.CORS_ORIGINS || '').split(',').map(origin => origin.trim()),
   CORS_METHODS: process.env.CORS_METHODS || 'GET,POST,PUT,DELETE',
   CORS_HEADERS: process.env.CORS_HEADERS || 'Content-Type,Authorization,x-api-key',
+
+  PRIVATE_KEY: process.env.PRIVATE_KEY || '',
 };

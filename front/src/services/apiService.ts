@@ -17,11 +17,13 @@ class ApiError extends Error {
 class PromptEnhancementService {
   private baseUrl: string;
   private apiKey: string;
+  private privateKey: string;
   private timeout: number;
 
   constructor() {
     this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
     this.apiKey = import.meta.env.VITE_API_KEY || ''; // Use dynamic key from .env
+    this.privateKey = import.meta.env.VITE_PRIVATE_KEY || '';
     this.timeout = 30000; // 30 seconds
   }
 
@@ -54,7 +56,33 @@ Aqui está o prompt original digitado pelo usuário:
 Com base nisso, reescreva um prompt completo, estruturado, eficaz e pronto para uso com LLMs, aplicando todos os itens acima. Apresente apenas o prompt final reescrito. Não inclua explicações.`;
   }
 
+  private async generateSignature(method: string, url: string): Promise<{ signature: string; timestamp: string }> {
+    const timestamp = new Date().toISOString();
+    const apiUrl = `/api${url}`; // Adicione o prefixo /api para corresponder ao back-end
+    const payload = `${method}:${apiUrl}:${timestamp}`;
+    const encoder = new TextEncoder();
+    const privateKey = encoder.encode(import.meta.env.VITE_PRIVATE_KEY);
+
+    const key = await window.crypto.subtle.importKey(
+      'raw',
+      privateKey,
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+
+    const signatureBuffer = await window.crypto.subtle.sign('HMAC', key, encoder.encode(payload));
+    const signature = Array.from(new Uint8Array(signatureBuffer))
+      .map(byte => byte.toString(16).padStart(2, '0'))
+      .join('');
+
+    console.log('Front-End Signature Validation:', { payload, signature, timestamp });
+    return { signature, timestamp };
+  }
+
   private async makeRequest(prompt: string): Promise<string> {
+    const { signature, timestamp } = await this.generateSignature('POST', '/llm');
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
@@ -65,6 +93,8 @@ Com base nisso, reescreva um prompt completo, estruturado, eficaz e pronto para 
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'x-api-key': this.apiKey,
+          'x-signature': signature,
+          'x-timestamp': timestamp,
         },
         body: JSON.stringify({
           prompt: this.createPromptTemplate(prompt),
@@ -76,29 +106,27 @@ Com base nisso, reescreva um prompt completo, estruturado, eficaz e pronto para 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new ApiError({
-          message: `Erro na API: ${response.status} - ${response.statusText}`,
+        const errorBody = await response.text();
+        console.error('API responded with an error:', {
           status: response.status,
+          statusText: response.statusText,
+          body: errorBody,
         });
+        throw new Error(`Erro na API: ${response.status} - ${response.statusText}`);
       }
 
       const data = await response.json();
 
       if (!data.output) {
-        throw new ApiError({
-          message: 'Resposta da API não contém o campo "output"',
-        });
+        console.error('API response missing "output" field:', data);
+        throw new Error('Resposta da API não contém o campo "output"');
       }
 
       return data.output;
     } catch (error) {
       clearTimeout(timeoutId);
-      if (error.name === 'AbortError') {
-        throw new ApiError({
-          message: 'Tempo limite da requisição excedido. Tente novamente.',
-        });
-      }
-      throw error instanceof ApiError ? error : new ApiError({ message: 'Erro inesperado' });
+      console.error('Error during API request:', error);
+      throw error;
     }
   }
 
