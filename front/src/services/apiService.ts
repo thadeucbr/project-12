@@ -21,8 +21,8 @@ class PromptEnhancementService {
 
   constructor() {
     this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-    this.apiKey = 'chave1'; // Substitua pela chave real, se necessário
-    this.timeout = 30000; // 30 segundos
+    this.apiKey = import.meta.env.VITE_API_KEY || ''; // Use dynamic key from .env
+    this.timeout = 30000; // 30 seconds
   }
 
   private createPromptTemplate(userPrompt: string): string {
