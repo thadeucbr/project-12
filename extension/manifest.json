@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "PromptCraft Text Enhancer",
+  "version": "1.0.0",
+  "description": "Aprimore qualquer texto na web com IA - melhore clareza, gramática e estilo automaticamente",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "https://api.openai.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "http://localhost:11434/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "PromptCraft Text Enhancer"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*", "content.css", "onboarding.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

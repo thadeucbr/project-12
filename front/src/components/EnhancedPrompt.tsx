@@ -1,17 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Sparkles, RotateCcw } from 'lucide-react';
+import { Copy, Check, Sparkles, RotateCcw, Type, Code, Lightbulb, Target } from 'lucide-react';
+import type { Prompt } from '../types';
 
 interface EnhancedPromptProps {
   prompt: string;
   isVisible: boolean;
   onCopy?: () => void;
+  enhancementType?: Prompt['enhancementType'];
 }
+
+const typeIcons = {
+  detailed: Type,
+  creative: Lightbulb,
+  technical: Code,
+  concise: Target
+};
+
+const typeColors = {
+  detailed: 'from-blue-500 to-cyan-500',
+  creative: 'from-purple-500 to-pink-500',
+  technical: 'from-green-500 to-emerald-500',
+  concise: 'from-orange-500 to-red-500'
+};
+
+const typeLabels = {
+  detailed: 'Detailed',
+  creative: 'Creative',
+  technical: 'Technical',
+  concise: 'Concise'
+};
 
 export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({ 
   prompt, 
   isVisible, 
-  onCopy 
+  onCopy,
+  enhancementType = 'detailed'
 }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -76,6 +100,10 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
 
   if (!isVisible || !prompt) return null;
 
+  const TypeIcon = typeIcons[enhancementType];
+  const typeColor = typeColors[enhancementType];
+  const typeLabel = typeLabels[enhancementType];
+
   return (
     <AnimatePresence>
       <motion.div
@@ -93,16 +121,22 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
         >
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <motion.div
                 animate={{ rotate: isTyping ? 360 : 0 }}
                 transition={{ duration: 2, repeat: isTyping ? Infinity : 0, ease: "linear" }}
+                className={`p-2 rounded-lg bg-gradient-to-r ${typeColor}`}
               >
-                <Sparkles className="h-5 w-5 text-purple-500" />
+                <TypeIcon className="h-4 w-4 text-white" />
               </motion.div>
-              <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-200">
-                Enhanced Prompt
-              </h3>
+              <div>
+                <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-200">
+                  Enhanced Prompt
+                </h3>
+                <p className="text-sm text-purple-600 dark:text-purple-400">
+                  Estilo: {typeLabel}
+                </p>
+              </div>
               {isTyping && (
                 <motion.div
                   animate={{ opacity: [1, 0] }}
@@ -120,26 +154,26 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-800 rounded-lg transition-colors duration-200"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                title={showFullText ? "Show typewriter effect" : "Show full text"}
+                title={showFullText ? "Mostrar efeito de digitação" : "Mostrar texto completo"}
               >
                 <RotateCcw className="h-4 w-4" />
               </motion.button>
               
               <motion.button
                 onClick={handleCopy}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
+                className={`flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${typeColor} text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 {isCopied ? (
                   <>
                     <Check className="h-4 w-4" />
-                    <span className="text-sm font-medium">Copied!</span>
+                    <span className="text-sm font-medium">Copiado!</span>
                   </>
                 ) : (
                   <>
                     <Copy className="h-4 w-4" />
-                    <span className="text-sm font-medium">Copy</span>
+                    <span className="text-sm font-medium">Copiar</span>
                   </>
                 )}
               </motion.button>
@@ -166,14 +200,40 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
             
             {/* Character count and stats */}
             <div className="flex items-center justify-between mt-3 text-xs text-purple-600 dark:text-purple-400">
+              <div className="flex items-center gap-4">
+                <span>
+                  {prompt.length} caracteres • {prompt.split(' ').length} palavras
+                </span>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${typeColor} text-white`}>
+                  {typeLabel}
+                </span>
+              </div>
               <span>
-                {prompt.length} characters • {prompt.split(' ').length} words
-              </span>
-              <span>
-                {Math.ceil(prompt.length / 4)} tokens (approx.)
+                ~{Math.ceil(prompt.length / 4)} tokens
               </span>
             </div>
           </div>
+
+          {/* Enhancement Quality Indicators */}
+          <motion.div
+            className="mt-4 flex items-center justify-center gap-4 text-xs text-purple-600 dark:text-purple-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>Estruturado</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span>Contextualizado</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <span>Otimizado para LLM</span>
+            </div>
+          </motion.div>
         </motion.div>
       </motion.div>
     </AnimatePresence>

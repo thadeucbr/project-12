@@ -1,0 +1,35 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#EC4899;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="url(#grad1)"/>
+  
+  <!-- Magic wand icon -->
+  <g transform="translate(64,64)">
+    <!-- Wand body -->
+    <line x1="-20" y1="20" x2="20" y2="-20" stroke="white" stroke-width="4" stroke-linecap="round"/>
+    
+    <!-- Stars -->
+    <g fill="white">
+      <!-- Main star -->
+      <path d="M-25,-25 L-22,-18 L-15,-15 L-22,-12 L-25,-5 L-28,-12 L-35,-15 L-28,-18 Z"/>
+      
+      <!-- Small stars -->
+      <circle cx="25" cy="25" r="2"/>
+      <circle cx="30" cy="15" r="1.5"/>
+      <circle cx="15" cy="30" r="1"/>
+      
+      <!-- Sparkles -->
+      <path d="M22,-25 L23,-22 L26,-21 L23,-20 L22,-17 L21,-20 L18,-21 L21,-22 Z"/>
+      <path d="M-15,28 L-14,30 L-12,31 L-14,32 L-15,34 L-16,32 L-18,31 L-16,30 Z"/>
+    </g>
+    
+    <!-- Wand tip -->
+    <circle cx="20" cy="-20" r="3" fill="white"/>
+  </g>
+</svg>

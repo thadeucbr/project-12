@@ -33,8 +33,8 @@ export const usePromptEnhancement = (
     setError(null);
 
     try {
-      // Tenta usar a API primeiro
-      const apiResponse = await promptEnhancementService.enhancePrompt(originalPrompt);
+      // Tenta usar a API primeiro, passando o tipo de aprimoramento
+      const apiResponse = await promptEnhancementService.enhancePrompt(originalPrompt, enhancementType);
       
       let enhancedPrompt: string;
       
@@ -52,7 +52,7 @@ export const usePromptEnhancement = (
         originalPrompt: originalPrompt.trim(),
         enhancedPrompt,
         timestamp: new Date().toISOString(),
-        tags: generateTags(originalPrompt),
+        tags: generateTags(originalPrompt, enhancementType),
         characterCount: enhancedPrompt.length,
         enhancementType
       };
@@ -82,7 +82,7 @@ export const usePromptEnhancement = (
           originalPrompt: originalPrompt.trim(),
           enhancedPrompt: fallbackEnhanced,
           timestamp: new Date().toISOString(),
-          tags: generateTags(originalPrompt),
+          tags: generateTags(originalPrompt, enhancementType),
           characterCount: fallbackEnhanced.length,
           enhancementType
         };
@@ -109,9 +109,9 @@ export const usePromptEnhancement = (
   };
 };
 
-// Função auxiliar para gerar tags (mantida do código original)
-const generateTags = (prompt: string): string[] => {
-  const tagMap: Record<string, string[]> = {
+// Função auxiliar para gerar tags baseadas no prompt e tipo de aprimoramento
+const generateTags = (prompt: string, enhancementType: string): string[] => {
+  const baseTagMap: Record<string, string[]> = {
     'escrever|escrita|conteúdo|blog|artigo|write|writing|content': ['escrita', 'conteúdo'],
     'código|programação|desenvolver|função|api|code|programming|develop': ['código', 'desenvolvimento'],
     'design|ui|ux|interface|visual': ['design', 'ui-ux'],
@@ -127,12 +127,25 @@ const generateTags = (prompt: string): string[] => {
   const tags: string[] = [];
   const lowerPrompt = prompt.toLowerCase();
 
-  Object.entries(tagMap).forEach(([pattern, tagList]) => {
+  // Adiciona tags baseadas no conteúdo do prompt
+  Object.entries(baseTagMap).forEach(([pattern, tagList]) => {
     const regex = new RegExp(pattern, 'i');
     if (regex.test(lowerPrompt)) {
       tags.push(...tagList);
     }
   });
+
+  // Adiciona tag baseada no tipo de aprimoramento
+  const typeTagMap: Record<string, string> = {
+    detailed: 'detalhado',
+    creative: 'criativo',
+    technical: 'técnico',
+    concise: 'conciso'
+  };
+
+  if (typeTagMap[enhancementType]) {
+    tags.push(typeTagMap[enhancementType]);
+  }
 
   return [...new Set(tags)];
 };
