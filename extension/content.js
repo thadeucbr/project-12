@@ -511,20 +511,34 @@ class TextEnhancer {
   }
   
   setFieldText(field, text) {
+    // Valida o texto antes de aplicar
+    if (!text || typeof text !== 'string') {
+      console.error('Texto inválido para aplicar:', text);
+      return;
+    }
+    
+    // Remove caracteres de controle e normaliza
+    const cleanText = text
+      .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // Remove caracteres de controle
+      .replace(/\u00A0/g, ' ') // Substitui espaços não-quebráveis
+      .trim();
+    
     if (field.contentEditable === 'true') {
-      field.textContent = text;
+      // Para campos contenteditable, usa textContent para evitar problemas de encoding
+      field.textContent = cleanText;
       // Dispara evento de input para frameworks
       field.dispatchEvent(new Event('input', { bubbles: true }));
       field.dispatchEvent(new Event('change', { bubbles: true }));
     } else {
-      field.value = text;
+      // Para inputs normais
+      field.value = cleanText;
       field.dispatchEvent(new Event('input', { bubbles: true }));
       field.dispatchEvent(new Event('change', { bubbles: true }));
     }
     
     // Foca no final do texto
-    if (field.setSelectionRange) {
-      field.setSelectionRange(text.length, text.length);
+    if (field.setSelectionRange && field.type !== 'email') {
+      field.setSelectionRange(cleanText.length, cleanText.length);
     }
   }
   
@@ -538,13 +552,23 @@ class TextEnhancer {
           action: 'enhanceText',
           data: { text, context, style }
         }, (response) => {
-          if (response.success) {
+          if (chrome.runtime.lastError) {
+            reject(new Error(chrome.runtime.lastError.message));
+            return;
+          }
+          
+          if (response && response.success) {
             resolve(response.data);
           } else {
-            reject(new Error(response.error));
+            reject(new Error(response?.error || 'Erro desconhecido'));
           }
         });
       });
+      
+      // Valida a resposta
+      if (!response || typeof response !== 'string') {
+        throw new Error('Resposta inválida da API');
+      }
       
       // Aplica o texto aprimorado
       this.setFieldText(this.currentField, response);

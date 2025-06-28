@@ -77,13 +77,41 @@ async function handleTextEnhancement(data) {
         throw new Error('Provedor não suportado');
     }
     
-    return result;
+    // Limpa e valida o resultado
+    const cleanedResult = cleanAndValidateText(result, text);
+    return cleanedResult;
     
   } catch (error) {
     console.error('Erro no aprimoramento:', error);
     // Fallback local
     return getLocalTextEnhancement(text, context, style);
   }
+}
+
+function cleanAndValidateText(enhancedText, originalText) {
+  if (!enhancedText || typeof enhancedText !== 'string') {
+    throw new Error('Resposta inválida da API');
+  }
+  
+  // Remove caracteres de controle e normaliza
+  let cleaned = enhancedText
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // Remove caracteres de controle
+    .replace(/\u00A0/g, ' ') // Substitui espaços não-quebráveis
+    .trim();
+  
+  // Verifica se o texto não ficou muito diferente do original
+  if (cleaned.length < originalText.length * 0.3) {
+    console.warn('Texto aprimorado muito curto, usando fallback');
+    return getLocalTextEnhancement(originalText, 'default', 'professional');
+  }
+  
+  // Verifica se não há caracteres estranhos repetitivos
+  if (/(.)\1{10,}/.test(cleaned)) {
+    console.warn('Texto com caracteres repetitivos detectado, usando fallback');
+    return getLocalTextEnhancement(originalText, 'default', 'professional');
+  }
+  
+  return cleaned;
 }
 
 async function callOpenAI(prompt, settings) {
@@ -107,6 +135,11 @@ async function callOpenAI(prompt, settings) {
   }
   
   const result = await response.json();
+  
+  if (!result.choices || !result.choices[0] || !result.choices[0].message) {
+    throw new Error('Resposta inválida da OpenAI API');
+  }
+  
   return result.choices[0].message.content;
 }
 
@@ -127,6 +160,11 @@ async function callGemini(prompt, settings) {
   }
   
   const result = await response.json();
+  
+  if (!result.candidates || !result.candidates[0] || !result.candidates[0].content) {
+    throw new Error('Resposta inválida da Gemini API');
+  }
+  
   return result.candidates[0].content.parts[0].text;
 }
 
@@ -148,6 +186,11 @@ async function callOllama(prompt, settings) {
   }
   
   const result = await response.json();
+  
+  if (!result.response) {
+    throw new Error('Resposta inválida do Ollama');
+  }
+  
   return result.response;
 }
 
@@ -279,17 +322,19 @@ function createTextEnhancementPrompt(text, context, style) {
 **Contexto:** ${contextInstruction}
 **Estilo desejado:** ${styleInstruction}
 
-**Instruções específicas:**
+**INSTRUÇÕES CRÍTICAS:**
 - Mantenha o significado original do texto
 - Preserve a intenção e personalidade do autor
 - Corrija erros gramaticais e de ortografia
 - Melhore a fluidez e legibilidade
 - Adapte o tom ao contexto identificado
 - NÃO adicione informações que não estavam no texto original
-- Retorne APENAS o texto aprimorado, sem explicações
+- Retorne APENAS o texto aprimorado, sem explicações ou comentários
+- NÃO use aspas ou formatação especial
+- Mantenha o mesmo idioma do texto original
 
 **Texto original:**
-"""${text}"""
+${text}
 
 **Texto aprimorado:`;
 }
