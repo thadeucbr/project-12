@@ -29,7 +29,7 @@ class PopupManager {
     
     // Abrir website
     document.getElementById('open-website').addEventListener('click', () => {
-      chrome.tabs.create({ url: 'http://localhost:8090' });
+      chrome.tabs.create({ url: 'https://prompts.barbudas.com' });
     });
     
     // Testar aprimoramento
@@ -82,7 +82,7 @@ class PopupManager {
     
     document.getElementById('feedback-link').addEventListener('click', (e) => {
       e.preventDefault();
-      chrome.tabs.create({ url: 'https://github.com/your-repo/promptcraft-extension/issues' });
+      chrome.tabs.create({ url: 'https://prompts.barbudas.com/feedback' });
     });
   }
   

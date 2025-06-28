@@ -294,8 +294,8 @@ class OnboardingManager {
       chrome.tabs.remove(tab.id);
     });
     
-    // Abre uma nova aba para testar
-    chrome.tabs.create({ url: 'https://www.google.com' });
+    // Abre o website principal
+    chrome.tabs.create({ url: 'https://prompts.barbudas.com' });
   }
 }
 

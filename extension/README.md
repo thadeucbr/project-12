@@ -225,6 +225,11 @@ extension/
 - Verifique conexão com internet (OpenAI/Gemini)
 - Veja logs no console (F12)
 
+#### Texto com caracteres estranhos
+- Problema de codificação foi corrigido na versão atual
+- Recarregue a página e tente novamente
+- Use o fallback local se persistir
+
 ### Debug Avançado
 1. Abra `chrome://extensions/`
 2. Clique em "Detalhes" na extensão
@@ -239,6 +244,12 @@ A extensão mantém estatísticas locais:
 - **Não enviamos dados**: Tudo fica no seu navegador
 
 ## 🔄 Atualizações
+
+### v1.0.1 - Correções de Codificação
+- Corrigido problema de caracteres estranhos no texto aprimorado
+- Melhorada validação de respostas da API
+- Adicionado fallback robusto para casos de erro
+- Melhorada compatibilidade com diferentes sites
 
 ### v1.0.0 - Lançamento Inicial
 - Onboarding completo para usuários não técnicos
@@ -263,11 +274,12 @@ Este projeto está licenciado sob a licença MIT.
 
 ## 🔗 Links Úteis
 
+- [Website Principal](https://prompts.barbudas.com)
 - [Documentação Chrome Extensions](https://developer.chrome.com/docs/extensions/)
 - [OpenAI API](https://platform.openai.com/docs)
 - [Google Gemini API](https://ai.google.dev/)
 - [Ollama](https://ollama.ai/)
-- [Reportar Bug](https://github.com/your-repo/issues)
+- [Reportar Bug](https://prompts.barbudas.com/feedback)
 
 ---
 
