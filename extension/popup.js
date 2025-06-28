@@ -9,6 +9,7 @@ class PopupManager {
     await this.loadSettings();
     this.setupEventListeners();
     this.updateUI();
+    this.loadUsageStats();
   }
   
   async loadSettings() {
@@ -31,6 +32,16 @@ class PopupManager {
       chrome.tabs.create({ url: 'http://localhost:8090' });
     });
     
+    // Testar aprimoramento
+    document.getElementById('test-enhancement').addEventListener('click', () => {
+      chrome.tabs.create({ url: 'https://www.google.com' });
+    });
+    
+    // Reconfigurar
+    document.getElementById('reconfigure').addEventListener('click', () => {
+      this.showAdvancedSettings();
+    });
+    
     // Salvar configurações
     document.getElementById('save-settings').addEventListener('click', () => {
       this.saveSettings();
@@ -45,10 +56,28 @@ class PopupManager {
       this.toggleSwitch('show-notifications', 'showNotifications');
     });
     
+    // Mudança de estilo padrão
+    document.getElementById('default-style').addEventListener('change', (e) => {
+      this.settings.enhancementStyle = e.target.value;
+      chrome.storage.sync.set({ enhancementStyle: e.target.value });
+    });
+    
+    // Mudança de provedor
+    document.getElementById('provider-select').addEventListener('change', (e) => {
+      this.settings.provider = e.target.value;
+      this.loadModelsForProvider(e.target.value);
+    });
+    
+    // Mudança de modelo
+    document.getElementById('model-select').addEventListener('change', (e) => {
+      this.settings.model = e.target.value;
+      this.updateModelInfo();
+    });
+    
     // Links de ajuda
     document.getElementById('help-link').addEventListener('click', (e) => {
       e.preventDefault();
-      chrome.tabs.create({ url: 'https://github.com/your-repo/promptcraft-extension#readme' });
+      chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
     });
     
     document.getElementById('feedback-link').addEventListener('click', (e) => {
@@ -58,14 +87,23 @@ class PopupManager {
   }
   
   updateUI() {
+    // Verifica se é primeira vez
+    if (!this.settings.onboardingCompleted) {
+      chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
+      window.close();
+      return;
+    }
+    
     // Atualiza status
     this.updateStatus();
     
+    // Atualiza informações do provedor
+    this.updateProviderInfo();
+    
     // Preenche campos
-    document.getElementById('api-url').value = this.settings.apiUrl || 'http://localhost:3000/api';
-    document.getElementById('api-key').value = this.settings.apiKey || '';
-    document.getElementById('private-key').value = this.settings.privateKey || '';
     document.getElementById('default-style').value = this.settings.enhancementStyle || 'professional';
+    document.getElementById('provider-select').value = this.settings.provider || 'openai';
+    document.getElementById('api-key').value = this.settings.apiKey || '';
     
     // Atualiza switches
     this.updateSwitch('auto-context', this.settings.autoDetectContext);
@@ -74,6 +112,9 @@ class PopupManager {
     // Atualiza botão toggle
     const isEnabled = this.settings.extensionEnabled !== false;
     document.getElementById('toggle-text').textContent = isEnabled ? 'Desativar' : 'Ativar';
+    
+    // Carrega modelos
+    this.loadModelsForProvider(this.settings.provider);
   }
   
   updateStatus() {
@@ -81,18 +122,59 @@ class PopupManager {
     const statusTextEl = document.getElementById('status-text');
     
     const hasApiKey = this.settings.apiKey && this.settings.apiKey.length > 0;
-    const hasPrivateKey = this.settings.privateKey && this.settings.privateKey.length > 0;
+    const hasModel = this.settings.model && this.settings.model.length > 0;
     const isEnabled = this.settings.extensionEnabled !== false;
+    const isOllama = this.settings.provider === 'ollama';
     
     if (!isEnabled) {
       statusEl.className = 'status inactive';
       statusTextEl.textContent = 'Extensão desativada';
-    } else if (!hasApiKey || !hasPrivateKey) {
-      statusEl.className = 'status inactive';
-      statusTextEl.textContent = 'Configure as chaves da API';
+    } else if (!isOllama && !hasApiKey) {
+      statusEl.className = 'status warning';
+      statusTextEl.textContent = 'Configure sua chave da API';
+    } else if (!hasModel) {
+      statusEl.className = 'status warning';
+      statusTextEl.textContent = 'Selecione um modelo';
     } else {
       statusEl.className = 'status active';
       statusTextEl.textContent = 'Pronto para usar';
+    }
+  }
+  
+  updateProviderInfo() {
+    const providerInfoEl = document.getElementById('provider-info');
+    const providerBadgeEl = document.getElementById('provider-badge');
+    const providerDetailsEl = document.getElementById('provider-details');
+    
+    if (!this.settings.provider) {
+      providerInfoEl.classList.add('hidden');
+      return;
+    }
+    
+    const providerInfo = {
+      openai: {
+        name: 'OpenAI',
+        class: 'openai',
+        details: `Modelo: ${this.settings.model || 'Não selecionado'}<br>Custo: ~$0.002/1K tokens`
+      },
+      gemini: {
+        name: 'Google Gemini',
+        class: 'gemini',
+        details: `Modelo: ${this.settings.model || 'Não selecionado'}<br>Gratuito: 60 req/min`
+      },
+      ollama: {
+        name: 'Ollama (Local)',
+        class: 'ollama',
+        details: `Modelo: ${this.settings.model || 'Não selecionado'}<br>100% gratuito e privado`
+      }
+    };
+    
+    const info = providerInfo[this.settings.provider];
+    if (info) {
+      providerBadgeEl.textContent = info.name;
+      providerBadgeEl.className = `provider-badge ${info.class}`;
+      providerDetailsEl.innerHTML = info.details;
+      providerInfoEl.classList.remove('hidden');
     }
   }
   
@@ -134,29 +216,114 @@ class PopupManager {
     });
   }
   
+  showAdvancedSettings() {
+    const advancedEl = document.getElementById('advanced-settings');
+    const quickEl = document.getElementById('quick-settings');
+    
+    if (advancedEl.classList.contains('hidden')) {
+      advancedEl.classList.remove('hidden');
+      quickEl.classList.add('hidden');
+    } else {
+      advancedEl.classList.add('hidden');
+      quickEl.classList.remove('hidden');
+    }
+  }
+  
+  async loadModelsForProvider(provider) {
+    const modelSelect = document.getElementById('model-select');
+    modelSelect.innerHTML = '<option value="">Carregando...</option>';
+    
+    try {
+      const response = await new Promise(resolve => {
+        chrome.runtime.sendMessage({
+          action: 'getModels',
+          provider: provider,
+          apiKey: this.settings.apiKey
+        }, resolve);
+      });
+      
+      if (response.success) {
+        this.populateModels(response.models);
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar modelos:', error);
+      this.populateModels(this.getDefaultModels(provider));
+    }
+  }
+  
+  populateModels(models) {
+    const modelSelect = document.getElementById('model-select');
+    modelSelect.innerHTML = '<option value="">Selecione um modelo...</option>';
+    
+    models.forEach(model => {
+      const option = document.createElement('option');
+      option.value = model.id;
+      option.textContent = `${model.name}`;
+      if (model.id === this.settings.model) {
+        option.selected = true;
+      }
+      modelSelect.appendChild(option);
+    });
+    
+    this.updateModelInfo();
+  }
+  
+  updateModelInfo() {
+    const modelInfoEl = document.getElementById('model-info');
+    const selectedModel = document.getElementById('model-select').value;
+    
+    if (selectedModel) {
+      const modelDescriptions = {
+        'gpt-4': 'Modelo mais avançado, melhor qualidade',
+        'gpt-3.5-turbo': 'Rápido e eficiente, boa qualidade',
+        'gemini-pro': 'Modelo principal do Google',
+        'llama2': 'Modelo local, privado e gratuito'
+      };
+      
+      modelInfoEl.textContent = modelDescriptions[selectedModel] || 'Modelo selecionado';
+    } else {
+      modelInfoEl.textContent = '';
+    }
+  }
+  
+  getDefaultModels(provider) {
+    const defaults = {
+      openai: [
+        { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', description: 'Rápido e eficiente' },
+        { id: 'gpt-4', name: 'GPT-4', description: 'Mais avançado' }
+      ],
+      gemini: [
+        { id: 'gemini-pro', name: 'Gemini Pro', description: 'Modelo principal' }
+      ],
+      ollama: [
+        { id: 'llama2', name: 'Llama 2', description: 'Meta Llama 2' }
+      ]
+    };
+    
+    return defaults[provider] || [];
+  }
+  
   saveSettings() {
     const newSettings = {
-      apiUrl: document.getElementById('api-url').value.trim(),
+      provider: document.getElementById('provider-select').value,
       apiKey: document.getElementById('api-key').value.trim(),
-      privateKey: document.getElementById('private-key').value.trim(),
+      model: document.getElementById('model-select').value,
       enhancementStyle: document.getElementById('default-style').value,
       autoDetectContext: this.settings.autoDetectContext,
-      showNotifications: this.settings.showNotifications
+      showNotifications: this.settings.showNotifications,
+      extensionEnabled: this.settings.extensionEnabled
     };
     
     // Validação básica
-    if (!newSettings.apiUrl) {
-      this.showNotification('URL da API é obrigatória', 'error');
-      return;
-    }
-    
-    if (!newSettings.apiKey) {
+    if (newSettings.provider !== 'ollama' && !newSettings.apiKey) {
       this.showNotification('Chave da API é obrigatória', 'error');
       return;
     }
     
-    if (!newSettings.privateKey) {
-      this.showNotification('Chave privada é obrigatória', 'error');
+    if (!newSettings.model) {
+      this.showNotification('Selecione um modelo', 'error');
       return;
     }
     
@@ -165,6 +332,29 @@ class PopupManager {
       this.settings = { ...this.settings, ...newSettings };
       this.updateUI();
       this.showNotification('Configurações salvas com sucesso!');
+      this.showAdvancedSettings(); // Volta para configurações rápidas
+    });
+  }
+  
+  async loadUsageStats() {
+    // Carrega estatísticas de uso
+    chrome.storage.local.get(['dailyCount', 'totalCount', 'lastResetDate'], (result) => {
+      const today = new Date().toDateString();
+      const lastReset = result.lastResetDate;
+      
+      let dailyCount = result.dailyCount || 0;
+      
+      // Reset diário
+      if (lastReset !== today) {
+        dailyCount = 0;
+        chrome.storage.local.set({ 
+          dailyCount: 0, 
+          lastResetDate: today 
+        });
+      }
+      
+      document.getElementById('daily-count').textContent = dailyCount;
+      document.getElementById('total-count').textContent = result.totalCount || 0;
     });
   }
   

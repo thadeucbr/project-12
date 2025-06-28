@@ -10,6 +10,9 @@
   ],
   "host_permissions": [
     "http://localhost:3000/*",
+    "https://api.openai.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "http://localhost:11434/*",
     "https://*/*"
   ],
   "background": {
@@ -35,7 +38,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["icons/*", "content.css"],
+      "resources": ["icons/*", "content.css", "onboarding.html"],
       "matches": ["<all_urls>"]
     }
   ]

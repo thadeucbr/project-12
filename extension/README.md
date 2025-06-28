@@ -1,69 +1,42 @@
 # PromptCraft Text Enhancer - Extensão Chrome
 
-Uma extensão do Chrome que adiciona funcionalidade de aprimoramento de texto inteligente em qualquer campo de texto na web.
+Uma extensão do Chrome que adiciona funcionalidade de aprimoramento de texto inteligente em qualquer campo de texto na web, com onboarding completo e configuração simplificada.
 
 ## 🚀 Funcionalidades
 
-### ✨ Aprimoramento Inteligente de Texto
-- **Detecção Automática**: Identifica automaticamente o contexto (email, redes sociais, comentários, etc.)
-- **Múltiplos Estilos**: Profissional, Casual, Criativo, Conciso, Detalhado
-- **Melhoria Contextual**: Adapta o aprimoramento baseado no tipo de campo e site
+### ✨ Onboarding Completo
+- **Guia Passo a Passo**: Configuração guiada para usuários não técnicos
+- **Múltiplos Provedores**: OpenAI, Google Gemini, Ollama (local)
+- **Instruções Detalhadas**: Como obter chaves de API com links diretos
+- **Seleção de Modelos**: Lista automática de modelos disponíveis
+- **Configuração Visual**: Interface intuitiva e amigável
 
-### 🎯 Contextos Suportados
-- **Email**: Tom profissional e claro
-- **Redes Sociais**: Envolvente e conciso
-- **Comentários**: Respeitoso e construtivo
-- **Documentos Formais**: Linguagem profissional
-- **Textos Criativos**: Expressivo e envolvente
-- **Documentação Técnica**: Claro e preciso
+### 🤖 Provedores de IA Suportados
 
-### 🔧 Configurações Avançadas
-- Configuração de API personalizada
-- Detecção automática de contexto
-- Estilos de aprimoramento personalizáveis
-- Notificações opcionais
+#### OpenAI
+- **Modelos**: GPT-4, GPT-4 Turbo, GPT-3.5 Turbo
+- **Configuração**: Chave da API da OpenAI
+- **Custo**: ~$0.002/1K tokens
+- **Qualidade**: Excelente para todos os tipos de texto
 
-## 📦 Instalação
+#### Google Gemini
+- **Modelos**: Gemini Pro, Gemini Pro Vision
+- **Configuração**: Chave da API do Google AI Studio
+- **Custo**: Gratuito até 60 requisições/minuto
+- **Qualidade**: Muito boa, especialmente para textos criativos
 
-### Desenvolvimento Local
+#### Ollama (Local)
+- **Modelos**: Llama 2, Mistral, Code Llama, Neural Chat
+- **Configuração**: Instalação local do Ollama
+- **Custo**: 100% gratuito
+- **Privacidade**: Dados ficam no seu computador
 
-1. **Clone o repositório**:
-   ```bash
-   git clone <repository-url>
-   cd extension
-   ```
-
-2. **Configure a API**:
-   - Certifique-se de que o backend está rodando em `http://localhost:3000`
-   - Obtenha suas chaves de API (API Key e Private Key)
-
-3. **Carregue a extensão no Chrome**:
-   - Abra `chrome://extensions/`
-   - Ative o "Modo do desenvolvedor"
-   - Clique em "Carregar sem compactação"
-   - Selecione a pasta `extension`
-
-4. **Configure a extensão**:
-   - Clique no ícone da extensão na barra de ferramentas
-   - Insira suas credenciais da API
-   - Salve as configurações
-
-## 🎮 Como Usar
-
-### Uso Básico
-1. **Navegue para qualquer site** com campos de texto
-2. **Clique em um campo de texto** (textarea, input, contenteditable)
-3. **Digite seu texto**
-4. **Clique no ícone ✨** que aparece no canto do campo
-5. **Escolha o estilo** de aprimoramento desejado
-6. **Aguarde** o texto ser aprimorado automaticamente
-
-### Estilos Disponíveis
+### 🎯 Estilos de Aprimoramento
 
 #### ✨ Profissional
 - Tom formal e claro
-- Ideal para emails corporativos e documentos
-- Melhora clareza e profissionalismo
+- Ideal para emails corporativos
+- Melhora profissionalismo
 
 #### 😊 Casual
 - Tom amigável e descontraído
@@ -71,7 +44,7 @@ Uma extensão do Chrome que adiciona funcionalidade de aprimoramento de texto in
 - Mantém naturalidade
 
 #### 🎨 Criativo
-- Linguagem expressiva e envolvente
+- Linguagem expressiva
 - Ótimo para posts criativos
 - Adiciona personalidade
 
@@ -85,38 +58,123 @@ Uma extensão do Chrome que adiciona funcionalidade de aprimoramento de texto in
 - Adiciona contexto útil
 - Melhora completude
 
-### Detecção Automática de Contexto
+### 🔍 Detecção Automática de Contexto
 
 A extensão detecta automaticamente o contexto baseado em:
 - **Tipo do campo**: email, textarea, contenteditable
-- **Atributos HTML**: name, id, class, placeholder
+- **Atributos HTML**: name, id, class, placeholder, aria-label
 - **URL do site**: Gmail, LinkedIn, Twitter, GitHub, etc.
 - **Estrutura da página**: formulários, comentários, posts
 
-## ⚙️ Configuração
+## 📦 Instalação e Configuração
 
-### Configurações Básicas
-- **URL da API**: Endereço do backend (padrão: `http://localhost:3000/api`)
-- **Chave da API**: Sua chave de autenticação
-- **Chave Privada**: Chave para assinatura de requisições
-- **Estilo Padrão**: Estilo usado por padrão
+### 1. Instalação da Extensão
 
-### Configurações Avançadas
-- **Detecção Automática**: Ativa/desativa detecção de contexto
-- **Notificações**: Mostra feedback visual
-- **Sites Específicos**: Configurações por domínio
+1. **Baixe os arquivos** da extensão
+2. **Abra** `chrome://extensions/`
+3. **Ative** "Modo do desenvolvedor"
+4. **Clique** "Carregar sem compactação"
+5. **Selecione** a pasta `extension`
 
-## 🔒 Segurança
+### 2. Onboarding Automático
 
-### Autenticação
-- Usa sistema de assinatura HMAC-SHA256
-- Chaves armazenadas localmente no Chrome
-- Comunicação segura com o backend
+Ao instalar, a extensão abrirá automaticamente o onboarding que te guiará através de:
 
-### Privacidade
-- Texto processado apenas quando solicitado
-- Não armazena conteúdo dos campos
-- Configurações sincronizadas com conta do Chrome
+#### Passo 1: Escolha do Provedor
+- Selecione entre OpenAI, Gemini ou Ollama
+- Veja comparação de custos e características
+- Entenda as diferenças entre cada opção
+
+#### Passo 2: Obtenção da Chave da API
+
+**Para OpenAI:**
+1. Acesse [platform.openai.com](https://platform.openai.com/signup)
+2. Crie uma conta ou faça login
+3. Vá para [API Keys](https://platform.openai.com/api-keys)
+4. Clique em "Create new secret key"
+5. Copie a chave (começa com "sk-")
+
+**Para Google Gemini:**
+1. Acesse [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Faça login com sua conta Google
+3. Clique em "Create API Key"
+4. Selecione um projeto ou crie um novo
+5. Copie a chave gerada
+
+**Para Ollama:**
+1. Baixe em [ollama.ai](https://ollama.ai)
+2. Instale no seu computador
+3. Execute: `ollama pull llama2`
+4. Execute: `ollama serve`
+
+#### Passo 3: Seleção do Modelo
+- A extensão carrega automaticamente os modelos disponíveis
+- Escolha o modelo que melhor atende suas necessidades
+- Veja descrições e recomendações para cada modelo
+
+#### Passo 4: Configurações Finais
+- Defina o estilo padrão de aprimoramento
+- Configure preferências de uso
+- Entenda como usar a extensão
+
+### 3. Configuração Manual (Opcional)
+
+Você pode reconfigurar a extensão a qualquer momento:
+
+1. **Clique** no ícone da extensão
+2. **Clique** em "Configurar"
+3. **Altere** provedor, modelo ou configurações
+4. **Salve** as alterações
+
+## 🎮 Como Usar
+
+### Uso Básico
+1. **Navegue** para qualquer site com campos de texto
+2. **Clique** em um campo de texto
+3. **Digite** seu texto
+4. **Clique** no ícone ✨ que aparece
+5. **Escolha** o estilo de aprimoramento
+6. **Aguarde** o texto ser aprimorado
+
+### Dicas de Uso
+- **Texto mínimo**: 10 caracteres para aprimoramento
+- **Contexto automático**: A extensão detecta o tipo de campo
+- **Estilo padrão**: Use o configurado ou escolha outro
+- **Feedback visual**: Veja animações de sucesso/erro
+
+## ⚙️ Configurações Avançadas
+
+### Interface do Popup
+- **Status da extensão**: Verde (ativo), vermelho (inativo), amarelo (configuração pendente)
+- **Informações do provedor**: Modelo atual e custos
+- **Estatísticas de uso**: Contadores diário e total
+- **Ações rápidas**: Ativar/desativar, testar, configurar
+
+### Configurações Disponíveis
+- **Provedor de IA**: OpenAI, Gemini, Ollama
+- **Modelo específico**: Lista dinâmica baseada no provedor
+- **Estilo padrão**: Profissional, casual, criativo, conciso, detalhado
+- **Detecção automática**: Ativa/desativa detecção de contexto
+- **Notificações**: Feedback visual de ações
+
+## 🔒 Segurança e Privacidade
+
+### Armazenamento de Dados
+- **Configurações**: Armazenadas localmente no Chrome
+- **Chaves de API**: Criptografadas no armazenamento local
+- **Texto processado**: Enviado apenas quando solicitado
+- **Histórico**: Não armazenamos conteúdo dos campos
+
+### Comunicação com APIs
+- **OpenAI**: Comunicação direta via HTTPS
+- **Gemini**: Comunicação direta via HTTPS
+- **Ollama**: Comunicação local (localhost)
+
+### Permissões
+- **activeTab**: Para funcionar na aba atual
+- **storage**: Para salvar configurações
+- **scripting**: Para injetar funcionalidade
+- **host_permissions**: Para acessar APIs externas
 
 ## 🛠️ Desenvolvimento
 
@@ -124,11 +182,13 @@ A extensão detecta automaticamente o contexto baseado em:
 ```
 extension/
 ├── manifest.json          # Configuração da extensão
-├── background.js          # Service worker
-├── content.js            # Script injetado nas páginas
-├── content.css           # Estilos do content script
+├── background.js          # Service worker (API calls)
+├── content.js            # Script injetado (UI)
+├── content.css           # Estilos visuais
 ├── popup.html            # Interface do popup
 ├── popup.js              # Lógica do popup
+├── onboarding.html       # Interface de onboarding
+├── onboarding.js         # Lógica do onboarding
 ├── icons/                # Ícones da extensão
 └── README.md            # Documentação
 ```
@@ -137,51 +197,57 @@ extension/
 - **Chrome Extensions API**: Funcionalidades da extensão
 - **Chrome Storage API**: Armazenamento de configurações
 - **Chrome Tabs API**: Abertura de abas
-- **Web Crypto API**: Geração de assinaturas
-
-### Compatibilidade
-- **Chrome**: Versão 88+
-- **Edge**: Versão 88+
-- **Outros navegadores Chromium**: Suporte experimental
+- **OpenAI API**: Processamento de texto
+- **Google Gemini API**: Processamento de texto
+- **Ollama API**: Processamento local
 
 ## 🐛 Solução de Problemas
 
 ### Problemas Comuns
 
-#### Extensão não aparece
-- Verifique se está ativada em `chrome://extensions/`
-- Recarregue a página após instalar
-- Verifique permissões da extensão
+#### "Configure sua API primeiro"
+- Verifique se inseriu a chave da API corretamente
+- Confirme se o provedor está selecionado
+- Para Ollama, certifique-se de que está rodando
 
-#### Botão não aparece nos campos
+#### "Erro na API"
+- **OpenAI**: Verifique se tem créditos na conta
+- **Gemini**: Confirme se não excedeu o limite gratuito
+- **Ollama**: Verifique se o serviço está rodando
+
+#### Botão não aparece
 - Campos muito pequenos são ignorados
 - Campos de senha são ignorados por segurança
-- Verifique se a extensão está ativada
-
-#### Erro de API
-- Verifique se o backend está rodando
-- Confirme as credenciais da API
-- Verifique conectividade de rede
+- Recarregue a página após instalar
 
 #### Texto não é aprimorado
-- Verifique configurações da API
-- Teste com texto mais longo
-- Verifique logs do console (F12)
+- Texto deve ter pelo menos 10 caracteres
+- Verifique conexão com internet (OpenAI/Gemini)
+- Veja logs no console (F12)
 
-### Debug
+### Debug Avançado
 1. Abra `chrome://extensions/`
 2. Clique em "Detalhes" na extensão
 3. Clique em "Inspecionar visualizações: service worker"
-4. Verifique logs de erro
+4. Verifique logs de erro no console
 
-## 📝 Changelog
+## 📊 Estatísticas de Uso
 
-### v1.0.0
-- Lançamento inicial
-- Suporte a múltiplos estilos de aprimoramento
+A extensão mantém estatísticas locais:
+- **Contador diário**: Reset automático à meia-noite
+- **Contador total**: Acumulativo desde a instalação
+- **Não enviamos dados**: Tudo fica no seu navegador
+
+## 🔄 Atualizações
+
+### v1.0.0 - Lançamento Inicial
+- Onboarding completo para usuários não técnicos
+- Suporte a OpenAI, Gemini e Ollama
 - Detecção automática de contexto
-- Interface de configuração completa
-- Integração com backend PromptCraft
+- 5 estilos de aprimoramento
+- Interface moderna e intuitiva
+- Estatísticas de uso
+- Configuração simplificada
 
 ## 🤝 Contribuição
 
@@ -193,11 +259,16 @@ extension/
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a licença MIT. Veja o arquivo `LICENSE` para detalhes.
+Este projeto está licenciado sob a licença MIT.
 
 ## 🔗 Links Úteis
 
 - [Documentação Chrome Extensions](https://developer.chrome.com/docs/extensions/)
-- [Backend PromptCraft](../back/README.md)
-- [Frontend PromptCraft](../front/README.md)
+- [OpenAI API](https://platform.openai.com/docs)
+- [Google Gemini API](https://ai.google.dev/)
+- [Ollama](https://ollama.ai/)
 - [Reportar Bug](https://github.com/your-repo/issues)
+
+---
+
+**Desenvolvido com ❤️ para melhorar sua escrita na web!**

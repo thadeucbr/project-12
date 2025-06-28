@@ -1,15 +1,23 @@
 // Background script para a extensão
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener((details) => {
   console.log('PromptCraft Text Enhancer instalado');
+  
+  if (details.reason === 'install') {
+    // Primeira instalação - abre onboarding
+    chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
+  }
   
   // Configurações padrão
   chrome.storage.sync.set({
-    apiUrl: 'http://localhost:3000/api',
+    isFirstTime: details.reason === 'install',
+    onboardingCompleted: false,
+    provider: 'openai', // openai, gemini, ollama
     apiKey: '',
-    privateKey: '',
+    model: '',
     autoDetectContext: true,
     enhancementStyle: 'professional',
-    showNotifications: true
+    showNotifications: true,
+    extensionEnabled: true
   });
 });
 
@@ -28,6 +36,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
     return true;
   }
+  
+  if (request.action === 'getModels') {
+    getAvailableModels(request.provider, request.apiKey)
+      .then(models => sendResponse({ success: true, models }))
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
 });
 
 async function handleTextEnhancement(data) {
@@ -39,48 +54,196 @@ async function handleTextEnhancement(data) {
       chrome.storage.sync.get(null, resolve);
     });
     
-    if (!settings.apiKey || !settings.privateKey) {
-      throw new Error('API não configurada. Configure nas opções da extensão.');
+    if (!settings.apiKey || !settings.provider) {
+      throw new Error('Configure sua API primeiro. Clique no ícone da extensão para configurar.');
     }
     
     // Cria o prompt específico para melhoria de texto
     const enhancementPrompt = createTextEnhancementPrompt(text, context, style);
     
-    // Gera assinatura
-    const { signature, timestamp } = await generateSignature(
-      'POST', 
-      '/llm', 
-      settings.privateKey
-    );
-    
-    // Faz a requisição para a API
-    const response = await fetch(`${settings.apiUrl}/llm`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'x-api-key': settings.apiKey,
-        'x-signature': signature,
-        'x-timestamp': timestamp,
-      },
-      body: JSON.stringify({
-        prompt: enhancementPrompt,
-        provider: 'openai',
-      }),
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Erro na API: ${response.status}`);
+    // Chama a API baseada no provedor
+    let result;
+    switch (settings.provider) {
+      case 'openai':
+        result = await callOpenAI(enhancementPrompt, settings);
+        break;
+      case 'gemini':
+        result = await callGemini(enhancementPrompt, settings);
+        break;
+      case 'ollama':
+        result = await callOllama(enhancementPrompt, settings);
+        break;
+      default:
+        throw new Error('Provedor não suportado');
     }
     
-    const result = await response.json();
-    return result.output;
+    return result;
     
   } catch (error) {
     console.error('Erro no aprimoramento:', error);
     // Fallback local
     return getLocalTextEnhancement(text, context, style);
   }
+}
+
+async function callOpenAI(prompt, settings) {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${settings.apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: settings.model || 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 1000,
+      temperature: 0.7
+    }),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(`OpenAI API Error: ${error.error?.message || response.statusText}`);
+  }
+  
+  const result = await response.json();
+  return result.choices[0].message.content;
+}
+
+async function callGemini(prompt, settings) {
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${settings.model || 'gemini-pro'}:generateContent?key=${settings.apiKey}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }]
+    }),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(`Gemini API Error: ${error.error?.message || response.statusText}`);
+  }
+  
+  const result = await response.json();
+  return result.candidates[0].content.parts[0].text;
+}
+
+async function callOllama(prompt, settings) {
+  const response = await fetch('http://localhost:11434/api/generate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: settings.model || 'llama2',
+      prompt: prompt,
+      stream: false
+    }),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Ollama Error: ${response.statusText}. Certifique-se de que o Ollama está rodando.`);
+  }
+  
+  const result = await response.json();
+  return result.response;
+}
+
+async function getAvailableModels(provider, apiKey) {
+  try {
+    switch (provider) {
+      case 'openai':
+        return await getOpenAIModels(apiKey);
+      case 'gemini':
+        return await getGeminiModels(apiKey);
+      case 'ollama':
+        return await getOllamaModels();
+      default:
+        return [];
+    }
+  } catch (error) {
+    console.error('Erro ao buscar modelos:', error);
+    return getDefaultModels(provider);
+  }
+}
+
+async function getOpenAIModels(apiKey) {
+  const response = await fetch('https://api.openai.com/v1/models', {
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+    },
+  });
+  
+  if (!response.ok) {
+    return getDefaultModels('openai');
+  }
+  
+  const result = await response.json();
+  return result.data
+    .filter(model => model.id.includes('gpt'))
+    .map(model => ({
+      id: model.id,
+      name: model.id,
+      description: `OpenAI ${model.id}`
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+async function getGeminiModels(apiKey) {
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+  
+  if (!response.ok) {
+    return getDefaultModels('gemini');
+  }
+  
+  const result = await response.json();
+  return result.models
+    .filter(model => model.name.includes('gemini'))
+    .map(model => ({
+      id: model.name.split('/').pop(),
+      name: model.displayName || model.name.split('/').pop(),
+      description: model.description || `Google ${model.name.split('/').pop()}`
+    }));
+}
+
+async function getOllamaModels() {
+  const response = await fetch('http://localhost:11434/api/tags');
+  
+  if (!response.ok) {
+    return getDefaultModels('ollama');
+  }
+  
+  const result = await response.json();
+  return result.models.map(model => ({
+    id: model.name,
+    name: model.name,
+    description: `Ollama ${model.name} (${(model.size / 1024 / 1024 / 1024).toFixed(1)}GB)`
+  }));
+}
+
+function getDefaultModels(provider) {
+  const defaults = {
+    openai: [
+      { id: 'gpt-4', name: 'GPT-4', description: 'Modelo mais avançado da OpenAI' },
+      { id: 'gpt-4-turbo-preview', name: 'GPT-4 Turbo', description: 'Versão mais rápida do GPT-4' },
+      { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', description: 'Modelo rápido e eficiente' },
+      { id: 'gpt-3.5-turbo-16k', name: 'GPT-3.5 Turbo 16K', description: 'Versão com mais contexto' }
+    ],
+    gemini: [
+      { id: 'gemini-pro', name: 'Gemini Pro', description: 'Modelo principal do Google' },
+      { id: 'gemini-pro-vision', name: 'Gemini Pro Vision', description: 'Modelo com suporte a imagens' }
+    ],
+    ollama: [
+      { id: 'llama2', name: 'Llama 2', description: 'Meta Llama 2' },
+      { id: 'codellama', name: 'Code Llama', description: 'Especializado em código' },
+      { id: 'mistral', name: 'Mistral', description: 'Modelo Mistral AI' },
+      { id: 'neural-chat', name: 'Neural Chat', description: 'Modelo de conversação' }
+    ]
+  };
+  
+  return defaults[provider] || [];
 }
 
 function createTextEnhancementPrompt(text, context, style) {
@@ -128,31 +291,7 @@ function createTextEnhancementPrompt(text, context, style) {
 **Texto original:**
 """${text}"""
 
-**Texto aprimorado:**`;
-}
-
-async function generateSignature(method, url, privateKey) {
-  const timestamp = new Date().toISOString();
-  const apiUrl = `/api${url}`;
-  const payload = `${method}:${apiUrl}:${timestamp}`;
-  
-  const encoder = new TextEncoder();
-  const keyData = encoder.encode(privateKey);
-  
-  const key = await crypto.subtle.importKey(
-    'raw',
-    keyData,
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-  
-  const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
-  const signature = Array.from(new Uint8Array(signatureBuffer))
-    .map(byte => byte.toString(16).padStart(2, '0'))
-    .join('');
-  
-  return { signature, timestamp };
+**Texto aprimorado:`;
 }
 
 function getLocalTextEnhancement(text, context, style) {

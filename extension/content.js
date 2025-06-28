@@ -14,6 +14,11 @@ class TextEnhancer {
     // Carrega configurações
     await this.loadSettings();
     
+    // Verifica se a extensão está habilitada
+    if (!this.settings.extensionEnabled) {
+      return;
+    }
+    
     // Adiciona estilos
     this.addStyles();
     
@@ -42,108 +47,144 @@ class TextEnhancer {
     style.id = 'promptcraft-styles';
     style.textContent = `
       .promptcraft-enhance-btn {
-        position: absolute;
-        width: 24px;
-        height: 24px;
-        background: linear-gradient(135deg, #8B5CF6, #EC4899);
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        z-index: 10000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
-        transition: all 0.2s ease;
-        opacity: 0.8;
+        position: absolute !important;
+        width: 28px !important;
+        height: 28px !important;
+        background: linear-gradient(135deg, #8B5CF6, #EC4899) !important;
+        border: none !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+        z-index: 2147483647 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3) !important;
+        transition: all 0.2s ease !important;
+        opacity: 0.9 !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
       }
-      
+
       .promptcraft-enhance-btn:hover {
-        opacity: 1;
-        transform: scale(1.1);
-        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        opacity: 1 !important;
+        transform: scale(1.1) !important;
+        box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4) !important;
       }
-      
+
       .promptcraft-enhance-btn svg {
-        width: 14px;
-        height: 14px;
-        fill: white;
+        width: 16px !important;
+        height: 16px !important;
+        fill: white !important;
+        pointer-events: none !important;
       }
-      
+
       .promptcraft-enhance-btn.loading {
-        animation: promptcraft-spin 1s linear infinite;
+        animation: promptcraft-spin 1s linear infinite !important;
       }
-      
+
       @keyframes promptcraft-spin {
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
       }
-      
+
       .promptcraft-tooltip {
-        position: absolute;
-        background: #1F2937;
-        color: white;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 12px;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        z-index: 10001;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.2s ease;
-        white-space: nowrap;
+        position: absolute !important;
+        background: #1F2937 !important;
+        color: white !important;
+        padding: 8px 12px !important;
+        border-radius: 6px !important;
+        font-size: 12px !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        z-index: 2147483647 !important;
+        pointer-events: none !important;
+        opacity: 0 !important;
+        transition: opacity 0.2s ease !important;
+        white-space: nowrap !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        max-width: 200px !important;
       }
-      
+
       .promptcraft-tooltip.show {
-        opacity: 1;
+        opacity: 1 !important;
       }
-      
+
       .promptcraft-tooltip::after {
-        content: '';
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        border: 4px solid transparent;
-        border-top-color: #1F2937;
+        content: '' !important;
+        position: absolute !important;
+        top: 100% !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        border: 4px solid transparent !important;
+        border-top-color: #1F2937 !important;
       }
-      
+
       .promptcraft-enhanced {
         background: linear-gradient(90deg, #F3E8FF, #FDF2F8) !important;
-        border: 1px solid #8B5CF6 !important;
-        transition: background 0.3s ease;
+        border: 2px solid #8B5CF6 !important;
+        transition: all 0.3s ease !important;
       }
-      
+
       .promptcraft-context-menu {
-        position: absolute;
-        background: white;
-        border: 1px solid #E5E7EB;
-        border-radius: 8px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        z-index: 10002;
-        padding: 8px;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        font-size: 14px;
-        min-width: 200px;
+        position: absolute !important;
+        background: white !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 12px !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+        z-index: 2147483647 !important;
+        padding: 8px !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        font-size: 14px !important;
+        min-width: 220px !important;
+        max-width: 300px !important;
+        backdrop-filter: blur(10px) !important;
       }
-      
+
       .promptcraft-context-item {
-        padding: 8px 12px;
-        cursor: pointer;
-        border-radius: 4px;
-        transition: background 0.2s ease;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        padding: 12px 16px !important;
+        cursor: pointer !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        color: #374151 !important;
+        margin-bottom: 4px !important;
       }
-      
+
       .promptcraft-context-item:hover {
-        background: #F3F4F6;
+        background: #F3F4F6 !important;
+        transform: translateX(2px) !important;
       }
-      
+
       .promptcraft-context-item.selected {
-        background: #EDE9FE;
-        color: #7C3AED;
+        background: #EDE9FE !important;
+        color: #7C3AED !important;
+      }
+
+      .promptcraft-context-icon {
+        font-size: 16px !important;
+        width: 20px !important;
+        text-align: center !important;
+      }
+
+      .promptcraft-context-text {
+        flex: 1 !important;
+      }
+
+      .promptcraft-context-desc {
+        font-size: 11px !important;
+        opacity: 0.7 !important;
+        margin-top: 2px !important;
+      }
+
+      /* Animação de sucesso */
+      @keyframes promptcraft-success {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); background: #22C55E; }
+        100% { transform: scale(1); }
+      }
+
+      .promptcraft-enhance-btn.success {
+        animation: promptcraft-success 0.6s ease !important;
       }
     `;
     
@@ -156,10 +197,12 @@ class TextEnhancer {
       textarea,
       input[type="text"],
       input[type="email"],
+      input[type="search"],
       [contenteditable="true"],
       .ql-editor,
       .CodeMirror-code,
-      .ace_text-input
+      .ace_text-input,
+      [role="textbox"]
     `);
     
     textFields.forEach(field => this.setupField(field));
@@ -174,8 +217,10 @@ class TextEnhancer {
               textarea,
               input[type="text"],
               input[type="email"],
+              input[type="search"],
               [contenteditable="true"],
-              .ql-editor
+              .ql-editor,
+              [role="textbox"]
             `);
             textFields.forEach(field => this.setupField(field));
           }
@@ -193,10 +238,17 @@ class TextEnhancer {
     if (field.dataset.promptcraftSetup) return;
     field.dataset.promptcraftSetup = 'true';
     
-    // Ignora campos muito pequenos ou de senha
+    // Ignora campos muito pequenos, de senha ou ocultos
     if (field.type === 'password' || 
+        field.type === 'hidden' ||
         field.offsetWidth < 100 || 
-        field.offsetHeight < 30) {
+        field.offsetHeight < 30 ||
+        field.style.display === 'none') {
+      return;
+    }
+    
+    // Ignora campos de busca muito pequenos
+    if (field.type === 'search' && field.offsetWidth < 200) {
       return;
     }
     
@@ -205,6 +257,7 @@ class TextEnhancer {
       setTimeout(() => this.hideEnhanceButton(), 200);
     });
     field.addEventListener('input', () => this.updateButtonPosition(field));
+    field.addEventListener('scroll', () => this.updateButtonPosition(field));
   }
   
   showEnhanceButton(field) {
@@ -240,7 +293,7 @@ class TextEnhancer {
     });
     
     this.enhanceButton.addEventListener('mouseenter', () => {
-      this.showTooltip('Clique para aprimorar o texto');
+      this.showTooltip('Clique para aprimorar o texto ✨');
     });
     
     this.enhanceButton.addEventListener('mouseleave', () => {
@@ -257,15 +310,21 @@ class TextEnhancer {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
     
-    this.enhanceButton.style.left = `${rect.right - 30 + scrollLeft}px`;
-    this.enhanceButton.style.top = `${rect.top + 4 + scrollTop}px`;
+    // Posiciona no canto superior direito do campo
+    this.enhanceButton.style.left = `${rect.right - 35 + scrollLeft}px`;
+    this.enhanceButton.style.top = `${rect.top + 5 + scrollTop}px`;
   }
   
   showContextMenu(event) {
     const text = this.getFieldText(this.currentField);
     
     if (!text.trim()) {
-      this.showTooltip('Digite algum texto primeiro');
+      this.showTooltip('Digite algum texto primeiro', 2000);
+      return;
+    }
+    
+    if (text.length < 10) {
+      this.showTooltip('Texto muito curto para aprimorar', 2000);
       return;
     }
     
@@ -280,19 +339,53 @@ class TextEnhancer {
     
     const context = this.detectContext(this.currentField);
     const options = [
-      { id: 'professional', label: '✨ Profissional', desc: 'Tom formal e claro' },
-      { id: 'casual', label: '😊 Casual', desc: 'Tom amigável e descontraído' },
-      { id: 'creative', label: '🎨 Criativo', desc: 'Mais expressivo e envolvente' },
-      { id: 'concise', label: '⚡ Conciso', desc: 'Mais direto e objetivo' },
-      { id: 'detailed', label: '📝 Detalhado', desc: 'Mais completo e explicativo' }
+      { 
+        id: 'professional', 
+        icon: '✨', 
+        label: 'Profissional', 
+        desc: 'Tom formal e claro' 
+      },
+      { 
+        id: 'casual', 
+        icon: '😊', 
+        label: 'Casual', 
+        desc: 'Amigável e descontraído' 
+      },
+      { 
+        id: 'creative', 
+        icon: '🎨', 
+        label: 'Criativo', 
+        desc: 'Expressivo e envolvente' 
+      },
+      { 
+        id: 'concise', 
+        icon: '⚡', 
+        label: 'Conciso', 
+        desc: 'Direto ao ponto' 
+      },
+      { 
+        id: 'detailed', 
+        icon: '📝', 
+        label: 'Detalhado', 
+        desc: 'Mais completo' 
+      }
     ];
     
     options.forEach(option => {
       const item = document.createElement('div');
       item.className = 'promptcraft-context-item';
+      
+      // Marca o estilo padrão
+      if (option.id === this.settings.enhancementStyle) {
+        item.classList.add('selected');
+      }
+      
       item.innerHTML = `
-        <span>${option.label}</span>
-        <small style="color: #6B7280; margin-left: auto;">${option.desc}</small>
+        <div class="promptcraft-context-icon">${option.icon}</div>
+        <div class="promptcraft-context-text">
+          <div>${option.label}</div>
+          <div class="promptcraft-context-desc">${option.desc}</div>
+        </div>
       `;
       
       item.addEventListener('click', () => {
@@ -305,15 +398,28 @@ class TextEnhancer {
     
     // Posiciona o menu
     const rect = this.enhanceButton.getBoundingClientRect();
-    menu.style.left = `${rect.left - 100}px`;
-    menu.style.top = `${rect.bottom + 5}px`;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
     
+    menu.style.left = `${rect.left - 150 + scrollLeft}px`;
+    menu.style.top = `${rect.bottom + 5 + scrollTop}px`;
+    
+    // Ajusta posição se sair da tela
     document.body.appendChild(menu);
+    const menuRect = menu.getBoundingClientRect();
+    
+    if (menuRect.right > window.innerWidth) {
+      menu.style.left = `${rect.right - menuRect.width + scrollLeft}px`;
+    }
+    
+    if (menuRect.bottom > window.innerHeight) {
+      menu.style.top = `${rect.top - menuRect.height - 5 + scrollTop}px`;
+    }
     
     // Remove menu ao clicar fora
     setTimeout(() => {
       document.addEventListener('click', function removeMenu(e) {
-        if (!menu.contains(e.target)) {
+        if (!menu.contains(e.target) && !e.target.closest('.promptcraft-enhance-btn')) {
           menu.remove();
           document.removeEventListener('click', removeMenu);
         }
@@ -327,40 +433,71 @@ class TextEnhancer {
     const fieldId = (field.id || '').toLowerCase();
     const fieldClass = (field.className || '').toLowerCase();
     const placeholder = (field.placeholder || '').toLowerCase();
+    const ariaLabel = (field.getAttribute('aria-label') || '').toLowerCase();
     
     // Detecta contexto baseado em atributos do campo
-    if (fieldType === 'email' || fieldName.includes('email') || fieldId.includes('email')) {
+    if (fieldType === 'email' || 
+        fieldName.includes('email') || 
+        fieldId.includes('email') ||
+        placeholder.includes('email')) {
       return 'email';
     }
     
-    if (fieldName.includes('comment') || fieldId.includes('comment') || placeholder.includes('comment')) {
+    if (fieldName.includes('comment') || 
+        fieldId.includes('comment') || 
+        placeholder.includes('comment') ||
+        ariaLabel.includes('comment')) {
       return 'comment';
     }
     
-    if (fieldName.includes('message') || fieldId.includes('message') || placeholder.includes('message')) {
+    if (fieldName.includes('message') || 
+        fieldId.includes('message') || 
+        placeholder.includes('message') ||
+        fieldClass.includes('message')) {
       return 'message';
     }
     
-    if (fieldClass.includes('social') || fieldClass.includes('post') || fieldClass.includes('tweet')) {
+    if (fieldClass.includes('social') || 
+        fieldClass.includes('post') || 
+        fieldClass.includes('tweet') ||
+        fieldClass.includes('status')) {
       return 'social';
     }
     
-    if (fieldClass.includes('code') || fieldClass.includes('technical')) {
+    if (fieldClass.includes('code') || 
+        fieldClass.includes('technical') ||
+        fieldName.includes('code')) {
       return 'technical';
     }
     
     // Detecta baseado no contexto da página
     const url = window.location.href.toLowerCase();
-    if (url.includes('linkedin') || url.includes('twitter') || url.includes('facebook')) {
+    const hostname = window.location.hostname.toLowerCase();
+    
+    if (hostname.includes('linkedin') || 
+        hostname.includes('twitter') || 
+        hostname.includes('facebook') ||
+        hostname.includes('instagram')) {
       return 'social';
     }
     
-    if (url.includes('github') || url.includes('stackoverflow')) {
+    if (hostname.includes('github') || 
+        hostname.includes('stackoverflow') ||
+        hostname.includes('codepen')) {
       return 'technical';
     }
     
-    if (url.includes('gmail') || url.includes('outlook') || url.includes('mail')) {
+    if (hostname.includes('gmail') || 
+        hostname.includes('outlook') || 
+        hostname.includes('mail') ||
+        url.includes('compose')) {
       return 'email';
+    }
+    
+    if (hostname.includes('docs.google') ||
+        hostname.includes('notion') ||
+        hostname.includes('confluence')) {
+      return 'formal';
     }
     
     return 'default';
@@ -378,16 +515,22 @@ class TextEnhancer {
       field.textContent = text;
       // Dispara evento de input para frameworks
       field.dispatchEvent(new Event('input', { bubbles: true }));
+      field.dispatchEvent(new Event('change', { bubbles: true }));
     } else {
       field.value = text;
       field.dispatchEvent(new Event('input', { bubbles: true }));
       field.dispatchEvent(new Event('change', { bubbles: true }));
     }
+    
+    // Foca no final do texto
+    if (field.setSelectionRange) {
+      field.setSelectionRange(text.length, text.length);
+    }
   }
   
   async enhanceText(text, context, style) {
     this.enhanceButton.classList.add('loading');
-    this.showTooltip('Aprimorando texto...');
+    this.showTooltip('Aprimorando texto...', 0);
     
     try {
       const response = await new Promise((resolve, reject) => {
@@ -406,13 +549,19 @@ class TextEnhancer {
       // Aplica o texto aprimorado
       this.setFieldText(this.currentField, response);
       
-      // Adiciona efeito visual
+      // Adiciona efeito visual de sucesso
       this.currentField.classList.add('promptcraft-enhanced');
+      this.enhanceButton.classList.add('success');
+      
       setTimeout(() => {
         this.currentField.classList.remove('promptcraft-enhanced');
+        this.enhanceButton.classList.remove('success');
       }, 2000);
       
       this.showTooltip('Texto aprimorado! ✨', 2000);
+      
+      // Atualiza estatísticas
+      this.updateUsageStats();
       
     } catch (error) {
       console.error('Erro ao aprimorar texto:', error);
@@ -420,6 +569,18 @@ class TextEnhancer {
     } finally {
       this.enhanceButton.classList.remove('loading');
     }
+  }
+  
+  updateUsageStats() {
+    chrome.storage.local.get(['dailyCount', 'totalCount'], (result) => {
+      const newDailyCount = (result.dailyCount || 0) + 1;
+      const newTotalCount = (result.totalCount || 0) + 1;
+      
+      chrome.storage.local.set({
+        dailyCount: newDailyCount,
+        totalCount: newTotalCount
+      });
+    });
   }
   
   showTooltip(text, duration = 1000) {
@@ -432,16 +593,21 @@ class TextEnhancer {
     this.tooltip.textContent = text;
     
     const rect = this.enhanceButton.getBoundingClientRect();
-    this.tooltip.style.left = `${rect.left + rect.width / 2}px`;
-    this.tooltip.style.top = `${rect.top - 35}px`;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    
+    this.tooltip.style.left = `${rect.left + rect.width / 2 + scrollLeft}px`;
+    this.tooltip.style.top = `${rect.top - 40 + scrollTop}px`;
     this.tooltip.style.transform = 'translateX(-50%)';
     
     this.tooltip.classList.add('show');
     
-    clearTimeout(this.tooltipTimeout);
-    this.tooltipTimeout = setTimeout(() => {
-      this.hideTooltip();
-    }, duration);
+    if (duration > 0) {
+      clearTimeout(this.tooltipTimeout);
+      this.tooltipTimeout = setTimeout(() => {
+        this.hideTooltip();
+      }, duration);
+    }
   }
   
   hideTooltip() {
