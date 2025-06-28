@@ -63,7 +63,7 @@ function AppContent() {
 
   const handleSurpriseMe = () => {
     // Seleciona uma categoria aleatória
-    const categories: ('text' | 'image' | 'video')[] = ['text', 'image', 'video'];
+    const categories: ('text' | 'image' | 'video' | 'editing')[] = ['text', 'image', 'video', 'editing'];
     const randomCategory = categories[Math.floor(Math.random() * categories.length)];
     
     // Seleciona um prompt aleatório da categoria
@@ -73,7 +73,8 @@ function AppContent() {
     const typesByCategory = {
       text: ['detailed', 'creative', 'technical', 'concise'] as const,
       image: ['image'] as const,
-      video: ['video'] as const
+      video: ['video'] as const,
+      editing: ['image-editing', 'video-editing'] as const
     };
     
     const availableTypes = typesByCategory[randomCategory];
@@ -173,7 +174,7 @@ function AppContent() {
             Transforme Suas Ideias
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Converta prompts simples em instruções poderosas para IA - texto, imagem e vídeo
+            Converta prompts simples em instruções poderosas para IA - texto, imagem, vídeo e edição
           </p>
         </motion.div>
 

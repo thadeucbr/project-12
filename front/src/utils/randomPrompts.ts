@@ -64,10 +64,32 @@ export const randomPrompts = {
     "Wedding ceremony footage with emotional moments and beautiful scenery",
     "Gaming livestream with commentary and viewer interaction",
     "Virtual tour of a luxury real estate property with smooth camera movements"
+  ],
+  editing: [
+    "Remove background from product photo and replace with studio gradient",
+    "Color grade sunset footage to achieve cinematic orange and teal look",
+    "Retouch portrait photo removing blemishes and enhancing eye color",
+    "Add motion graphics title sequence to corporate video presentation",
+    "Create double exposure effect combining portrait with cityscape",
+    "Apply vintage film look with grain and color correction to modern photo",
+    "Edit action sequence with dynamic cuts and slow-motion effects",
+    "Composite green screen footage with realistic background environment",
+    "Design animated lower thirds and graphics for interview video",
+    "Apply HDR tone mapping to landscape photo for dramatic effect",
+    "Create seamless transition between multiple video clips using masks",
+    "Enhance product photo with professional lighting and shadow adjustments",
+    "Add particle effects and lens flares to sci-fi video sequence",
+    "Correct white balance and exposure in mixed lighting conditions",
+    "Create cinemagraph with subtle motion loop from still photograph",
+    "Apply frequency separation technique for advanced skin retouching",
+    "Design animated infographic with data visualization elements",
+    "Stabilize handheld footage and add smooth camera movements",
+    "Create panoramic image from multiple overlapping photographs",
+    "Add realistic depth of field blur to sharp background elements"
   ]
 };
 
-export const getRandomPrompt = (category: 'text' | 'image' | 'video' = 'text'): string => {
+export const getRandomPrompt = (category: 'text' | 'image' | 'video' | 'editing' = 'text'): string => {
   const prompts = randomPrompts[category];
   return prompts[Math.floor(Math.random() * prompts.length)];
 };

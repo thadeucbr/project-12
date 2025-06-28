@@ -5,8 +5,8 @@ export interface Prompt {
   timestamp: string;
   tags: string[];
   characterCount: number;
-  enhancementType: 'detailed' | 'creative' | 'technical' | 'concise' | 'image' | 'video';
-  mediaType?: 'text' | 'image' | 'video';
+  enhancementType: 'detailed' | 'creative' | 'technical' | 'concise' | 'image' | 'video' | 'image-editing' | 'video-editing';
+  mediaType?: 'text' | 'image' | 'video' | 'editing';
 }
 
 export interface HistoryFilters {

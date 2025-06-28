@@ -63,7 +63,19 @@ Enhanced image prompt:`,
 
 Original: ${userPrompt}
 
-Enhanced video prompt:`
+Enhanced video prompt:`,
+
+      'image-editing': `Transform this into a detailed image editing instruction optimized for photo editing software like Photoshop, GIMP, or Lightroom. Include specific techniques, tools, settings, and step-by-step workflow. Return only the enhanced editing instruction without any explanations.
+
+Original: ${userPrompt}
+
+Enhanced editing instruction:`,
+
+      'video-editing': `Transform this into a detailed video editing instruction optimized for video editing software like Premiere Pro, After Effects, DaVinci Resolve, or Final Cut Pro. Include specific techniques, effects, transitions, color grading, and workflow steps. Return only the enhanced editing instruction without any explanations.
+
+Original: ${userPrompt}
+
+Enhanced editing instruction:`
     };
 
     return templates[enhancementType] || templates.detailed;
@@ -313,6 +325,65 @@ Format: Optimized prompt for AI video generation`,
         "specifying duration and sequence pacing",
         "defining technical quality and specifications",
         "adding temporal narrative elements"
+      ]
+    },
+    'image-editing': {
+      prefix: "Create detailed image editing instructions for",
+      structure: `
+Project Setup: [File format, resolution, color space]
+Tools Required: [Specific software tools and brushes]
+Step-by-Step Workflow:
+1. [Preparation steps]
+2. [Main editing techniques]
+3. [Refinement and adjustments]
+4. [Final touches and export]
+
+Techniques & Settings:
+- Layer management and blending modes
+- Adjustment layers and masks
+- Specific tool settings and parameters
+- Color correction and grading
+
+Quality Control:
+- Before/after comparison
+- Export settings for different uses
+- File organization and backup`,
+      modifiers: [
+        "with specific tool recommendations and settings",
+        "including professional workflow techniques",
+        "providing detailed step-by-step instructions",
+        "addressing common challenges and solutions",
+        "optimizing for professional quality results"
+      ]
+    },
+    'video-editing': {
+      prefix: "Create comprehensive video editing instructions for",
+      structure: `
+Project Setup: [Timeline settings, sequence presets]
+Media Organization: [Bin structure, file naming]
+Editing Workflow:
+1. [Assembly and rough cut]
+2. [Fine cut and timing]
+3. [Color correction and grading]
+4. [Audio mixing and effects]
+5. [Final review and export]
+
+Technical Specifications:
+- Frame rates and resolution
+- Codec and compression settings
+- Audio levels and mixing
+- Effects and transitions
+
+Delivery Requirements:
+- Export presets for different platforms
+- Quality control checklist
+- File management and archiving`,
+      modifiers: [
+        "with professional editing techniques and workflows",
+        "including specific software features and shortcuts",
+        "providing detailed technical specifications",
+        "addressing post-production best practices",
+        "optimizing for various delivery formats"
       ]
     }
   };

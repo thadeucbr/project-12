@@ -47,9 +47,10 @@ export const usePromptEnhancement = (
       }
 
       // Determina o tipo de mídia baseado no enhancement type
-      const mediaType: 'text' | 'image' | 'video' = 
+      const mediaType: 'text' | 'image' | 'video' | 'editing' = 
         enhancementType === 'image' ? 'image' :
-        enhancementType === 'video' ? 'video' : 'text';
+        enhancementType === 'video' ? 'video' :
+        enhancementType === 'image-editing' || enhancementType === 'video-editing' ? 'editing' : 'text';
 
       // Cria o objeto do prompt
       const newPrompt: Prompt = {
@@ -83,9 +84,10 @@ export const usePromptEnhancement = (
       try {
         const fallbackEnhanced = getLocalEnhancement(originalPrompt, enhancementType);
         
-        const mediaType: 'text' | 'image' | 'video' = 
+        const mediaType: 'text' | 'image' | 'video' | 'editing' = 
           enhancementType === 'image' ? 'image' :
-          enhancementType === 'video' ? 'video' : 'text';
+          enhancementType === 'video' ? 'video' :
+          enhancementType === 'image-editing' || enhancementType === 'video-editing' ? 'editing' : 'text';
         
         const fallbackPrompt: Prompt = {
           id: crypto.randomUUID(),
@@ -138,7 +140,12 @@ const generateTags = (prompt: string, enhancementType: string): string[] => {
     'retrato|portrait|pessoa|person|face|rosto': ['retrato', 'pessoas'],
     'paisagem|landscape|natureza|nature|cenário|scenery': ['paisagem', 'natureza'],
     'produto|product|comercial|commercial|publicidade|advertising': ['produto', 'comercial'],
-    'abstrato|abstract|conceitual|conceptual|artístico|artistic': ['abstrato', 'artístico']
+    'abstrato|abstract|conceitual|conceptual|artístico|artistic': ['abstrato', 'artístico'],
+    'editar|edição|retocar|ajustar|edit|editing|retouch|adjust': ['edição', 'pós-produção'],
+    'photoshop|gimp|lightroom|adobe|software': ['photoshop', 'software'],
+    'premiere|after effects|davinci|final cut|editor': ['edição-vídeo', 'software'],
+    'cor|color|grading|correção|correction': ['cor', 'correção'],
+    'efeito|effect|filtro|filter|transição|transition': ['efeitos', 'pós-produção']
   };
 
   const tags: string[] = [];
@@ -159,18 +166,20 @@ const generateTags = (prompt: string, enhancementType: string): string[] => {
     technical: 'técnico',
     concise: 'conciso',
     image: 'imagem',
-    video: 'vídeo'
+    video: 'vídeo',
+    'image-editing': 'edição-imagem',
+    'video-editing': 'edição-vídeo'
   };
 
   if (typeTagMap[enhancementType]) {
     tags.push(typeTagMap[enhancementType]);
   }
 
-  // Adiciona tags específicas para mídia
-  if (enhancementType === 'image') {
-    tags.push('geração-imagem', 'visual');
-  } else if (enhancementType === 'video') {
-    tags.push('geração-vídeo', 'movimento');
+  // Adiciona tags específicas para edição
+  if (enhancementType === 'image-editing') {
+    tags.push('photoshop', 'retoque', 'pós-produção');
+  } else if (enhancementType === 'video-editing') {
+    tags.push('premiere', 'after-effects', 'montagem');
   }
 
   return [...new Set(tags)];

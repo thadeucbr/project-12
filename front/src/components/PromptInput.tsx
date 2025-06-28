@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Loader2, Zap, Type, Code, Lightbulb, Target, Image, Video, Palette, Camera } from 'lucide-react';
+import { Send, Loader2, Zap, Type, Code, Lightbulb, Target, Image, Video, Palette, Camera, Edit, Scissors } from 'lucide-react';
 import type { Prompt } from '../types';
 
 interface PromptInputProps {
@@ -57,19 +57,37 @@ const enhancementTypes = [
     color: 'from-indigo-500 to-purple-600',
     description: 'Especializa prompts para criação de vídeos com movimento e narrativa temporal',
     category: 'video'
+  },
+  { 
+    id: 'image-editing' as const, 
+    label: 'Image Editing', 
+    icon: Edit, 
+    color: 'from-emerald-500 to-teal-500',
+    description: 'Prompts especializados para edição de imagens em Photoshop, GIMP, etc.',
+    category: 'editing'
+  },
+  { 
+    id: 'video-editing' as const, 
+    label: 'Video Editing', 
+    icon: Scissors, 
+    color: 'from-violet-500 to-indigo-600',
+    description: 'Prompts para edição de vídeos em Premiere, After Effects, DaVinci, etc.',
+    category: 'editing'
   }
 ];
 
 const categoryLabels = {
   text: 'Texto',
-  image: 'Imagem',
-  video: 'Vídeo'
+  image: 'Geração de Imagem',
+  video: 'Geração de Vídeo',
+  editing: 'Edição'
 };
 
 const categoryIcons = {
   text: Type,
   image: Palette,
-  video: Camera
+  video: Camera,
+  editing: Edit
 };
 
 export const PromptInput: React.FC<PromptInputProps> = ({ 
@@ -79,7 +97,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
 }) => {
   const [input, setInput] = useState(initialValue);
   const [selectedType, setSelectedType] = useState<Prompt['enhancementType']>('detailed');
-  const [selectedCategory, setSelectedCategory] = useState<'text' | 'image' | 'video'>('text');
+  const [selectedCategory, setSelectedCategory] = useState<'text' | 'image' | 'video' | 'editing'>('text');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showTypeInfo, setShowTypeInfo] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -105,6 +123,13 @@ export const PromptInput: React.FC<PromptInputProps> = ({
       "Tutorial showing how to cook pasta",
       "Animated logo reveal with particle effects",
       "Documentary-style interview setup"
+    ],
+    editing: [
+      "Remove background from product photo and add studio lighting",
+      "Color grade this sunset video to be more cinematic",
+      "Add motion graphics and transitions to corporate presentation",
+      "Retouch portrait photo removing blemishes and enhancing eyes",
+      "Create smooth slow-motion effect for action sequence"
     ]
   };
 
@@ -147,7 +172,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
     setShowTypeInfo(false);
   };
 
-  const handleCategorySelect = (category: 'text' | 'image' | 'video') => {
+  const handleCategorySelect = (category: 'text' | 'image' | 'video' | 'editing') => {
     setSelectedCategory(category);
     setShowSuggestions(false);
   };
@@ -164,7 +189,8 @@ export const PromptInput: React.FC<PromptInputProps> = ({
     const placeholders = {
       text: `Descreva o que você quer criar e eu vou aprimorar usando o estilo ${selectedTypeInfo?.label.toLowerCase()}...`,
       image: `Descreva a imagem que você quer gerar (ex: "um gato fofo dormindo em uma cama")...`,
-      video: `Descreva o vídeo que você quer criar (ex: "uma pessoa caminhando na praia ao pôr do sol")...`
+      video: `Descreva o vídeo que você quer criar (ex: "uma pessoa caminhando na praia ao pôr do sol")...`,
+      editing: `Descreva a edição que você quer fazer (ex: "remover fundo da foto e adicionar efeito vintage")...`
     };
     return placeholders[selectedCategory];
   };
@@ -195,7 +221,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                 <motion.button
                   key={key}
                   type="button"
-                  onClick={() => handleCategorySelect(key as 'text' | 'image' | 'video')}
+                  onClick={() => handleCategorySelect(key as 'text' | 'image' | 'video' | 'editing')}
                   className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                     selectedCategory === key
                       ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg'

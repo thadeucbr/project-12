@@ -12,7 +12,8 @@ import {
   X,
   Type,
   Image,
-  Video
+  Video,
+  Edit
 } from 'lucide-react';
 import type { Prompt, HistoryFilters } from '../types';
 
@@ -28,12 +29,14 @@ interface HistoryPanelProps {
 const mediaTypeIcons = {
   text: Type,
   image: Image,
-  video: Video
+  video: Video,
+  editing: Edit
 };
 
-const getMediaType = (enhancementType: Prompt['enhancementType']): 'text' | 'image' | 'video' => {
+const getMediaType = (enhancementType: Prompt['enhancementType']): 'text' | 'image' | 'video' | 'editing' => {
   if (enhancementType === 'image') return 'image';
   if (enhancementType === 'video') return 'video';
+  if (enhancementType === 'image-editing' || enhancementType === 'video-editing') return 'editing';
   return 'text';
 };
 
@@ -245,7 +248,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                 {/* Media Type Filter */}
                 <div className="flex items-center gap-2 flex-wrap">
                   <Filter className="h-4 w-4 text-gray-500" />
-                  {['all', 'text', 'image', 'video'].map((type) => {
+                  {['all', 'text', 'image', 'video', 'editing'].map((type) => {
                     const Icon = type === 'all' ? Filter : mediaTypeIcons[type as keyof typeof mediaTypeIcons];
                     return (
                       <button
@@ -268,7 +271,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                 {allTags.length > 0 && (
                   <div className="flex items-center gap-2 flex-wrap">
                     <Tag className="h-4 w-4 text-gray-500" />
-                    {allTags.map((tag) => (
+                    {allTags.slice(0, 8).map((tag) => (
                       <button
                         key={tag}
                         onClick={() => toggleTag(tag)}
@@ -281,6 +284,11 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                         {tag}
                       </button>
                     ))}
+                    {allTags.length > 8 && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        +{allTags.length - 8} mais
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
@@ -317,7 +325,9 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                             prompt.enhancementType === 'technical' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
                             prompt.enhancementType === 'concise' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300' :
                             prompt.enhancementType === 'image' ? 'bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300' :
-                            'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
+                            prompt.enhancementType === 'video' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300' :
+                            prompt.enhancementType === 'image-editing' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300' :
+                            'bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300'
                           }`}>
                             {prompt.enhancementType}
                           </span>
@@ -376,7 +386,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 
                       {prompt.tags.length > 0 && (
                         <div className="flex items-center gap-1 flex-wrap">
-                          {prompt.tags.map((tag) => (
+                          {prompt.tags.slice(0, 4).map((tag) => (
                             <span
                               key={tag}
                               className="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full"
@@ -384,6 +394,11 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                               {tag}
                             </span>
                           ))}
+                          {prompt.tags.length > 4 && (
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              +{prompt.tags.length - 4}
+                            </span>
+                          )}
                         </div>
                       )}
                     </motion.div>
