@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Loader2, Zap, Type, Code, Lightbulb, Target, Image, Video, Palette, Camera, Edit, Scissors } from 'lucide-react';
+import { Send, Loader2, Zap, Type, Code, Lightbulb, Target, Image, Video, Palette, Camera, Edit, Scissors, Wand2 } from 'lucide-react';
 import type { Prompt } from '../types';
 
 interface PromptInputProps {
@@ -60,18 +60,18 @@ const enhancementTypes = [
   },
   { 
     id: 'image-editing' as const, 
-    label: 'Image Editing', 
-    icon: Edit, 
+    label: 'AI Image Editing', 
+    icon: Wand2, 
     color: 'from-emerald-500 to-teal-500',
-    description: 'Prompts especializados para edição de imagens em Photoshop, GIMP, etc.',
+    description: 'Prompts para IAs de edição de imagem como Photoshop AI, Canva AI, Remove.bg',
     category: 'editing'
   },
   { 
     id: 'video-editing' as const, 
-    label: 'Video Editing', 
+    label: 'AI Video Editing', 
     icon: Scissors, 
     color: 'from-violet-500 to-indigo-600',
-    description: 'Prompts para edição de vídeos em Premiere, After Effects, DaVinci, etc.',
+    description: 'Prompts para IAs de edição de vídeo como RunwayML, Kapwing AI, Descript',
     category: 'editing'
   }
 ];
@@ -80,14 +80,14 @@ const categoryLabels = {
   text: 'Texto',
   image: 'Geração de Imagem',
   video: 'Geração de Vídeo',
-  editing: 'Edição'
+  editing: 'Edição com IA'
 };
 
 const categoryIcons = {
   text: Type,
   image: Palette,
   video: Camera,
-  editing: Edit
+  editing: Wand2
 };
 
 export const PromptInput: React.FC<PromptInputProps> = ({ 
@@ -125,11 +125,11 @@ export const PromptInput: React.FC<PromptInputProps> = ({
       "Documentary-style interview setup"
     ],
     editing: [
-      "Remove background from product photo and add studio lighting",
-      "Color grade this sunset video to be more cinematic",
-      "Add motion graphics and transitions to corporate presentation",
-      "Retouch portrait photo removing blemishes and enhancing eyes",
-      "Create smooth slow-motion effect for action sequence"
+      "Remove background from product photo using AI",
+      "Enhance portrait photo with AI beauty filters",
+      "Color grade sunset video automatically",
+      "Generate smooth transitions between clips",
+      "Upscale old photo to 4K using AI enhancement"
     ]
   };
 
@@ -190,7 +190,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
       text: `Descreva o que você quer criar e eu vou aprimorar usando o estilo ${selectedTypeInfo?.label.toLowerCase()}...`,
       image: `Descreva a imagem que você quer gerar (ex: "um gato fofo dormindo em uma cama")...`,
       video: `Descreva o vídeo que você quer criar (ex: "uma pessoa caminhando na praia ao pôr do sol")...`,
-      editing: `Descreva a edição que você quer fazer (ex: "remover fundo da foto e adicionar efeito vintage")...`
+      editing: `Descreva a edição que você quer fazer com IA (ex: "remover fundo da foto usando AI")...`
     };
     return placeholders[selectedCategory];
   };

@@ -65,17 +65,17 @@ Original: ${userPrompt}
 
 Enhanced video prompt:`,
 
-      'image-editing': `Transform this into a detailed image editing instruction optimized for photo editing software like Photoshop, GIMP, or Lightroom. Include specific techniques, tools, settings, and step-by-step workflow. Return only the enhanced editing instruction without any explanations.
+      'image-editing': `Transform this into a detailed AI image editing prompt optimized for AI photo editing tools like Photoshop AI, Canva AI, Remove.bg, or similar AI-powered editing services. Focus on specific AI editing commands, effects, and transformations. Return only the enhanced AI editing prompt without any explanations.
 
 Original: ${userPrompt}
 
-Enhanced editing instruction:`,
+Enhanced AI image editing prompt:`,
 
-      'video-editing': `Transform this into a detailed video editing instruction optimized for video editing software like Premiere Pro, After Effects, DaVinci Resolve, or Final Cut Pro. Include specific techniques, effects, transitions, color grading, and workflow steps. Return only the enhanced editing instruction without any explanations.
+      'video-editing': `Transform this into a detailed AI video editing prompt optimized for AI video editing tools like RunwayML, Kapwing AI, Descript, or similar AI-powered video editing services. Focus on specific AI editing commands, effects, transitions, and automated editing tasks. Return only the enhanced AI video editing prompt without any explanations.
 
 Original: ${userPrompt}
 
-Enhanced editing instruction:`
+Enhanced AI video editing prompt:`
     };
 
     return templates[enhancementType] || templates.detailed;
@@ -328,62 +328,66 @@ Format: Optimized prompt for AI video generation`,
       ]
     },
     'image-editing': {
-      prefix: "Create detailed image editing instructions for",
+      prefix: "Create an AI image editing prompt for",
       structure: `
-Project Setup: [File format, resolution, color space]
-Tools Required: [Specific software tools and brushes]
-Step-by-Step Workflow:
-1. [Preparation steps]
-2. [Main editing techniques]
-3. [Refinement and adjustments]
-4. [Final touches and export]
+AI Editing Task: [Specific editing operation]
+Target Elements: [What to edit/modify/enhance]
+Desired Outcome: [Expected result]
+AI Commands:
+- Remove: [elements to remove]
+- Enhance: [features to improve]
+- Add: [elements to insert]
+- Transform: [changes to apply]
 
-Techniques & Settings:
-- Layer management and blending modes
-- Adjustment layers and masks
-- Specific tool settings and parameters
-- Color correction and grading
+Style & Quality:
+- Maintain: [aspects to preserve]
+- Improve: [quality enhancements]
+- Style: [artistic direction]
 
-Quality Control:
-- Before/after comparison
-- Export settings for different uses
-- File organization and backup`,
+AI Tool Optimization:
+- Use advanced AI algorithms for [specific task]
+- Apply intelligent selection for [target areas]
+- Ensure seamless blending and natural results`,
       modifiers: [
-        "with specific tool recommendations and settings",
-        "including professional workflow techniques",
-        "providing detailed step-by-step instructions",
-        "addressing common challenges and solutions",
-        "optimizing for professional quality results"
+        "optimized for AI-powered photo editing tools",
+        "using specific AI editing commands and terminology",
+        "focusing on automated intelligent processing",
+        "ensuring natural and seamless AI-generated results",
+        "leveraging machine learning capabilities for enhancement"
       ]
     },
     'video-editing': {
-      prefix: "Create comprehensive video editing instructions for",
+      prefix: "Create an AI video editing prompt for",
       structure: `
-Project Setup: [Timeline settings, sequence presets]
-Media Organization: [Bin structure, file naming]
-Editing Workflow:
-1. [Assembly and rough cut]
-2. [Fine cut and timing]
-3. [Color correction and grading]
-4. [Audio mixing and effects]
-5. [Final review and export]
+AI Editing Objective: [Main editing goal]
+Video Elements: [Clips, scenes, segments to process]
+AI Operations:
+- Auto-cut: [scene detection and cutting]
+- Enhance: [quality improvements]
+- Generate: [transitions, effects, titles]
+- Sync: [audio-video alignment]
 
-Technical Specifications:
-- Frame rates and resolution
-- Codec and compression settings
-- Audio levels and mixing
-- Effects and transitions
+Automated Tasks:
+- Smart cropping and framing
+- Intelligent color correction
+- Automatic subtitle generation
+- Scene transition detection
 
-Delivery Requirements:
-- Export presets for different platforms
-- Quality control checklist
-- File management and archiving`,
+AI Style & Effects:
+- Apply: [specific AI effects]
+- Generate: [automated elements]
+- Optimize: [quality enhancements]
+
+Output Specifications:
+- Format: [video format and quality]
+- Duration: [target length]
+- Style: [visual treatment]`,
       modifiers: [
-        "with professional editing techniques and workflows",
-        "including specific software features and shortcuts",
-        "providing detailed technical specifications",
-        "addressing post-production best practices",
-        "optimizing for various delivery formats"
+        "optimized for AI-powered video editing platforms",
+        "using automated editing and enhancement commands",
+        "leveraging machine learning for intelligent processing",
+        "focusing on AI-generated transitions and effects",
+        "ensuring professional automated post-production results"
       ]
     }
   };

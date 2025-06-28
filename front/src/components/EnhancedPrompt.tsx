@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Sparkles, RotateCcw, Type, Code, Lightbulb, Target, Image, Video, Edit, Scissors } from 'lucide-react';
+import { Copy, Check, Sparkles, RotateCcw, Type, Code, Lightbulb, Target, Image, Video, Wand2, Scissors } from 'lucide-react';
 import type { Prompt } from '../types';
 
 interface EnhancedPromptProps {
@@ -17,7 +17,7 @@ const typeIcons = {
   concise: Target,
   image: Image,
   video: Video,
-  'image-editing': Edit,
+  'image-editing': Wand2,
   'video-editing': Scissors
 };
 
@@ -39,8 +39,8 @@ const typeLabels = {
   concise: 'Concise',
   image: 'Image Generation',
   video: 'Video Generation',
-  'image-editing': 'Image Editing',
-  'video-editing': 'Video Editing'
+  'image-editing': 'AI Image Editing',
+  'video-editing': 'AI Video Editing'
 };
 
 const typeDescriptions = {
@@ -50,8 +50,8 @@ const typeDescriptions = {
   concise: 'Prompt direto e objetivo',
   image: 'Otimizado para geração de imagens',
   video: 'Especializado para criação de vídeos',
-  'image-editing': 'Instruções para edição de imagens',
-  'video-editing': 'Instruções para edição de vídeos'
+  'image-editing': 'Comandos para IA de edição de imagens',
+  'video-editing': 'Comandos para IA de edição de vídeos'
 };
 
 export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({ 
@@ -198,7 +198,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
               </motion.div>
               <div>
                 <h3 className={`text-lg font-semibold ${getTextColor()}`}>
-                  Enhanced {isEditingType ? 'Instructions' : 'Prompt'}
+                  Enhanced {isEditingType ? 'AI Commands' : 'Prompt'}
                 </h3>
                 <p className={`text-sm ${getSubtextColor()}`}>
                   {typeDescription}
@@ -316,7 +316,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 isMediaType ? 'bg-indigo-500' : 'bg-purple-500'
               } rounded-full`}></div>
               <span>
-                {isEditingType ? 'Otimizado para Edição' : 
+                {isEditingType ? 'Otimizado para IA de Edição' : 
                  isMediaType ? 'Otimizado para Mídia' : 'Otimizado para LLM'}
               </span>
             </div>
@@ -339,8 +339,8 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                     : enhancementType === 'video'
                       ? 'Use este prompt em ferramentas como RunwayML, Pika Labs, ou Stable Video Diffusion para criar vídeos incríveis.'
                     : enhancementType === 'image-editing'
-                      ? 'Siga estas instruções no Photoshop, GIMP, Lightroom ou outras ferramentas de edição de imagem.'
-                    : 'Execute estas etapas no Premiere Pro, After Effects, DaVinci Resolve, Final Cut Pro ou outros editores de vídeo.'
+                      ? 'Use estes comandos em ferramentas de IA como Photoshop AI, Canva AI, Remove.bg, ou Upscale.media.'
+                    : 'Execute estes comandos em ferramentas de IA como RunwayML, Kapwing AI, Descript, ou outros editores com IA.'
                   }
                 </div>
               </div>
