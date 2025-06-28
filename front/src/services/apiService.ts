@@ -22,28 +22,71 @@ class PromptEnhancementService {
 
   constructor() {
     this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-    this.apiKey = import.meta.env.VITE_API_KEY || ''; // Use dynamic key from .env
+    this.apiKey = import.meta.env.VITE_API_KEY || '';
     this.privateKey = import.meta.env.VITE_PRIVATE_KEY || '';
     this.timeout = 30000; // 30 seconds
   }
 
-  private createPromptTemplate(userPrompt: string): string {
-    return `Você é um engenheiro de prompt altamente experiente. Sua função é analisar e reescrever prompts simples criados por usuários, transformando-os em versões completas, claras e eficazes para maximizar o desempenho de um modelo de linguagem (LLM).
+  private createPromptTemplate(userPrompt: string, enhancementType: string): string {
+    const baseInstruction = `Você é um engenheiro de prompt altamente experiente. Sua função é analisar e reescrever prompts simples criados por usuários, transformando-os em versões completas, claras e eficazes para maximizar o desempenho de um modelo de linguagem (LLM).`;
+
+    const typeSpecificInstructions = {
+      detailed: `
+Foque em criar um prompt DETALHADO e ABRANGENTE que:
+- Inclua contexto específico e informações de background relevantes
+- Forneça instruções passo a passo quando aplicável
+- Especifique exemplos concretos e casos de uso
+- Defina claramente o formato esperado da resposta
+- Inclua critérios de qualidade e métricas de sucesso
+- Antecipe possíveis dúvidas e forneça esclarecimentos
+- Use estrutura hierárquica com seções bem definidas`,
+
+      creative: `
+Foque em criar um prompt CRIATIVO e INOVADOR que:
+- Estimule pensamento fora da caixa e abordagens não convencionais
+- Incorpore elementos narrativos e storytelling quando apropriado
+- Use linguagem vívida e inspiradora
+- Encoraje múltiplas perspectivas e soluções alternativas
+- Inclua elementos de brainstorming e exploração de ideias
+- Promova originalidade mantendo a relevância prática
+- Utilize técnicas de pensamento lateral e associação livre`,
+
+      technical: `
+Foque em criar um prompt TÉCNICO e PRECISO que:
+- Especifique requisitos técnicos detalhados e padrões
+- Inclua terminologia técnica apropriada e específica
+- Defina parâmetros, limitações e especificações exatas
+- Referencie melhores práticas e metodologias estabelecidas
+- Solicite documentação técnica e exemplos de código
+- Aborde considerações de performance, escalabilidade e segurança
+- Estruture a resposta em formato técnico profissional`,
+
+      concise: `
+Foque em criar um prompt CONCISO e DIRETO que:
+- Elimine informações desnecessárias mantendo a clareza
+- Use linguagem objetiva e instruções diretas
+- Priorize informações essenciais e acionáveis
+- Estruture em bullet points ou listas numeradas
+- Defina escopo limitado e específico
+- Solicite respostas sucintas e bem organizadas
+- Mantenha foco no resultado prático imediato`
+    };
+
+    const specificInstruction = typeSpecificInstructions[enhancementType] || typeSpecificInstructions.detailed;
+
+    return `${baseInstruction}
+
+${specificInstruction}
+
+**Importante:** O prompt deve ser escrito no mesmo idioma do original do usuário. Não traduza.
 
 Siga rigorosamente as melhores práticas de engenharia de prompt:
-
-1. **Identifique a tarefa principal** desejada pelo usuário e explicite-a com clareza.
-2. **Defina o papel (persona)** que o modelo deve assumir (ex: especialista, tutor, consultor, desenvolvedor, etc.).
-3. **Inclua o contexto relevante** (se houver) de forma separada e bem delimitada.
-4. **Descreva a instrução de forma objetiva**, com passos claros e específicos.
-5. **Especifique o formato esperado da resposta**, incluindo estrutura, estilo e nível de detalhamento desejado.
-6. **Utilize delimitadores** (ex: \`"""texto"""\`) para separar instruções, contexto e exemplos.
-7. **Ajuste o tom da linguagem**, se necessário (ex: formal, amigável, técnico).
-8. **Adicione exemplos de entrada/saída (few-shot prompting)** se isso for adequado para tornar o prompt mais robusto.
-9. **Evite ambiguidade**, jargões excessivos ou instruções vagas.
-10. **Garanta que o prompt final funcione de forma genérica e reutilizável**, sempre que possível.
-
-**Importante:** O prompt deve ser escrito no mesmo idioma do original do usuário. Não traduza. Se o idioma for português, continue em português. Se for inglês, continue em inglês.
+1. **Defina o papel (persona)** que o modelo deve assumir
+2. **Inclua contexto relevante** de forma bem delimitada
+3. **Use delimitadores** (ex: """texto""") para separar seções
+4. **Especifique o formato da resposta** claramente
+5. **Evite ambiguidade** e instruções vagas
+6. **Garanta reutilização** do prompt final
 
 ---
 
@@ -53,12 +96,12 @@ Aqui está o prompt original digitado pelo usuário:
 
 ---
 
-Com base nisso, reescreva um prompt completo, estruturado, eficaz e pronto para uso com LLMs, aplicando todos os itens acima. Apresente apenas o prompt final reescrito. Não inclua explicações.`;
+Com base nisso, reescreva um prompt completo, estruturado, eficaz e pronto para uso com LLMs, aplicando o estilo ${enhancementType.toUpperCase()} especificado acima. Apresente apenas o prompt final reescrito. Não inclua explicações adicionais.`;
   }
 
   private async generateSignature(method: string, url: string): Promise<{ signature: string; timestamp: string }> {
     const timestamp = new Date().toISOString();
-    const apiUrl = `/api${url}`; // Adicione o prefixo /api para corresponder ao back-end
+    const apiUrl = `/api${url}`;
     const payload = `${method}:${apiUrl}:${timestamp}`;
     const encoder = new TextEncoder();
     const privateKey = encoder.encode(import.meta.env.VITE_PRIVATE_KEY);
@@ -79,7 +122,7 @@ Com base nisso, reescreva um prompt completo, estruturado, eficaz e pronto para 
     return { signature, timestamp };
   }
 
-  private async makeRequest(prompt: string): Promise<string> {
+  private async makeRequest(prompt: string, enhancementType: string): Promise<string> {
     const { signature, timestamp } = await this.generateSignature('POST', '/llm');
 
     const controller = new AbortController();
@@ -96,7 +139,7 @@ Com base nisso, reescreva um prompt completo, estruturado, eficaz e pronto para 
           'x-timestamp': timestamp,
         },
         body: JSON.stringify({
-          prompt: this.createPromptTemplate(prompt),
+          prompt: this.createPromptTemplate(prompt, enhancementType),
           provider: 'openai',
         }),
         signal: controller.signal,
@@ -122,7 +165,7 @@ Com base nisso, reescreva um prompt completo, estruturado, eficaz e pronto para 
     }
   }
 
-  async enhancePrompt(userPrompt: string): Promise<ApiResponse> {
+  async enhancePrompt(userPrompt: string, enhancementType: string = 'detailed'): Promise<ApiResponse> {
     if (!userPrompt?.trim()) {
       return {
         success: false,
@@ -132,7 +175,7 @@ Com base nisso, reescreva um prompt completo, estruturado, eficaz e pronto para 
     }
 
     try {
-      const enhancedPrompt = await this.makeRequest(userPrompt.trim());
+      const enhancedPrompt = await this.makeRequest(userPrompt.trim(), enhancementType);
 
       return {
         success: true,
@@ -153,42 +196,114 @@ export const promptEnhancementService = new PromptEnhancementService();
 
 // Função auxiliar para fallback local (caso a API falhe)
 export const getLocalEnhancement = (prompt: string, type: string): string => {
-  // Mantém a lógica local existente como fallback
   const enhancementTemplates = {
     detailed: {
-      prefix: "Crie uma resposta abrangente e detalhada que",
+      prefix: "Você é um especialista em [área relevante]. Crie uma resposta abrangente e detalhada que",
+      structure: `
+**Contexto:** [Defina o contexto específico]
+**Objetivo:** [Especifique o objetivo claro]
+**Instruções:**
+1. [Passo específico 1]
+2. [Passo específico 2]
+3. [Passo específico 3]
+
+**Formato da Resposta:**
+- Use estrutura hierárquica
+- Inclua exemplos práticos
+- Forneça justificativas para cada ponto
+- Adicione considerações importantes
+
+**Critérios de Qualidade:**
+- Precisão técnica
+- Aplicabilidade prática
+- Clareza na comunicação`,
       modifiers: [
         "inclua exemplos específicos e insights acionáveis",
-        "forneça orientação passo a passo quando aplicável",
+        "forneça orientação passo a passo detalhada",
         "incorpore contexto relevante e informações de background",
-        "aborde desafios potenciais e soluções"
+        "aborde desafios potenciais e soluções alternativas",
+        "especifique métricas de sucesso e critérios de avaliação"
       ]
     },
     creative: {
-      prefix: "Gere uma resposta inovadora e criativa que",
+      prefix: "Você é um pensador criativo e inovador. Gere uma resposta original e inspiradora que",
+      structure: `
+**Desafio Criativo:** [Reformule o problema de forma inspiradora]
+**Perspectivas Múltiplas:** Explore pelo menos 3 abordagens diferentes
+**Brainstorming:** 
+- Ideias convencionais: [lista]
+- Ideias inovadoras: [lista]
+- Ideias disruptivas: [lista]
+
+**Desenvolvimento Criativo:**
+- Use analogias e metáforas
+- Incorpore storytelling
+- Pense em conexões inusitadas
+- Explore o "e se...?"
+
+**Resultado Esperado:**
+- Soluções originais e viáveis
+- Narrativa envolvente
+- Múltiplas alternativas criativas`,
       modifiers: [
         "explore perspectivas únicas e abordagens não convencionais",
-        "incorpore elementos narrativos quando apropriado",
-        "use linguagem vívida e envolvente",
-        "pense fora da caixa mantendo a relevância"
+        "incorpore elementos narrativos e storytelling",
+        "use linguagem vívida e inspiradora",
+        "pense fora da caixa mantendo a relevância prática",
+        "estimule brainstorming e geração de múltiplas ideias"
       ]
     },
     technical: {
-      prefix: "Forneça uma resposta precisa e tecnicamente correta que",
+      prefix: "Você é um especialista técnico sênior. Forneça uma resposta precisa e tecnicamente correta que",
+      structure: `
+**Especificações Técnicas:**
+- Requisitos: [lista detalhada]
+- Limitações: [constraints técnicos]
+- Padrões aplicáveis: [standards relevantes]
+
+**Implementação:**
+- Arquitetura: [descrição técnica]
+- Tecnologias: [stack recomendado]
+- Configurações: [parâmetros específicos]
+
+**Código/Exemplos:**
+\`\`\`
+[Exemplos de código ou configuração]
+\`\`\`
+
+**Considerações:**
+- Performance e escalabilidade
+- Segurança e compliance
+- Manutenibilidade
+- Documentação técnica`,
       modifiers: [
-        "inclua especificações técnicas relevantes e padrões",
+        "inclua especificações técnicas detalhadas e padrões",
         "cite fontes autoritativas e melhores práticas",
         "ofereça detalhes de implementação e exemplos de código",
-        "aborde considerações de escalabilidade e performance"
+        "aborde considerações de escalabilidade e performance",
+        "forneça documentação técnica completa"
       ]
     },
     concise: {
-      prefix: "Entregue uma resposta clara e concisa que",
+      prefix: "Você é um consultor eficiente. Entregue uma resposta clara, direta e concisa que",
+      structure: `
+**Objetivo:** [Uma frase clara]
+**Ação Requerida:** [O que fazer]
+**Passos Essenciais:**
+1. [Ação específica 1]
+2. [Ação específica 2]
+3. [Ação específica 3]
+
+**Resultado Esperado:** [Outcome específico]
+**Próximos Passos:** [Ações imediatas]
+
+**Formato:** Bullet points, listas numeradas, máximo 200 palavras`,
       modifiers: [
-        "foque nas informações mais essenciais",
+        "foque nas informações mais essenciais e acionáveis",
         "use bullet points ou listas numeradas para clareza",
         "elimine detalhes desnecessários mantendo a completude",
-        "forneça valor acionável imediato"
+        "forneça valor acionável imediato",
+        "mantenha resposta objetiva e direta"
       ]
     }
   };
@@ -196,11 +311,16 @@ export const getLocalEnhancement = (prompt: string, type: string): string => {
   const template = enhancementTemplates[type] || enhancementTemplates.detailed;
   const selectedModifiers = template.modifiers
     .sort(() => Math.random() - 0.5)
-    .slice(0, 2);
+    .slice(0, 3);
 
-  return `${template.prefix} ${prompt.toLowerCase()}. 
+  return `${template.prefix} ${prompt.toLowerCase()}.
 
-Garanta que sua resposta ${selectedModifiers.join(' e ')}.
+${template.structure}
 
-Contexto Adicional: ${prompt}`;
+**Instruções Específicas:**
+${selectedModifiers.map(modifier => `- ${modifier}`).join('\n')}
+
+**Prompt Original:** "${prompt}"
+
+**Importante:** Adapte todas as instruções acima ao contexto específico do prompt original, mantendo a estrutura e o estilo ${type}.`;
 };

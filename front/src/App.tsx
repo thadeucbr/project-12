@@ -17,6 +17,7 @@ function AppContent() {
   const [prompts, setPrompts] = useLocalStorage<Prompt[]>('prompt-history', []);
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const [enhancedPrompt, setEnhancedPrompt] = useState<string>('');
+  const [currentEnhancementType, setCurrentEnhancementType] = useState<Prompt['enhancementType']>('detailed');
   const [showEnhanced, setShowEnhanced] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
@@ -36,6 +37,7 @@ function AppContent() {
     enhancementType: Prompt['enhancementType']
   ) => {
     setCurrentPrompt(prompt);
+    setCurrentEnhancementType(enhancementType);
     setShowEnhanced(false);
     clearError();
     
@@ -44,16 +46,22 @@ function AppContent() {
 
   const handleSurpriseMe = () => {
     const randomPrompt = getRandomPrompt();
+    const randomTypes: Prompt['enhancementType'][] = ['detailed', 'creative', 'technical', 'concise'];
+    const randomType = randomTypes[Math.floor(Math.random() * randomTypes.length)];
+    
     setCurrentPrompt(randomPrompt);
+    setCurrentEnhancementType(randomType);
+    
     // Trigger enhancement automatically
     setTimeout(() => {
-      handlePromptSubmit(randomPrompt, 'creative');
+      handlePromptSubmit(randomPrompt, randomType);
     }, 500);
   };
 
   const handlePromptSelect = (prompt: Prompt) => {
     setCurrentPrompt(prompt.originalPrompt);
     setEnhancedPrompt(prompt.enhancedPrompt);
+    setCurrentEnhancementType(prompt.enhancementType);
     setShowEnhanced(true);
     setIsHistoryOpen(false);
     clearError();
@@ -78,7 +86,7 @@ function AppContent() {
 
   const handleRetry = () => {
     if (currentPrompt) {
-      handlePromptSubmit(currentPrompt, 'detailed');
+      handlePromptSubmit(currentPrompt, currentEnhancementType);
     }
   };
 
@@ -155,6 +163,7 @@ function AppContent() {
             prompt={enhancedPrompt}
             isVisible={showEnhanced && !isLoading}
             onCopy={handleCopy}
+            enhancementType={currentEnhancementType}
           />
         </div>
 
