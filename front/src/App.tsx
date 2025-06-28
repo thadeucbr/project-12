@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Header } from './components/Header';
+import { AdvancedHeader } from './components/AdvancedHeader';
 import { PromptInput } from './components/PromptInput';
 import { EnhancedPrompt } from './components/EnhancedPrompt';
 import { HistoryPanel } from './components/HistoryPanel';
+import { PromptTemplates } from './components/PromptTemplates';
+import { PromptAnalytics } from './components/PromptAnalytics';
+import { PromptExport } from './components/PromptExport';
+import { PromptComparison } from './components/PromptComparison';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorMessage } from './components/ErrorMessage';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -20,12 +24,25 @@ function AppContent() {
   const [currentEnhancementType, setCurrentEnhancementType] = useState<Prompt['enhancementType']>('detailed');
   const [showEnhanced, setShowEnhanced] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
+  const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isComparisonOpen, setIsComparisonOpen] = useState(false);
+  const [comparisonData, setComparisonData] = useState<any>(null);
 
   // Hook personalizado para aprimoramento de prompts
   const { enhancePrompt, isLoading, error, clearError } = usePromptEnhancement(
     (enhanced) => {
       setEnhancedPrompt(enhanced);
       setShowEnhanced(true);
+      
+      // Prepara dados para comparação
+      setComparisonData({
+        original: currentPrompt,
+        enhanced: enhanced,
+        enhancementType: currentEnhancementType,
+        timestamp: new Date().toISOString()
+      });
     },
     (newPrompt) => {
       setPrompts(prev => [newPrompt, ...prev]);
@@ -78,6 +95,20 @@ function AppContent() {
     setShowEnhanced(true);
     setIsHistoryOpen(false);
     clearError();
+    
+    // Prepara dados para comparação
+    setComparisonData({
+      original: prompt.originalPrompt,
+      enhanced: prompt.enhancedPrompt,
+      enhancementType: prompt.enhancementType,
+      timestamp: prompt.timestamp
+    });
+  };
+
+  const handleTemplateSelect = (template: any) => {
+    setCurrentPrompt(template.prompt);
+    setCurrentEnhancementType(template.enhancementType);
+    setIsTemplatesOpen(false);
   };
 
   const handlePromptDelete = (id: string) => {
@@ -121,9 +152,13 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20 transition-colors duration-500">
-      <Header
+      <AdvancedHeader
         onHistoryToggle={() => setIsHistoryOpen(!isHistoryOpen)}
         onSurpriseMe={handleSurpriseMe}
+        onTemplatesOpen={() => setIsTemplatesOpen(true)}
+        onAnalyticsOpen={() => setIsAnalyticsOpen(true)}
+        onExportOpen={() => setIsExportOpen(true)}
+        onComparisonOpen={() => comparisonData && setIsComparisonOpen(true)}
         isHistoryOpen={isHistoryOpen}
       />
       
@@ -192,6 +227,7 @@ function AppContent() {
         </motion.div>
       </main>
 
+      {/* Modals */}
       <HistoryPanel
         prompts={prompts}
         onPromptSelect={handlePromptSelect}
@@ -200,6 +236,67 @@ function AppContent() {
         isOpen={isHistoryOpen}
         onClose={() => setIsHistoryOpen(false)}
       />
+
+      <PromptTemplates
+        onSelectTemplate={handleTemplateSelect}
+        isOpen={isTemplatesOpen}
+        onClose={() => setIsTemplatesOpen(false)}
+      />
+
+      <PromptAnalytics
+        prompts={prompts}
+      />
+
+      <PromptExport
+        prompts={prompts}
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+      />
+
+      {comparisonData && (
+        <PromptComparison
+          data={comparisonData}
+          isOpen={isComparisonOpen}
+          onClose={() => setIsComparisonOpen(false)}
+        />
+      )}
+
+      {/* Analytics Modal */}
+      {isAnalyticsOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+          onClick={() => setIsAnalyticsOpen(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="fixed inset-4 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-6 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold">Analytics Dashboard</h2>
+                  <p className="text-indigo-100">Insights sobre seu uso do PromptCraft</p>
+                </div>
+                <button
+                  onClick={() => setIsAnalyticsOpen(false)}
+                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+            <div className="p-6">
+              <PromptAnalytics prompts={prompts} />
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }
