@@ -69,7 +69,34 @@ Foque em criar um prompt CONCISO e DIRETO que:
 - Estruture em bullet points ou listas numeradas
 - Defina escopo limitado e específico
 - Solicite respostas sucintas e bem organizadas
-- Mantenha foco no resultado prático imediato`
+- Mantenha foco no resultado prático imediato`,
+
+      image: `
+Foque em criar um prompt OTIMIZADO PARA GERAÇÃO DE IMAGENS que:
+- Inclua descrições visuais detalhadas e específicas
+- Especifique estilo artístico, técnica e composição
+- Defina iluminação, cores, texturas e atmosfera
+- Inclua detalhes sobre perspectiva, enquadramento e foco
+- Mencione qualidade técnica (resolução, nitidez, etc.)
+- Especifique elementos de design e estética
+- Use terminologia específica para IA de imagem (ex: "highly detailed", "8K", "photorealistic")
+- Inclua aspectos técnicos como câmera, lente, configurações
+- Defina mood, emoção e narrativa visual
+- Especifique elementos que devem ser evitados (negative prompts)`,
+
+      video: `
+Foque em criar um prompt ESPECIALIZADO PARA GERAÇÃO DE VÍDEOS que:
+- Descreva movimento, ação e sequência temporal
+- Especifique duração, ritmo e transições
+- Inclua detalhes sobre cinematografia e direção
+- Defina ângulos de câmera, movimentos e enquadramentos
+- Especifique iluminação dinâmica e mudanças visuais
+- Inclua elementos de narrativa e storytelling temporal
+- Defina qualidade técnica (fps, resolução, estabilização)
+- Especifique estilo visual e tratamento de cor
+- Inclua detalhes sobre áudio e sincronização
+- Defina início, meio e fim da sequência
+- Especifique elementos de continuidade e fluidez`
     };
 
     const specificInstruction = typeSpecificInstructions[enhancementType] || typeSpecificInstructions.detailed;
@@ -304,6 +331,51 @@ export const getLocalEnhancement = (prompt: string, type: string): string => {
         "elimine detalhes desnecessários mantendo a completude",
         "forneça valor acionável imediato",
         "mantenha resposta objetiva e direta"
+      ]
+    },
+    image: {
+      prefix: "Crie um prompt detalhado para geração de imagem que descreva",
+      structure: `
+**Descrição Visual Principal:** [Elemento central da imagem]
+**Estilo e Técnica:** [Estilo artístico, fotográfico, digital art, etc.]
+**Composição:** [Enquadramento, perspectiva, regra dos terços]
+**Iluminação:** [Tipo de luz, direção, intensidade, hora do dia]
+**Cores e Paleta:** [Esquema de cores, saturação, temperatura]
+**Textura e Detalhes:** [Superfícies, materiais, acabamentos]
+**Atmosfera e Mood:** [Emoção, sentimento, energia]
+**Qualidade Técnica:** [Resolução, nitidez, profundidade de campo]
+**Elementos a Evitar:** [Negative prompts]
+
+**Formato:** Prompt otimizado para IA de imagem`,
+      modifiers: [
+        "inclua descrições visuais específicas e detalhadas",
+        "especifique estilo artístico e técnica de renderização",
+        "defina iluminação, cores e composição precisamente",
+        "adicione qualificadores de qualidade técnica",
+        "inclua elementos de atmosfera e narrativa visual"
+      ]
+    },
+    video: {
+      prefix: "Desenvolva um prompt especializado para geração de vídeo que descreva",
+      structure: `
+**Sequência Principal:** [Ação ou movimento central]
+**Duração e Ritmo:** [Tempo, velocidade, cadência]
+**Cinematografia:** [Ângulos, movimentos de câmera, transições]
+**Narrativa Temporal:** [Início, desenvolvimento, conclusão]
+**Elementos Visuais:** [Cenário, personagens, objetos em movimento]
+**Iluminação Dinâmica:** [Mudanças de luz ao longo do tempo]
+**Qualidade Técnica:** [FPS, resolução, estabilização]
+**Estilo Visual:** [Tratamento de cor, filtros, efeitos]
+**Continuidade:** [Fluidez, coerência temporal]
+**Especificações:** [Formato, codec, aspectos técnicos]
+
+**Formato:** Prompt otimizado para IA de vídeo`,
+      modifiers: [
+        "descreva movimento e ação de forma específica",
+        "inclua detalhes de cinematografia e direção",
+        "especifique duração e ritmo da sequência",
+        "defina qualidade técnica e especificações",
+        "adicione elementos de narrativa temporal"
       ]
     }
   };

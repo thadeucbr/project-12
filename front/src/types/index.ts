@@ -5,7 +5,8 @@ export interface Prompt {
   timestamp: string;
   tags: string[];
   characterCount: number;
-  enhancementType: 'detailed' | 'creative' | 'technical' | 'concise';
+  enhancementType: 'detailed' | 'creative' | 'technical' | 'concise' | 'image' | 'video';
+  mediaType?: 'text' | 'image' | 'video';
 }
 
 export interface HistoryFilters {
@@ -13,6 +14,7 @@ export interface HistoryFilters {
   tags: string[];
   dateRange: 'all' | 'today' | 'week' | 'month';
   enhancementType: string;
+  mediaType?: string;
 }
 
 export type Theme = 'light' | 'dark';

@@ -46,6 +46,11 @@ export const usePromptEnhancement = (
         enhancedPrompt = getLocalEnhancement(originalPrompt, enhancementType);
       }
 
+      // Determina o tipo de mídia baseado no enhancement type
+      const mediaType: 'text' | 'image' | 'video' = 
+        enhancementType === 'image' ? 'image' :
+        enhancementType === 'video' ? 'video' : 'text';
+
       // Cria o objeto do prompt
       const newPrompt: Prompt = {
         id: crypto.randomUUID(),
@@ -54,7 +59,8 @@ export const usePromptEnhancement = (
         timestamp: new Date().toISOString(),
         tags: generateTags(originalPrompt, enhancementType),
         characterCount: enhancedPrompt.length,
-        enhancementType
+        enhancementType,
+        mediaType
       };
 
       // Salva no localStorage através do callback
@@ -77,6 +83,10 @@ export const usePromptEnhancement = (
       try {
         const fallbackEnhanced = getLocalEnhancement(originalPrompt, enhancementType);
         
+        const mediaType: 'text' | 'image' | 'video' = 
+          enhancementType === 'image' ? 'image' :
+          enhancementType === 'video' ? 'video' : 'text';
+        
         const fallbackPrompt: Prompt = {
           id: crypto.randomUUID(),
           originalPrompt: originalPrompt.trim(),
@@ -84,7 +94,8 @@ export const usePromptEnhancement = (
           timestamp: new Date().toISOString(),
           tags: generateTags(originalPrompt, enhancementType),
           characterCount: fallbackEnhanced.length,
-          enhancementType
+          enhancementType,
+          mediaType
         };
 
         onSave(fallbackPrompt);
@@ -121,7 +132,13 @@ const generateTags = (prompt: string, enhancementType: string): string[] => {
     'pesquisa|estudo|investigação|research|study|investigation': ['pesquisa', 'acadêmico'],
     'criativo|história|narrativa|ficção|creative|story|narrative|fiction': ['criativo', 'storytelling'],
     'técnico|especificação|documentação|technical|specification|documentation': ['técnico', 'documentação'],
-    'estratégia|plano|roadmap|objetivo|strategy|plan|goal': ['estratégia', 'planejamento']
+    'estratégia|plano|roadmap|objetivo|strategy|plan|goal': ['estratégia', 'planejamento'],
+    'imagem|foto|visual|picture|image|photo|visual|arte|art': ['visual', 'arte'],
+    'vídeo|filme|animação|video|movie|animation|cinema': ['vídeo', 'cinema'],
+    'retrato|portrait|pessoa|person|face|rosto': ['retrato', 'pessoas'],
+    'paisagem|landscape|natureza|nature|cenário|scenery': ['paisagem', 'natureza'],
+    'produto|product|comercial|commercial|publicidade|advertising': ['produto', 'comercial'],
+    'abstrato|abstract|conceitual|conceptual|artístico|artistic': ['abstrato', 'artístico']
   };
 
   const tags: string[] = [];
@@ -140,11 +157,20 @@ const generateTags = (prompt: string, enhancementType: string): string[] => {
     detailed: 'detalhado',
     creative: 'criativo',
     technical: 'técnico',
-    concise: 'conciso'
+    concise: 'conciso',
+    image: 'imagem',
+    video: 'vídeo'
   };
 
   if (typeTagMap[enhancementType]) {
     tags.push(typeTagMap[enhancementType]);
+  }
+
+  // Adiciona tags específicas para mídia
+  if (enhancementType === 'image') {
+    tags.push('geração-imagem', 'visual');
+  } else if (enhancementType === 'video') {
+    tags.push('geração-vídeo', 'movimento');
   }
 
   return [...new Set(tags)];

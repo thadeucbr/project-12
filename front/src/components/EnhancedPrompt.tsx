@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Sparkles, RotateCcw, Type, Code, Lightbulb, Target } from 'lucide-react';
+import { Copy, Check, Sparkles, RotateCcw, Type, Code, Lightbulb, Target, Image, Video } from 'lucide-react';
 import type { Prompt } from '../types';
 
 interface EnhancedPromptProps {
@@ -14,21 +14,36 @@ const typeIcons = {
   detailed: Type,
   creative: Lightbulb,
   technical: Code,
-  concise: Target
+  concise: Target,
+  image: Image,
+  video: Video
 };
 
 const typeColors = {
   detailed: 'from-blue-500 to-cyan-500',
   creative: 'from-purple-500 to-pink-500',
   technical: 'from-green-500 to-emerald-500',
-  concise: 'from-orange-500 to-red-500'
+  concise: 'from-orange-500 to-red-500',
+  image: 'from-pink-500 to-rose-500',
+  video: 'from-indigo-500 to-purple-600'
 };
 
 const typeLabels = {
   detailed: 'Detailed',
   creative: 'Creative',
   technical: 'Technical',
-  concise: 'Concise'
+  concise: 'Concise',
+  image: 'Image Generation',
+  video: 'Video Generation'
+};
+
+const typeDescriptions = {
+  detailed: 'Prompt detalhado e abrangente',
+  creative: 'Prompt criativo e inovador',
+  technical: 'Prompt técnico e preciso',
+  concise: 'Prompt direto e objetivo',
+  image: 'Otimizado para geração de imagens',
+  video: 'Especializado para criação de vídeos'
 };
 
 export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({ 
@@ -103,6 +118,9 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
   const TypeIcon = typeIcons[enhancementType];
   const typeColor = typeColors[enhancementType];
   const typeLabel = typeLabels[enhancementType];
+  const typeDescription = typeDescriptions[enhancementType];
+
+  const isMediaType = enhancementType === 'image' || enhancementType === 'video';
 
   return (
     <AnimatePresence>
@@ -114,7 +132,15 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
         className="w-full max-w-4xl mx-auto mt-8"
       >
         <motion.div
-          className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-6 border border-purple-200 dark:border-purple-700 shadow-xl backdrop-blur-sm"
+          className={`bg-gradient-to-br ${
+            isMediaType 
+              ? 'from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20' 
+              : 'from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20'
+          } rounded-2xl p-6 border ${
+            isMediaType 
+              ? 'border-indigo-200 dark:border-indigo-700' 
+              : 'border-purple-200 dark:border-purple-700'
+          } shadow-xl backdrop-blur-sm`}
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2 }}
@@ -130,11 +156,19 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 <TypeIcon className="h-4 w-4 text-white" />
               </motion.div>
               <div>
-                <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-200">
+                <h3 className={`text-lg font-semibold ${
+                  isMediaType 
+                    ? 'text-indigo-800 dark:text-indigo-200' 
+                    : 'text-purple-800 dark:text-purple-200'
+                }`}>
                   Enhanced Prompt
                 </h3>
-                <p className="text-sm text-purple-600 dark:text-purple-400">
-                  Estilo: {typeLabel}
+                <p className={`text-sm ${
+                  isMediaType 
+                    ? 'text-indigo-600 dark:text-indigo-400' 
+                    : 'text-purple-600 dark:text-purple-400'
+                }`}>
+                  {typeDescription}
                 </p>
               </div>
               {isTyping && (
@@ -143,7 +177,9 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                   transition={{ duration: 0.8, repeat: Infinity }}
                   className="ml-2"
                 >
-                  <div className="h-1 w-1 bg-purple-500 rounded-full" />
+                  <div className={`h-1 w-1 ${
+                    isMediaType ? 'bg-indigo-500' : 'bg-purple-500'
+                  } rounded-full`} />
                 </motion.div>
               )}
             </div>
@@ -151,7 +187,11 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
             <div className="flex items-center gap-2">
               <motion.button
                 onClick={toggleFullText}
-                className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-800 rounded-lg transition-colors duration-200"
+                className={`p-2 ${
+                  isMediaType 
+                    ? 'text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-800' 
+                    : 'text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-800'
+                } rounded-lg transition-colors duration-200`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 title={showFullText ? "Mostrar efeito de digitação" : "Mostrar texto completo"}
@@ -183,7 +223,11 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
           {/* Enhanced Prompt Text */}
           <div className="relative">
             <motion.div
-              className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap font-mono text-sm p-4 bg-white/50 dark:bg-black/20 rounded-xl border border-purple-100 dark:border-purple-800"
+              className={`text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap font-mono text-sm p-4 bg-white/50 dark:bg-black/20 rounded-xl border ${
+                isMediaType 
+                  ? 'border-indigo-100 dark:border-indigo-800' 
+                  : 'border-purple-100 dark:border-purple-800'
+              }`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
@@ -193,13 +237,19 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 <motion.span
                   animate={{ opacity: [1, 0] }}
                   transition={{ duration: 0.5, repeat: Infinity }}
-                  className="inline-block w-2 h-5 bg-purple-500 ml-1"
+                  className={`inline-block w-2 h-5 ${
+                    isMediaType ? 'bg-indigo-500' : 'bg-purple-500'
+                  } ml-1`}
                 />
               )}
             </motion.div>
             
             {/* Character count and stats */}
-            <div className="flex items-center justify-between mt-3 text-xs text-purple-600 dark:text-purple-400">
+            <div className={`flex items-center justify-between mt-3 text-xs ${
+              isMediaType 
+                ? 'text-indigo-600 dark:text-indigo-400' 
+                : 'text-purple-600 dark:text-purple-400'
+            }`}>
               <div className="flex items-center gap-4">
                 <span>
                   {prompt.length} caracteres • {prompt.split(' ').length} palavras
@@ -216,7 +266,11 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
 
           {/* Enhancement Quality Indicators */}
           <motion.div
-            className="mt-4 flex items-center justify-center gap-4 text-xs text-purple-600 dark:text-purple-400"
+            className={`mt-4 flex items-center justify-center gap-4 text-xs ${
+              isMediaType 
+                ? 'text-indigo-600 dark:text-indigo-400' 
+                : 'text-purple-600 dark:text-purple-400'
+            }`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -230,10 +284,32 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
               <span>Contextualizado</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <span>Otimizado para LLM</span>
+              <div className={`w-2 h-2 ${
+                isMediaType ? 'bg-indigo-500' : 'bg-purple-500'
+              } rounded-full`}></div>
+              <span>{isMediaType ? 'Otimizado para Mídia' : 'Otimizado para LLM'}</span>
             </div>
           </motion.div>
+
+          {/* Media-specific tips */}
+          {isMediaType && (
+            <motion.div
+              className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-700"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <div className="flex items-start gap-2">
+                <Sparkles className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                <div className="text-xs text-blue-700 dark:text-blue-300">
+                  <strong>Dica:</strong> {enhancementType === 'image' 
+                    ? 'Use este prompt em ferramentas como DALL-E, Midjourney, Stable Diffusion ou Leonardo AI para melhores resultados.'
+                    : 'Use este prompt em ferramentas como RunwayML, Pika Labs, ou Stable Video Diffusion para criar vídeos incríveis.'
+                  }
+                </div>
+              </div>
+            </motion.div>
+          )}
         </motion.div>
       </motion.div>
     </AnimatePresence>

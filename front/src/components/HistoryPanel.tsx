@@ -9,7 +9,10 @@ import {
   Trash2, 
   Clock,
   RotateCcw,
-  X
+  X,
+  Type,
+  Image,
+  Video
 } from 'lucide-react';
 import type { Prompt, HistoryFilters } from '../types';
 
@@ -21,6 +24,18 @@ interface HistoryPanelProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const mediaTypeIcons = {
+  text: Type,
+  image: Image,
+  video: Video
+};
+
+const getMediaType = (enhancementType: Prompt['enhancementType']): 'text' | 'image' | 'video' => {
+  if (enhancementType === 'image') return 'image';
+  if (enhancementType === 'video') return 'video';
+  return 'text';
+};
 
 export const HistoryPanel: React.FC<HistoryPanelProps> = ({
   prompts,
@@ -46,7 +61,8 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
     searchTerm: '',
     tags: [],
     dateRange: 'all',
-    enhancementType: ''
+    enhancementType: '',
+    mediaType: ''
   });
   const [isCopied, setIsCopied] = useState<string | null>(null);
 
@@ -79,6 +95,14 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
       // Enhancement type filter
       if (filters.enhancementType && prompt.enhancementType !== filters.enhancementType) {
         return false;
+      }
+
+      // Media type filter
+      if (filters.mediaType) {
+        const promptMediaType = getMediaType(prompt.enhancementType);
+        if (promptMediaType !== filters.mediaType) {
+          return false;
+        }
       }
 
       // Date range filter
@@ -218,6 +242,28 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                   ))}
                 </div>
 
+                {/* Media Type Filter */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Filter className="h-4 w-4 text-gray-500" />
+                  {['all', 'text', 'image', 'video'].map((type) => {
+                    const Icon = type === 'all' ? Filter : mediaTypeIcons[type as keyof typeof mediaTypeIcons];
+                    return (
+                      <button
+                        key={type}
+                        onClick={() => setFilters(prev => ({ ...prev, mediaType: type === 'all' ? '' : type }))}
+                        className={`flex items-center gap-1 px-3 py-1 text-xs rounded-full transition-colors duration-200 ${
+                          (type === 'all' && !filters.mediaType) || filters.mediaType === type
+                            ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        <Icon className="h-3 w-3" />
+                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                      </button>
+                    );
+                  })}
+                </div>
+
                 {/* Tags */}
                 {allTags.length > 0 && (
                   <div className="flex items-center gap-2 flex-wrap">
@@ -250,91 +296,99 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                   </p>
                 </div>
               ) : (
-                filteredPrompts.map((prompt) => (
-                  <motion.div
-                    key={prompt.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow duration-200"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className={`px-2 py-1 text-xs rounded-full font-medium ${
-                          prompt.enhancementType === 'detailed' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' :
-                          prompt.enhancementType === 'creative' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300' :
-                          prompt.enhancementType === 'technical' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
-                          'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300'
-                        }`}>
-                          {prompt.enhancementType}
-                        </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {formatDate(prompt.timestamp)}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <motion.button
-                          onClick={() => onPromptSelect(prompt)}
-                          className="p-1 text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-900 rounded transition-colors duration-200"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          title="Use this prompt"
-                        >
-                          <RotateCcw className="h-3 w-3" />
-                        </motion.button>
-                        <motion.button
-                          onClick={() => handleCopy(prompt.enhancedPrompt, prompt.id)}
-                          className="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors duration-200"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          title="Copy enhanced prompt"
-                        >
-                          <Copy className="h-3 w-3" />
-                        </motion.button>
-                        <motion.button
-                          onClick={() => onPromptDelete(prompt.id)}
-                          className="p-1 text-red-600 hover:bg-red-100 dark:hover:bg-red-900 rounded transition-colors duration-200"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          title="Delete prompt"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </motion.button>
-                      </div>
-                    </div>
-
-                    <div className="mb-3">
-                      <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-1">
-                        Original:
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                        {prompt.originalPrompt}
-                      </p>
-                    </div>
-
-                    <div className="mb-3">
-                      <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-1">
-                        Enhanced:
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
-                        {prompt.enhancedPrompt}
-                      </p>
-                    </div>
-
-                    {prompt.tags.length > 0 && (
-                      <div className="flex items-center gap-1 flex-wrap">
-                        {prompt.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full"
-                          >
-                            {tag}
+                filteredPrompts.map((prompt) => {
+                  const mediaType = getMediaType(prompt.enhancementType);
+                  const MediaIcon = mediaTypeIcons[mediaType];
+                  
+                  return (
+                    <motion.div
+                      key={prompt.id}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow duration-200"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <MediaIcon className="h-4 w-4 text-gray-500" />
+                          <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+                            prompt.enhancementType === 'detailed' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' :
+                            prompt.enhancementType === 'creative' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300' :
+                            prompt.enhancementType === 'technical' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
+                            prompt.enhancementType === 'concise' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300' :
+                            prompt.enhancementType === 'image' ? 'bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300' :
+                            'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
+                          }`}>
+                            {prompt.enhancementType}
                           </span>
-                        ))}
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {formatDate(prompt.timestamp)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <motion.button
+                            onClick={() => onPromptSelect(prompt)}
+                            className="p-1 text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-900 rounded transition-colors duration-200"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            title="Use this prompt"
+                          >
+                            <RotateCcw className="h-3 w-3" />
+                          </motion.button>
+                          <motion.button
+                            onClick={() => handleCopy(prompt.enhancedPrompt, prompt.id)}
+                            className="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors duration-200"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            title="Copy enhanced prompt"
+                          >
+                            <Copy className="h-3 w-3" />
+                          </motion.button>
+                          <motion.button
+                            onClick={() => onPromptDelete(prompt.id)}
+                            className="p-1 text-red-600 hover:bg-red-100 dark:hover:bg-red-900 rounded transition-colors duration-200"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            title="Delete prompt"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </motion.button>
+                        </div>
                       </div>
-                    )}
-                  </motion.div>
-                ))
+
+                      <div className="mb-3">
+                        <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-1">
+                          Original:
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                          {prompt.originalPrompt}
+                        </p>
+                      </div>
+
+                      <div className="mb-3">
+                        <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-1">
+                          Enhanced:
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
+                          {prompt.enhancedPrompt}
+                        </p>
+                      </div>
+
+                      {prompt.tags.length > 0 && (
+                        <div className="flex items-center gap-1 flex-wrap">
+                          {prompt.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                })
               )}
             </div>
           </motion.div>

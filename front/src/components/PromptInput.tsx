@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Loader2, Zap, Type, Code, Lightbulb, Target } from 'lucide-react';
+import { Send, Loader2, Zap, Type, Code, Lightbulb, Target, Image, Video, Palette, Camera } from 'lucide-react';
 import type { Prompt } from '../types';
 
 interface PromptInputProps {
@@ -15,30 +15,62 @@ const enhancementTypes = [
     label: 'Detailed', 
     icon: Type, 
     color: 'from-blue-500 to-cyan-500',
-    description: 'Cria prompts abrangentes com instruções passo a passo e contexto detalhado'
+    description: 'Cria prompts abrangentes com instruções passo a passo e contexto detalhado',
+    category: 'text'
   },
   { 
     id: 'creative' as const, 
     label: 'Creative', 
     icon: Lightbulb, 
     color: 'from-purple-500 to-pink-500',
-    description: 'Gera prompts inovadores que estimulam pensamento criativo e soluções originais'
+    description: 'Gera prompts inovadores que estimulam pensamento criativo e soluções originais',
+    category: 'text'
   },
   { 
     id: 'technical' as const, 
     label: 'Technical', 
     icon: Code, 
     color: 'from-green-500 to-emerald-500',
-    description: 'Produz prompts técnicos precisos com especificações e melhores práticas'
+    description: 'Produz prompts técnicos precisos com especificações e melhores práticas',
+    category: 'text'
   },
   { 
     id: 'concise' as const, 
     label: 'Concise', 
     icon: Target, 
     color: 'from-orange-500 to-red-500',
-    description: 'Cria prompts diretos e objetivos focados em resultados imediatos'
+    description: 'Cria prompts diretos e objetivos focados em resultados imediatos',
+    category: 'text'
+  },
+  { 
+    id: 'image' as const, 
+    label: 'Image Generation', 
+    icon: Image, 
+    color: 'from-pink-500 to-rose-500',
+    description: 'Otimiza prompts para geração de imagens com detalhes visuais específicos',
+    category: 'image'
+  },
+  { 
+    id: 'video' as const, 
+    label: 'Video Generation', 
+    icon: Video, 
+    color: 'from-indigo-500 to-purple-600',
+    description: 'Especializa prompts para criação de vídeos com movimento e narrativa temporal',
+    category: 'video'
   }
 ];
+
+const categoryLabels = {
+  text: 'Texto',
+  image: 'Imagem',
+  video: 'Vídeo'
+};
+
+const categoryIcons = {
+  text: Type,
+  image: Palette,
+  video: Camera
+};
 
 export const PromptInput: React.FC<PromptInputProps> = ({ 
   onSubmit, 
@@ -47,17 +79,34 @@ export const PromptInput: React.FC<PromptInputProps> = ({
 }) => {
   const [input, setInput] = useState(initialValue);
   const [selectedType, setSelectedType] = useState<Prompt['enhancementType']>('detailed');
+  const [selectedCategory, setSelectedCategory] = useState<'text' | 'image' | 'video'>('text');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showTypeInfo, setShowTypeInfo] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const suggestions = [
-    "Write a professional email to...",
-    "Create a marketing strategy for...",
-    "Develop a technical guide for...",
-    "Design a user interface for...",
-    "Analyze the market trends of..."
-  ];
+  const suggestions = {
+    text: [
+      "Write a professional email to...",
+      "Create a marketing strategy for...",
+      "Develop a technical guide for...",
+      "Design a user interface for...",
+      "Analyze the market trends of..."
+    ],
+    image: [
+      "A futuristic cityscape at sunset with flying cars",
+      "Portrait of a wise old wizard with glowing eyes",
+      "Minimalist logo design for a tech startup",
+      "Abstract art representing digital transformation",
+      "Product photography of a luxury watch"
+    ],
+    video: [
+      "Time-lapse of a flower blooming in spring",
+      "Cinematic trailer for a sci-fi adventure",
+      "Tutorial showing how to cook pasta",
+      "Animated logo reveal with particle effects",
+      "Documentary-style interview setup"
+    ]
+  };
 
   useEffect(() => {
     if (initialValue) {
@@ -71,6 +120,14 @@ export const PromptInput: React.FC<PromptInputProps> = ({
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [input]);
+
+  useEffect(() => {
+    // Atualiza o tipo selecionado quando a categoria muda
+    const typesInCategory = enhancementTypes.filter(type => type.category === selectedCategory);
+    if (typesInCategory.length > 0 && !typesInCategory.find(type => type.id === selectedType)) {
+      setSelectedType(typesInCategory[0].id);
+    }
+  }, [selectedCategory, selectedType]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,11 +147,27 @@ export const PromptInput: React.FC<PromptInputProps> = ({
     setShowTypeInfo(false);
   };
 
+  const handleCategorySelect = (category: 'text' | 'image' | 'video') => {
+    setSelectedCategory(category);
+    setShowSuggestions(false);
+  };
+
   const characterCount = input.length;
   const isNearLimit = characterCount > 800;
   const isAtLimit = characterCount >= 1000;
 
   const selectedTypeInfo = enhancementTypes.find(type => type.id === selectedType);
+  const filteredTypes = enhancementTypes.filter(type => type.category === selectedCategory);
+  const CategoryIcon = categoryIcons[selectedCategory];
+
+  const getPlaceholder = () => {
+    const placeholders = {
+      text: `Descreva o que você quer criar e eu vou aprimorar usando o estilo ${selectedTypeInfo?.label.toLowerCase()}...`,
+      image: `Descreva a imagem que você quer gerar (ex: "um gato fofo dormindo em uma cama")...`,
+      video: `Descreva o vídeo que você quer criar (ex: "uma pessoa caminhando na praia ao pôr do sol")...`
+    };
+    return placeholders[selectedCategory];
+  };
 
   return (
     <motion.div
@@ -104,6 +177,41 @@ export const PromptInput: React.FC<PromptInputProps> = ({
       transition={{ duration: 0.5 }}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Category Selector */}
+        <motion.div 
+          className="space-y-3"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+        >
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Tipo de Conteúdo:
+          </h3>
+          
+          <div className="flex flex-wrap gap-2 justify-center">
+            {Object.entries(categoryLabels).map(([key, label]) => {
+              const Icon = categoryIcons[key as keyof typeof categoryIcons];
+              return (
+                <motion.button
+                  key={key}
+                  type="button"
+                  onClick={() => handleCategorySelect(key as 'text' | 'image' | 'video')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    selectedCategory === key
+                      ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  }`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </motion.button>
+              );
+            })}
+          </div>
+        </motion.div>
+
         {/* Enhancement Type Selector */}
         <motion.div 
           className="space-y-3"
@@ -112,8 +220,9 @@ export const PromptInput: React.FC<PromptInputProps> = ({
           transition={{ delay: 0.2 }}
         >
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Tipo de Aprimoramento:
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+              <CategoryIcon className="h-4 w-4" />
+              Estilo de Aprimoramento:
             </h3>
             <button
               type="button"
@@ -125,7 +234,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
           </div>
           
           <div className="flex flex-wrap gap-2 justify-center">
-            {enhancementTypes.map((type) => (
+            {filteredTypes.map((type) => (
               <motion.button
                 key={type.id}
                 type="button"
@@ -185,7 +294,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
               onChange={(e) => setInput(e.target.value)}
               onFocus={() => setShowSuggestions(input.length === 0)}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              placeholder={`Descreva o que você quer criar e eu vou aprimorar usando o estilo ${selectedTypeInfo?.label.toLowerCase()}...`}
+              placeholder={getPlaceholder()}
               className="w-full p-6 pb-16 text-lg bg-transparent border-none outline-none resize-none min-h-[120px] max-h-[300px] overflow-y-auto placeholder-gray-400 dark:placeholder-gray-500"
               maxLength={1000}
               disabled={isLoading}
@@ -224,10 +333,11 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                 exit={{ opacity: 0, y: 10 }}
                 className="absolute top-full mt-2 w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-3 z-10"
               >
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 px-2">
-                  Ideias para começar:
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 px-2 flex items-center gap-2">
+                  <CategoryIcon className="h-3 w-3" />
+                  Ideias para {categoryLabels[selectedCategory].toLowerCase()}:
                 </p>
-                {suggestions.map((suggestion, index) => (
+                {suggestions[selectedCategory].map((suggestion, index) => (
                   <motion.button
                     key={index}
                     onClick={() => handleSuggestionClick(suggestion)}
@@ -252,7 +362,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
             transition={{ delay: 0.4 }}
           >
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Seu prompt será aprimorado com foco em: <span className="font-medium text-purple-600 dark:text-purple-400">{selectedTypeInfo.label}</span>
+              Seu prompt será aprimorado para: <span className="font-medium text-purple-600 dark:text-purple-400">{categoryLabels[selectedCategory]} - {selectedTypeInfo.label}</span>
             </p>
           </motion.div>
         )}

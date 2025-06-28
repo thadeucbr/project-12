@@ -45,9 +45,22 @@ function AppContent() {
   };
 
   const handleSurpriseMe = () => {
-    const randomPrompt = getRandomPrompt();
-    const randomTypes: Prompt['enhancementType'][] = ['detailed', 'creative', 'technical', 'concise'];
-    const randomType = randomTypes[Math.floor(Math.random() * randomTypes.length)];
+    // Seleciona uma categoria aleatória
+    const categories: ('text' | 'image' | 'video')[] = ['text', 'image', 'video'];
+    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+    
+    // Seleciona um prompt aleatório da categoria
+    const randomPrompt = getRandomPrompt(randomCategory);
+    
+    // Seleciona um tipo de enhancement apropriado para a categoria
+    const typesByCategory = {
+      text: ['detailed', 'creative', 'technical', 'concise'] as const,
+      image: ['image'] as const,
+      video: ['video'] as const
+    };
+    
+    const availableTypes = typesByCategory[randomCategory];
+    const randomType = availableTypes[Math.floor(Math.random() * availableTypes.length)];
     
     setCurrentPrompt(randomPrompt);
     setCurrentEnhancementType(randomType);
@@ -125,7 +138,7 @@ function AppContent() {
             Transforme Suas Ideias
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Converta prompts simples em instruções poderosas para IA com aprimoramento inteligente
+            Converta prompts simples em instruções poderosas para IA - texto, imagem e vídeo
           </p>
         </motion.div>
 
