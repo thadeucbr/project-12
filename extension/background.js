@@ -99,6 +99,28 @@ function cleanAndValidateText(enhancedText, originalText) {
     .replace(/\u00A0/g, ' ') // Substitui espaços não-quebráveis
     .trim();
   
+  // Remove possíveis prefixos de instrução
+  const prefixes = [
+    'texto aprimorado:',
+    'enhanced text:',
+    'improved text:',
+    'resultado:',
+    'result:',
+    'aqui está:',
+    'here is:',
+    'versão melhorada:',
+    'improved version:'
+  ];
+  
+  for (const prefix of prefixes) {
+    if (cleaned.toLowerCase().startsWith(prefix)) {
+      cleaned = cleaned.substring(prefix.length).trim();
+    }
+  }
+  
+  // Remove aspas desnecessárias
+  cleaned = cleaned.replace(/^["']|["']$/g, '');
+  
   // Verifica se o texto não ficou muito diferente do original
   if (cleaned.length < originalText.length * 0.3) {
     console.warn('Texto aprimorado muito curto, usando fallback');
@@ -291,52 +313,32 @@ function getDefaultModels(provider) {
 
 function createTextEnhancementPrompt(text, context, style) {
   const contextPrompts = {
-    email: 'Você está aprimorando um email. Mantenha tom profissional mas amigável.',
-    social: 'Você está aprimorando um post para redes sociais. Seja envolvente e conciso.',
-    formal: 'Você está aprimorando um documento formal. Use linguagem profissional e precisa.',
-    creative: 'Você está aprimorando um texto criativo. Seja expressivo e envolvente.',
-    technical: 'Você está aprimorando documentação técnica. Seja claro e preciso.',
-    comment: 'Você está aprimorando um comentário. Seja respeitoso e construtivo.',
-    message: 'Você está aprimorando uma mensagem. Seja claro e cordial.',
-    default: 'Você está aprimorando um texto geral. Melhore clareza e fluidez.'
+    email: 'Improve this email text to be more professional and clear',
+    social: 'Improve this social media post to be more engaging and concise',
+    formal: 'Improve this formal text to be more professional and precise',
+    creative: 'Improve this creative text to be more expressive and engaging',
+    technical: 'Improve this technical text to be clearer and more precise',
+    comment: 'Improve this comment to be more respectful and constructive',
+    message: 'Improve this message to be clearer and more cordial',
+    default: 'Improve this text to be clearer and more fluent'
   };
   
   const stylePrompts = {
-    professional: 'Use tom profissional, formal mas acessível',
-    casual: 'Use tom casual e amigável, mas mantenha clareza',
-    creative: 'Use linguagem criativa e expressiva',
-    concise: 'Seja o mais conciso possível mantendo o significado',
-    detailed: 'Expanda com mais detalhes e explicações'
+    professional: 'Use a professional, formal but accessible tone',
+    casual: 'Use a casual and friendly tone while maintaining clarity',
+    creative: 'Use creative and expressive language',
+    concise: 'Be as concise as possible while maintaining meaning',
+    detailed: 'Expand with more details and explanations'
   };
   
   const contextInstruction = contextPrompts[context] || contextPrompts.default;
   const styleInstruction = stylePrompts[style] || stylePrompts.professional;
   
-  return `Você é um especialista em redação e comunicação. Sua tarefa é aprimorar o texto fornecido, melhorando:
+  return `${contextInstruction}. ${styleInstruction}. Keep the original meaning and intention. Return only the improved text without explanations.
 
-1. **Clareza e fluidez** da escrita
-2. **Gramática e ortografia** 
-3. **Estrutura e organização** das ideias
-4. **Tom e estilo** apropriados ao contexto
+Original text: ${text}
 
-**Contexto:** ${contextInstruction}
-**Estilo desejado:** ${styleInstruction}
-
-**INSTRUÇÕES CRÍTICAS:**
-- Mantenha o significado original do texto
-- Preserve a intenção e personalidade do autor
-- Corrija erros gramaticais e de ortografia
-- Melhore a fluidez e legibilidade
-- Adapte o tom ao contexto identificado
-- NÃO adicione informações que não estavam no texto original
-- Retorne APENAS o texto aprimorado, sem explicações ou comentários
-- NÃO use aspas ou formatação especial
-- Mantenha o mesmo idioma do texto original
-
-**Texto original:**
-${text}
-
-**Texto aprimorado:`;
+Improved text:`;
 }
 
 function getLocalTextEnhancement(text, context, style) {

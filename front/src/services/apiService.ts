@@ -28,102 +28,45 @@ class PromptEnhancementService {
   }
 
   private createPromptTemplate(userPrompt: string, enhancementType: string): string {
-    const baseInstruction = `Você é um engenheiro de prompt altamente experiente. Sua função é analisar e reescrever prompts simples criados por usuários, transformando-os em versões completas, claras e eficazes para maximizar o desempenho de um modelo de linguagem (LLM).`;
+    const templates = {
+      detailed: `Transform this simple prompt into a comprehensive, detailed version with clear instructions, context, and specific requirements. Return only the enhanced prompt without any explanations.
 
-    const typeSpecificInstructions = {
-      detailed: `
-Foque em criar um prompt DETALHADO e ABRANGENTE que:
-- Inclua contexto específico e informações de background relevantes
-- Forneça instruções passo a passo quando aplicável
-- Especifique exemplos concretos e casos de uso
-- Defina claramente o formato esperado da resposta
-- Inclua critérios de qualidade e métricas de sucesso
-- Antecipe possíveis dúvidas e forneça esclarecimentos
-- Use estrutura hierárquica com seções bem definidas`,
+Original: ${userPrompt}
 
-      creative: `
-Foque em criar um prompt CRIATIVO e INOVADOR que:
-- Estimule pensamento fora da caixa e abordagens não convencionais
-- Incorpore elementos narrativos e storytelling quando apropriado
-- Use linguagem vívida e inspiradora
-- Encoraje múltiplas perspectivas e soluções alternativas
-- Inclua elementos de brainstorming e exploração de ideias
-- Promova originalidade mantendo a relevância prática
-- Utilize técnicas de pensamento lateral e associação livre`,
+Enhanced prompt:`,
 
-      technical: `
-Foque em criar um prompt TÉCNICO e PRECISO que:
-- Especifique requisitos técnicos detalhados e padrões
-- Inclua terminologia técnica apropriada e específica
-- Defina parâmetros, limitações e especificações exatas
-- Referencie melhores práticas e metodologias estabelecidas
-- Solicite documentação técnica e exemplos de código
-- Aborde considerações de performance, escalabilidade e segurança
-- Estruture a resposta em formato técnico profissional`,
+      creative: `Transform this prompt into a creative, innovative version that encourages original thinking and unique approaches. Return only the enhanced prompt without any explanations.
 
-      concise: `
-Foque em criar um prompt CONCISO e DIRETO que:
-- Elimine informações desnecessárias mantendo a clareza
-- Use linguagem objetiva e instruções diretas
-- Priorize informações essenciais e acionáveis
-- Estruture em bullet points ou listas numeradas
-- Defina escopo limitado e específico
-- Solicite respostas sucintas e bem organizadas
-- Mantenha foco no resultado prático imediato`,
+Original: ${userPrompt}
 
-      image: `
-Foque em criar um prompt OTIMIZADO PARA GERAÇÃO DE IMAGENS que:
-- Inclua descrições visuais detalhadas e específicas
-- Especifique estilo artístico, técnica e composição
-- Defina iluminação, cores, texturas e atmosfera
-- Inclua detalhes sobre perspectiva, enquadramento e foco
-- Mencione qualidade técnica (resolução, nitidez, etc.)
-- Especifique elementos de design e estética
-- Use terminologia específica para IA de imagem (ex: "highly detailed", "8K", "photorealistic")
-- Inclua aspectos técnicos como câmera, lente, configurações
-- Defina mood, emoção e narrativa visual
-- Especifique elementos que devem ser evitados (negative prompts)`,
+Enhanced prompt:`,
 
-      video: `
-Foque em criar um prompt ESPECIALIZADO PARA GERAÇÃO DE VÍDEOS que:
-- Descreva movimento, ação e sequência temporal
-- Especifique duração, ritmo e transições
-- Inclua detalhes sobre cinematografia e direção
-- Defina ângulos de câmera, movimentos e enquadramentos
-- Especifique iluminação dinâmica e mudanças visuais
-- Inclua elementos de narrativa e storytelling temporal
-- Defina qualidade técnica (fps, resolução, estabilização)
-- Especifique estilo visual e tratamento de cor
-- Inclua detalhes sobre áudio e sincronização
-- Defina início, meio e fim da sequência
-- Especifique elementos de continuidade e fluidez`
+      technical: `Transform this prompt into a technical, precise version with specific requirements, best practices, and implementation details. Return only the enhanced prompt without any explanations.
+
+Original: ${userPrompt}
+
+Enhanced prompt:`,
+
+      concise: `Transform this prompt into a clear, direct, and concise version focused on immediate actionable results. Return only the enhanced prompt without any explanations.
+
+Original: ${userPrompt}
+
+Enhanced prompt:`,
+
+      image: `Transform this into a detailed image generation prompt optimized for AI image tools like DALL-E, Midjourney, or Stable Diffusion. Include visual details, style, lighting, composition, and technical specifications. Return only the enhanced prompt in English without any explanations.
+
+Original: ${userPrompt}
+
+Enhanced image prompt:`,
+
+      video: `Transform this into a detailed video generation prompt optimized for AI video tools like RunwayML or Pika Labs. Include movement, cinematography, duration, visual style, and technical specifications. Return only the enhanced prompt in English without any explanations.
+
+Original: ${userPrompt}
+
+Enhanced video prompt:`
     };
 
-    const specificInstruction = typeSpecificInstructions[enhancementType] || typeSpecificInstructions.detailed;
-
-    return `${baseInstruction}
-
-${specificInstruction}
-
-**Importante:** O prompt deve ser escrito no mesmo idioma do original do usuário. Não traduza.
-
-Siga rigorosamente as melhores práticas de engenharia de prompt:
-1. **Defina o papel (persona)** que o modelo deve assumir
-2. **Inclua contexto relevante** de forma bem delimitada
-3. **Use delimitadores** (ex: """texto""") para separar seções
-4. **Especifique o formato da resposta** claramente
-5. **Evite ambiguidade** e instruções vagas
-6. **Garanta reutilização** do prompt final
-
----
-
-Aqui está o prompt original digitado pelo usuário:
-
-"""${userPrompt}"""
-
----
-
-Com base nisso, reescreva um prompt completo, estruturado, eficaz e pronto para uso com LLMs, aplicando o estilo ${enhancementType.toUpperCase()} especificado acima. Apresente apenas o prompt final reescrito. Não inclua explicações adicionais.`;
+    return templates[enhancementType] || templates.detailed;
   }
 
   private async generateSignature(method: string, url: string): Promise<{ signature: string; timestamp: string }> {
@@ -225,157 +168,151 @@ export const promptEnhancementService = new PromptEnhancementService();
 export const getLocalEnhancement = (prompt: string, type: string): string => {
   const enhancementTemplates = {
     detailed: {
-      prefix: "Você é um especialista em [área relevante]. Crie uma resposta abrangente e detalhada que",
+      prefix: "Create a comprehensive and detailed response that addresses",
       structure: `
-**Contexto:** [Defina o contexto específico]
-**Objetivo:** [Especifique o objetivo claro]
-**Instruções:**
-1. [Passo específico 1]
-2. [Passo específico 2]
-3. [Passo específico 3]
+Context: [Define specific context and background]
+Objective: [Specify clear goal]
+Requirements:
+- [Specific requirement 1]
+- [Specific requirement 2]
+- [Specific requirement 3]
 
-**Formato da Resposta:**
-- Use estrutura hierárquica
-- Inclua exemplos práticos
-- Forneça justificativas para cada ponto
-- Adicione considerações importantes
+Expected Output:
+- Use structured format with clear sections
+- Include practical examples and actionable insights
+- Provide step-by-step guidance where applicable
+- Address potential challenges and solutions
 
-**Critérios de Qualidade:**
-- Precisão técnica
-- Aplicabilidade prática
-- Clareza na comunicação`,
+Quality Criteria:
+- Technical accuracy and practical applicability
+- Clear communication and logical flow`,
       modifiers: [
-        "inclua exemplos específicos e insights acionáveis",
-        "forneça orientação passo a passo detalhada",
-        "incorpore contexto relevante e informações de background",
-        "aborde desafios potenciais e soluções alternativas",
-        "especifique métricas de sucesso e critérios de avaliação"
+        "with comprehensive analysis and step-by-step guidance",
+        "including specific examples and practical applications",
+        "with detailed context and background information",
+        "addressing potential challenges and alternative solutions"
       ]
     },
     creative: {
-      prefix: "Você é um pensador criativo e inovador. Gere uma resposta original e inspiradora que",
+      prefix: "Generate an innovative and creative approach to",
       structure: `
-**Desafio Criativo:** [Reformule o problema de forma inspiradora]
-**Perspectivas Múltiplas:** Explore pelo menos 3 abordagens diferentes
-**Brainstorming:** 
-- Ideias convencionais: [lista]
-- Ideias inovadoras: [lista]
-- Ideias disruptivas: [lista]
+Creative Challenge: [Reframe the problem inspirationally]
+Multiple Perspectives: Explore at least 3 different approaches
+Brainstorming Elements:
+- Conventional ideas: [list]
+- Innovative concepts: [list]
+- Disruptive possibilities: [list]
 
-**Desenvolvimento Criativo:**
-- Use analogias e metáforas
-- Incorpore storytelling
-- Pense em conexões inusitadas
-- Explore o "e se...?"
+Creative Development:
+- Use analogies and metaphors
+- Incorporate storytelling elements
+- Think in unusual connections
+- Explore "what if" scenarios
 
-**Resultado Esperado:**
-- Soluções originais e viáveis
-- Narrativa envolvente
-- Múltiplas alternativas criativas`,
+Expected Outcome:
+- Original and viable solutions
+- Engaging narrative approach
+- Multiple creative alternatives`,
       modifiers: [
-        "explore perspectivas únicas e abordagens não convencionais",
-        "incorpore elementos narrativos e storytelling",
-        "use linguagem vívida e inspiradora",
-        "pense fora da caixa mantendo a relevância prática",
-        "estimule brainstorming e geração de múltiplas ideias"
+        "with unique perspectives and unconventional approaches",
+        "incorporating storytelling and creative elements",
+        "using vivid and inspiring language",
+        "thinking outside the box while maintaining practical relevance"
       ]
     },
     technical: {
-      prefix: "Você é um especialista técnico sênior. Forneça uma resposta precisa e tecnicamente correta que",
+      prefix: "Provide a precise technical solution for",
       structure: `
-**Especificações Técnicas:**
-- Requisitos: [lista detalhada]
-- Limitações: [constraints técnicos]
-- Padrões aplicáveis: [standards relevantes]
+Technical Specifications:
+- Requirements: [detailed list]
+- Constraints: [technical limitations]
+- Standards: [applicable standards]
 
-**Implementação:**
-- Arquitetura: [descrição técnica]
-- Tecnologias: [stack recomendado]
-- Configurações: [parâmetros específicos]
+Implementation:
+- Architecture: [technical description]
+- Technologies: [recommended stack]
+- Configuration: [specific parameters]
 
-**Código/Exemplos:**
+Code Examples:
 \`\`\`
-[Exemplos de código ou configuração]
+[Code or configuration examples]
 \`\`\`
 
-**Considerações:**
-- Performance e escalabilidade
-- Segurança e compliance
-- Manutenibilidade
-- Documentação técnica`,
+Considerations:
+- Performance and scalability
+- Security and compliance
+- Maintainability and documentation`,
       modifiers: [
-        "inclua especificações técnicas detalhadas e padrões",
-        "cite fontes autoritativas e melhores práticas",
-        "ofereça detalhes de implementação e exemplos de código",
-        "aborde considerações de escalabilidade e performance",
-        "forneça documentação técnica completa"
+        "with detailed technical specifications and standards",
+        "including authoritative sources and best practices",
+        "providing implementation details and code examples",
+        "addressing scalability and performance considerations"
       ]
     },
     concise: {
-      prefix: "Você é um consultor eficiente. Entregue uma resposta clara, direta e concisa que",
+      prefix: "Provide a clear and direct solution for",
       structure: `
-**Objetivo:** [Uma frase clara]
-**Ação Requerida:** [O que fazer]
-**Passos Essenciais:**
-1. [Ação específica 1]
-2. [Ação específica 2]
-3. [Ação específica 3]
+Objective: [One clear sentence]
+Action Required: [What to do]
+Essential Steps:
+1. [Specific action 1]
+2. [Specific action 2]
+3. [Specific action 3]
 
-**Resultado Esperado:** [Outcome específico]
-**Próximos Passos:** [Ações imediatas]
+Expected Result: [Specific outcome]
+Next Steps: [Immediate actions]
 
-**Formato:** Bullet points, listas numeradas, máximo 200 palavras`,
+Format: Bullet points, numbered lists, maximum 200 words`,
       modifiers: [
-        "foque nas informações mais essenciais e acionáveis",
-        "use bullet points ou listas numeradas para clareza",
-        "elimine detalhes desnecessários mantendo a completude",
-        "forneça valor acionável imediato",
-        "mantenha resposta objetiva e direta"
+        "focusing on essential and actionable information",
+        "using bullet points or numbered lists for clarity",
+        "eliminating unnecessary details while maintaining completeness",
+        "providing immediate actionable value"
       ]
     },
     image: {
-      prefix: "Crie um prompt detalhado para geração de imagem que descreva",
+      prefix: "Create a detailed image generation prompt describing",
       structure: `
-**Descrição Visual Principal:** [Elemento central da imagem]
-**Estilo e Técnica:** [Estilo artístico, fotográfico, digital art, etc.]
-**Composição:** [Enquadramento, perspectiva, regra dos terços]
-**Iluminação:** [Tipo de luz, direção, intensidade, hora do dia]
-**Cores e Paleta:** [Esquema de cores, saturação, temperatura]
-**Textura e Detalhes:** [Superfícies, materiais, acabamentos]
-**Atmosfera e Mood:** [Emoção, sentimento, energia]
-**Qualidade Técnica:** [Resolução, nitidez, profundidade de campo]
-**Elementos a Evitar:** [Negative prompts]
+Visual Description: [Central element of the image]
+Style & Technique: [Artistic style, photography, digital art]
+Composition: [Framing, perspective, rule of thirds]
+Lighting: [Type, direction, intensity, time of day]
+Colors & Palette: [Color scheme, saturation, temperature]
+Texture & Details: [Surfaces, materials, finishes]
+Atmosphere & Mood: [Emotion, feeling, energy]
+Technical Quality: [Resolution, sharpness, depth of field]
+Negative Prompts: [Elements to avoid]
 
-**Formato:** Prompt otimizado para IA de imagem`,
+Format: Optimized prompt for AI image generation`,
       modifiers: [
-        "inclua descrições visuais específicas e detalhadas",
-        "especifique estilo artístico e técnica de renderização",
-        "defina iluminação, cores e composição precisamente",
-        "adicione qualificadores de qualidade técnica",
-        "inclua elementos de atmosfera e narrativa visual"
+        "with specific visual descriptions and artistic details",
+        "specifying artistic style and rendering technique",
+        "defining lighting, colors, and composition precisely",
+        "adding technical quality specifications",
+        "including atmospheric and narrative visual elements"
       ]
     },
     video: {
-      prefix: "Desenvolva um prompt especializado para geração de vídeo que descreva",
+      prefix: "Create a specialized video generation prompt describing",
       structure: `
-**Sequência Principal:** [Ação ou movimento central]
-**Duração e Ritmo:** [Tempo, velocidade, cadência]
-**Cinematografia:** [Ângulos, movimentos de câmera, transições]
-**Narrativa Temporal:** [Início, desenvolvimento, conclusão]
-**Elementos Visuais:** [Cenário, personagens, objetos em movimento]
-**Iluminação Dinâmica:** [Mudanças de luz ao longo do tempo]
-**Qualidade Técnica:** [FPS, resolução, estabilização]
-**Estilo Visual:** [Tratamento de cor, filtros, efeitos]
-**Continuidade:** [Fluidez, coerência temporal]
-**Especificações:** [Formato, codec, aspectos técnicos]
+Main Sequence: [Central action or movement]
+Duration & Pacing: [Time, speed, rhythm]
+Cinematography: [Angles, camera movements, transitions]
+Temporal Narrative: [Beginning, development, conclusion]
+Visual Elements: [Setting, characters, moving objects]
+Dynamic Lighting: [Light changes over time]
+Technical Quality: [FPS, resolution, stabilization]
+Visual Style: [Color treatment, filters, effects]
+Continuity: [Flow, temporal coherence]
+Specifications: [Format, codec, technical aspects]
 
-**Formato:** Prompt otimizado para IA de vídeo`,
+Format: Optimized prompt for AI video generation`,
       modifiers: [
-        "descreva movimento e ação de forma específica",
-        "inclua detalhes de cinematografia e direção",
-        "especifique duração e ritmo da sequência",
-        "defina qualidade técnica e especificações",
-        "adicione elementos de narrativa temporal"
+        "describing movement and action specifically",
+        "including cinematography and direction details",
+        "specifying duration and sequence pacing",
+        "defining technical quality and specifications",
+        "adding temporal narrative elements"
       ]
     }
   };
@@ -383,16 +320,16 @@ export const getLocalEnhancement = (prompt: string, type: string): string => {
   const template = enhancementTemplates[type] || enhancementTemplates.detailed;
   const selectedModifiers = template.modifiers
     .sort(() => Math.random() - 0.5)
-    .slice(0, 3);
+    .slice(0, 2);
 
   return `${template.prefix} ${prompt.toLowerCase()}.
 
 ${template.structure}
 
-**Instruções Específicas:**
+Key Instructions:
 ${selectedModifiers.map(modifier => `- ${modifier}`).join('\n')}
 
-**Prompt Original:** "${prompt}"
+Original Request: "${prompt}"
 
-**Importante:** Adapte todas as instruções acima ao contexto específico do prompt original, mantendo a estrutura e o estilo ${type}.`;
+Important: Adapt all instructions above to the specific context of the original request, maintaining the ${type} style and structure.`;
 };

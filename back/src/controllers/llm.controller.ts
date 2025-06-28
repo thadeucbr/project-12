@@ -48,7 +48,41 @@ export const llmController = {
     try {
       const { prompt, provider } = dto;
       const result = await llmService.generate(prompt, provider as any);
-      res.json(result);
+      
+      // Limpa a resposta para remover possíveis instruções ou formatação desnecessária
+      let cleanedOutput = result.output;
+      
+      // Remove possíveis prefixos de instrução que podem ter vazado
+      const instructionPrefixes = [
+        'Enhanced prompt:',
+        'Enhanced image prompt:',
+        'Enhanced video prompt:',
+        'Prompt aprimorado:',
+        'Resultado:',
+        'Output:',
+        'Response:',
+        'Here is the enhanced prompt:',
+        'Here\'s the enhanced prompt:',
+        'The enhanced prompt is:',
+        'Enhanced version:'
+      ];
+      
+      for (const prefix of instructionPrefixes) {
+        if (cleanedOutput.toLowerCase().startsWith(prefix.toLowerCase())) {
+          cleanedOutput = cleanedOutput.substring(prefix.length).trim();
+        }
+      }
+      
+      // Remove aspas desnecessárias no início e fim
+      cleanedOutput = cleanedOutput.replace(/^["']|["']$/g, '');
+      
+      // Remove quebras de linha excessivas
+      cleanedOutput = cleanedOutput.replace(/\n{3,}/g, '\n\n');
+      
+      res.json({
+        provider: result.provider,
+        output: cleanedOutput.trim()
+      });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
