@@ -72,8 +72,8 @@ function AppContent() {
     // Seleciona um tipo de enhancement apropriado para a categoria
     const typesByCategory = {
       text: ['detailed', 'creative', 'technical', 'concise'] as const,
-      image: ['image'] as const,
-      video: ['video'] as const,
+      image: ['image-realistic', 'image-artistic', 'image-anime', 'image-commercial'] as const,
+      video: ['video-cinematic', 'video-documentary', 'video-animated', 'video-commercial'] as const,
       editing: ['image-editing', 'video-editing'] as const
     };
     
@@ -233,10 +233,6 @@ function AppContent() {
         onClose={() => setIsTemplatesOpen(false)}
       />
 
-      <PromptAnalytics
-        prompts={prompts}
-      />
-
       <PromptExport
         prompts={prompts}
         isOpen={isExportOpen}
@@ -251,42 +247,44 @@ function AppContent() {
         />
       )}
 
-      {/* Analytics Modal */}
-      {isAnalyticsOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-          onClick={() => setIsAnalyticsOpen(false)}
-        >
+      {/* Analytics Modal - Agora apenas acessível via menu de ferramentas */}
+      <AnimatePresence>
+        {isAnalyticsOpen && (
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            className="fixed inset-4 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            onClick={() => setIsAnalyticsOpen(false)}
           >
-            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-6 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold">Painel de Estatísticas</h2>
-                  <p className="text-indigo-100">Insights sobre seu uso do PromptCraft</p>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="fixed inset-4 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold">Painel de Estatísticas</h2>
+                    <p className="text-indigo-100">Insights sobre seu uso do PromptCraft</p>
+                  </div>
+                  <button
+                    onClick={() => setIsAnalyticsOpen(false)}
+                    className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                  >
+                    ✕
+                  </button>
                 </div>
-                <button
-                  onClick={() => setIsAnalyticsOpen(false)}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-                >
-                  ✕
-                </button>
               </div>
-            </div>
-            <div className="p-6">
-              <PromptAnalytics prompts={prompts} />
-            </div>
+              <div className="p-6">
+                <PromptAnalytics prompts={prompts} />
+              </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 }
