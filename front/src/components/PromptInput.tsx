@@ -426,7 +426,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                className="absolute top-full mt-4 w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-4 z-10"
+                className="absolute top-full mt-4 w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-4 z-10 backdrop-blur-sm"
               >
                 <div className="flex items-center gap-2 mb-3 text-sm text-gray-600 dark:text-gray-400">
                   <CategoryIcon className="h-4 w-4" />
