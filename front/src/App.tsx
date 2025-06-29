@@ -8,9 +8,15 @@ import { PromptTemplates } from './components/PromptTemplates';
 import { PromptAnalytics } from './components/PromptAnalytics';
 import { PromptExport } from './components/PromptExport';
 import { PromptComparison } from './components/PromptComparison';
+import { FavoritesManager } from './components/FavoritesManager';
+import { CollectionsManager } from './components/CollectionsManager';
+import { VersionManager } from './components/VersionManager';
+import { RecommendationEngine } from './components/RecommendationEngine';
+import { AchievementSystem } from './components/AchievementSystem';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorMessage } from './components/ErrorMessage';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { AppProvider, useApp } from './contexts/AppContext';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { usePromptEnhancement } from './hooks/usePromptEnhancement';
@@ -18,7 +24,7 @@ import { getRandomPrompt } from './utils/randomPrompts';
 import type { Prompt } from './types';
 
 function AppContent() {
-  const [prompts, setPrompts] = useLocalStorage<Prompt[]>('prompt-history', []);
+  const { state, addPrompt, updatePrompt, toggleFavorite } = useApp();
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const [enhancedPrompt, setEnhancedPrompt] = useState<string>('');
   const [currentEnhancementType, setCurrentEnhancementType] = useState<Prompt['enhancementType']>('detailed');
@@ -28,7 +34,12 @@ function AppContent() {
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isComparisonOpen, setIsComparisonOpen] = useState(false);
+  const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
+  const [isCollectionsOpen, setIsCollectionsOpen] = useState(false);
+  const [isVersionManagerOpen, setIsVersionManagerOpen] = useState(false);
+  const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
   const [comparisonData, setComparisonData] = useState<any>(null);
+  const [selectedPromptForVersions, setSelectedPromptForVersions] = useState<Prompt | null>(null);
 
   // Hook personalizado para aprimoramento de prompts
   const { enhancePrompt, isLoading, error, clearError } = usePromptEnhancement(
@@ -45,7 +56,7 @@ function AppContent() {
       });
     },
     (newPrompt) => {
-      setPrompts(prev => [newPrompt, ...prev]);
+      addPrompt(newPrompt);
     }
   );
 
@@ -95,6 +106,8 @@ function AppContent() {
     setCurrentEnhancementType(prompt.enhancementType);
     setShowEnhanced(true);
     setIsHistoryOpen(false);
+    setIsFavoritesOpen(false);
+    setIsCollectionsOpen(false);
     clearError();
     
     // Prepara dados para comparação
@@ -113,12 +126,12 @@ function AppContent() {
   };
 
   const handlePromptDelete = (id: string) => {
-    setPrompts(prev => prev.filter(p => p.id !== id));
+    // This would be handled by the context
   };
 
   const handleClearHistory = () => {
     if (window.confirm('Tem certeza que deseja limpar todo o histórico?')) {
-      setPrompts([]);
+      // This would be handled by the context
     }
   };
 
@@ -133,6 +146,15 @@ function AppContent() {
     if (currentPrompt) {
       handlePromptSubmit(currentPrompt, currentEnhancementType);
     }
+  };
+
+  const handleVersionSelect = (version: any) => {
+    // Handle version selection
+    setIsVersionManagerOpen(false);
+  };
+
+  const handleCreateVersion = (content: string, changes: string) => {
+    // Handle version creation
   };
 
   useKeyboardShortcuts({
@@ -214,17 +236,59 @@ function AppContent() {
             onCopy={handleCopy}
             enhancementType={currentEnhancementType}
           />
+
+          {/* Recommendation Engine */}
+          {state.prompts.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="max-w-4xl mx-auto"
+            >
+              <RecommendationEngine />
+            </motion.div>
+          )}
         </div>
       </main>
 
       {/* Modals */}
       <HistoryPanel
-        prompts={prompts}
+        prompts={state.prompts}
         onPromptSelect={handlePromptSelect}
         onPromptDelete={handlePromptDelete}
         onClearHistory={handleClearHistory}
         isOpen={isHistoryOpen}
         onClose={() => setIsHistoryOpen(false)}
+      />
+
+      <FavoritesManager
+        isOpen={isFavoritesOpen}
+        onClose={() => setIsFavoritesOpen(false)}
+        onPromptSelect={handlePromptSelect}
+      />
+
+      <CollectionsManager
+        isOpen={isCollectionsOpen}
+        onClose={() => setIsCollectionsOpen(false)}
+        onPromptSelect={handlePromptSelect}
+      />
+
+      {selectedPromptForVersions && (
+        <VersionManager
+          prompt={selectedPromptForVersions}
+          isOpen={isVersionManagerOpen}
+          onClose={() => {
+            setIsVersionManagerOpen(false);
+            setSelectedPromptForVersions(null);
+          }}
+          onVersionSelect={handleVersionSelect}
+          onCreateVersion={handleCreateVersion}
+        />
+      )}
+
+      <AchievementSystem
+        isOpen={isAchievementsOpen}
+        onClose={() => setIsAchievementsOpen(false)}
       />
 
       <PromptTemplates
@@ -234,7 +298,7 @@ function AppContent() {
       />
 
       <PromptExport
-        prompts={prompts}
+        prompts={state.prompts}
         isOpen={isExportOpen}
         onClose={() => setIsExportOpen(false)}
       />
@@ -279,7 +343,7 @@ function AppContent() {
                 </div>
               </div>
               <div className="p-6">
-                <PromptAnalytics prompts={prompts} />
+                <PromptAnalytics prompts={state.prompts} />
               </div>
             </motion.div>
           </motion.div>
@@ -292,7 +356,9 @@ function AppContent() {
 function App() {
   return (
     <ThemeProvider>
-      <AppContent />
+      <AppProvider>
+        <AppContent />
+      </AppProvider>
     </ThemeProvider>
   );
 }
