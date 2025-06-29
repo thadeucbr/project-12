@@ -12,7 +12,7 @@ interface PromptInputProps {
 const enhancementTypes = [
   { 
     id: 'detailed' as const, 
-    label: 'Detailed', 
+    label: 'Detalhado', 
     icon: Type, 
     color: 'from-blue-500 to-cyan-500',
     description: 'Cria prompts abrangentes com instruções passo a passo e contexto detalhado',
@@ -20,7 +20,7 @@ const enhancementTypes = [
   },
   { 
     id: 'creative' as const, 
-    label: 'Creative', 
+    label: 'Criativo', 
     icon: Lightbulb, 
     color: 'from-purple-500 to-pink-500',
     description: 'Gera prompts inovadores que estimulam pensamento criativo e soluções originais',
@@ -28,7 +28,7 @@ const enhancementTypes = [
   },
   { 
     id: 'technical' as const, 
-    label: 'Technical', 
+    label: 'Técnico', 
     icon: Code, 
     color: 'from-green-500 to-emerald-500',
     description: 'Produz prompts técnicos precisos com especificações e melhores práticas',
@@ -36,7 +36,7 @@ const enhancementTypes = [
   },
   { 
     id: 'concise' as const, 
-    label: 'Concise', 
+    label: 'Conciso', 
     icon: Target, 
     color: 'from-orange-500 to-red-500',
     description: 'Cria prompts diretos e objetivos focados em resultados imediatos',
@@ -44,7 +44,7 @@ const enhancementTypes = [
   },
   { 
     id: 'image' as const, 
-    label: 'Image Generation', 
+    label: 'Geração de Imagem', 
     icon: Image, 
     color: 'from-pink-500 to-rose-500',
     description: 'Otimiza prompts para geração de imagens com detalhes visuais específicos',
@@ -52,7 +52,7 @@ const enhancementTypes = [
   },
   { 
     id: 'video' as const, 
-    label: 'Video Generation', 
+    label: 'Geração de Vídeo', 
     icon: Video, 
     color: 'from-indigo-500 to-purple-600',
     description: 'Especializa prompts para criação de vídeos com movimento e narrativa temporal',
@@ -60,7 +60,7 @@ const enhancementTypes = [
   },
   { 
     id: 'image-editing' as const, 
-    label: 'AI Image Editing', 
+    label: 'Edição de Imagem com IA', 
     icon: Wand2, 
     color: 'from-emerald-500 to-teal-500',
     description: 'Prompts para IAs de edição de imagem como Photoshop AI, Canva AI, Remove.bg',
@@ -68,7 +68,7 @@ const enhancementTypes = [
   },
   { 
     id: 'video-editing' as const, 
-    label: 'AI Video Editing', 
+    label: 'Edição de Vídeo com IA', 
     icon: Scissors, 
     color: 'from-violet-500 to-indigo-600',
     description: 'Prompts para IAs de edição de vídeo como RunwayML, Kapwing AI, Descript',
@@ -104,32 +104,32 @@ export const PromptInput: React.FC<PromptInputProps> = ({
 
   const suggestions = {
     text: [
-      "Write a professional email to...",
-      "Create a marketing strategy for...",
-      "Develop a technical guide for...",
-      "Design a user interface for...",
-      "Analyze the market trends of..."
+      "Escreva um email profissional para...",
+      "Crie uma estratégia de marketing para...",
+      "Desenvolva um guia técnico para...",
+      "Projete uma interface de usuário para...",
+      "Analise as tendências de mercado de..."
     ],
     image: [
-      "A futuristic cityscape at sunset with flying cars",
-      "Portrait of a wise old wizard with glowing eyes",
-      "Minimalist logo design for a tech startup",
-      "Abstract art representing digital transformation",
-      "Product photography of a luxury watch"
+      "Uma paisagem urbana futurista ao pôr do sol com carros voadores",
+      "Retrato de um sábio mago idoso com olhos brilhantes",
+      "Design de logo minimalista para uma startup de tecnologia",
+      "Arte abstrata representando transformação digital",
+      "Fotografia de produto de um relógio de luxo"
     ],
     video: [
-      "Time-lapse of a flower blooming in spring",
-      "Cinematic trailer for a sci-fi adventure",
-      "Tutorial showing how to cook pasta",
-      "Animated logo reveal with particle effects",
-      "Documentary-style interview setup"
+      "Time-lapse de uma flor desabrochando na primavera",
+      "Trailer cinematográfico para uma aventura de ficção científica",
+      "Tutorial mostrando como cozinhar macarrão",
+      "Revelação de logo animado com efeitos de partículas",
+      "Configuração de entrevista estilo documentário"
     ],
     editing: [
-      "Remove background from product photo using AI",
-      "Enhance portrait photo with AI beauty filters",
-      "Color grade sunset video automatically",
-      "Generate smooth transitions between clips",
-      "Upscale old photo to 4K using AI enhancement"
+      "Remover fundo de foto de produto usando IA",
+      "Melhorar foto de retrato com filtros de beleza IA",
+      "Corrigir cores de vídeo do pôr do sol automaticamente",
+      "Gerar transições suaves entre clipes",
+      "Aumentar resolução de foto antiga para 4K usando IA"
     ]
   };
 
@@ -190,7 +190,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
       text: `Descreva o que você quer criar e eu vou aprimorar usando o estilo ${selectedTypeInfo?.label.toLowerCase()}...`,
       image: `Descreva a imagem que você quer gerar (ex: "um gato fofo dormindo em uma cama")...`,
       video: `Descreva o vídeo que você quer criar (ex: "uma pessoa caminhando na praia ao pôr do sol")...`,
-      editing: `Descreva a edição que você quer fazer com IA (ex: "remover fundo da foto usando AI")...`
+      editing: `Descreva a edição que você quer fazer com IA (ex: "remover fundo da foto usando IA")...`
     };
     return placeholders[selectedCategory];
   };
@@ -225,7 +225,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                   className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                     selectedCategory === key
                       ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -268,7 +268,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                   selectedType === type.id
                     ? `bg-gradient-to-r ${type.color} text-white shadow-lg`
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -294,7 +294,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                   </div>
                   <div>
                     <h4 className="font-semibold text-purple-800 dark:text-purple-200 mb-1">
-                      {selectedTypeInfo.label} Enhancement
+                      Aprimoramento {selectedTypeInfo.label}
                     </h4>
                     <p className="text-sm text-purple-700 dark:text-purple-300">
                       {selectedTypeInfo.description}
@@ -321,14 +321,14 @@ export const PromptInput: React.FC<PromptInputProps> = ({
               onFocus={() => setShowSuggestions(input.length === 0)}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
               placeholder={getPlaceholder()}
-              className="w-full p-6 pb-16 text-lg bg-transparent border-none outline-none resize-none min-h-[120px] max-h-[300px] overflow-y-auto placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full p-6 pb-16 text-lg bg-transparent border-none outline-none resize-none min-h-[120px] max-h-[300px] overflow-y-auto placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
               maxLength={1000}
               disabled={isLoading}
             />
             
             {/* Character Count */}
             <div className={`absolute bottom-4 left-6 text-sm ${
-              isAtLimit ? 'text-red-500' : isNearLimit ? 'text-orange-500' : 'text-gray-400'
+              isAtLimit ? 'text-red-500' : isNearLimit ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'
             }`}>
               {characterCount}/1000
             </div>
@@ -367,7 +367,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                   <motion.button
                     key={index}
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className="w-full text-left p-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-150"
+                    className="w-full text-left p-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-150 text-gray-700 dark:text-gray-300"
                     whileHover={{ x: 4 }}
                   >
                     <Zap className="h-3 w-3 inline mr-2 text-purple-500" />

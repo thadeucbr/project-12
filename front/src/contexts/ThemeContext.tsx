@@ -12,7 +12,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    throw new Error('useTheme deve ser usado dentro de um ThemeProvider');
   }
   return context;
 };
@@ -23,8 +23,18 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
+    // Primeiro verifica se há preferência salva
     const saved = localStorage.getItem('theme');
-    return (saved as Theme) || 'light';
+    if (saved) {
+      return saved as Theme;
+    }
+    
+    // Se não há preferência salva, detecta o tema do sistema
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    
+    return 'light';
   });
 
   useEffect(() => {
@@ -36,6 +46,22 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     }
     localStorage.setItem('theme', theme);
   }, [theme]);
+
+  // Escuta mudanças no tema do sistema
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleChange = (e: MediaQueryListEvent) => {
+      // Só muda automaticamente se não há preferência salva
+      const saved = localStorage.getItem('theme');
+      if (!saved) {
+        setThemeState(e.matches ? 'dark' : 'light');
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   const toggleTheme = () => {
     setThemeState(prev => prev === 'light' ? 'dark' : 'light');

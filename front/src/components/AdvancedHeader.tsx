@@ -39,17 +39,17 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
   const tools = [
     { 
       id: 'templates', 
-      label: 'Templates', 
+      label: 'Modelos', 
       icon: BookOpen, 
       action: onTemplatesOpen,
       description: 'Prompts prontos para usar'
     },
     { 
       id: 'analytics', 
-      label: 'Analytics', 
+      label: 'Estatísticas', 
       icon: BarChart3, 
       action: onAnalyticsOpen,
-      description: 'Estatísticas de uso'
+      description: 'Análise de uso'
     },
     { 
       id: 'export', 
@@ -69,7 +69,7 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
 
   return (
     <motion.header 
-      className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 border-b border-gray-200 dark:border-gray-700"
+      className="sticky top-0 z-50 backdrop-blur-xl bg-white/90 dark:bg-gray-900/90 border-b border-gray-200 dark:border-gray-700"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
@@ -91,7 +91,7 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
                 PromptCraft
               </h1>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                AI Enhancement Engine
+                Motor de Aprimoramento de IA
               </p>
             </div>
           </motion.div>
@@ -107,7 +107,7 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
             <div className="relative">
               <motion.button
                 onClick={() => setShowToolsMenu(!showToolsMenu)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -163,7 +163,7 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
               className="p-2 rounded-lg bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:from-orange-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              title="Surprise Me (Ctrl+Shift+R)"
+              title="Me Surpreenda (Ctrl+Shift+R)"
             >
               <Sparkles className="h-4 w-4" />
             </motion.button>
@@ -172,12 +172,12 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
               onClick={onHistoryToggle}
               className={`p-2 rounded-lg transition-all duration-200 ${
                 isHistoryOpen
-                  ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400'
+                  ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400'
                   : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              title="Toggle History (Ctrl+Shift+H)"
+              title="Alternar Histórico (Ctrl+Shift+H)"
             >
               <History className="h-4 w-4" />
             </motion.button>
@@ -187,7 +187,7 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
               className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              title="Toggle Theme (Ctrl+Shift+T)"
+              title="Alternar Tema (Ctrl+Shift+T)"
             >
               {theme === 'light' ? (
                 <Moon className="h-4 w-4" />

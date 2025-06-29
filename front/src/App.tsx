@@ -152,7 +152,7 @@ function AppContent() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20 transition-colors duration-500">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-500">
       <AdvancedHeader
         onHistoryToggle={() => setIsHistoryOpen(!isHistoryOpen)}
         onSurpriseMe={handleSurpriseMe}
@@ -281,7 +281,7 @@ function AppContent() {
             <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-6 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl font-bold">Analytics Dashboard</h2>
+                  <h2 className="text-2xl font-bold">Painel de Estatísticas</h2>
                   <p className="text-indigo-100">Insights sobre seu uso do PromptCraft</p>
                 </div>
                 <button

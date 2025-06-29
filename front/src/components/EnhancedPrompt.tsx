@@ -33,14 +33,14 @@ const typeColors = {
 };
 
 const typeLabels = {
-  detailed: 'Detailed',
-  creative: 'Creative',
-  technical: 'Technical',
-  concise: 'Concise',
-  image: 'Image Generation',
-  video: 'Video Generation',
-  'image-editing': 'AI Image Editing',
-  'video-editing': 'AI Video Editing'
+  detailed: 'Detalhado',
+  creative: 'Criativo',
+  technical: 'Técnico',
+  concise: 'Conciso',
+  image: 'Geração de Imagem',
+  video: 'Geração de Vídeo',
+  'image-editing': 'Edição de Imagem com IA',
+  'video-editing': 'Edição de Vídeo com IA'
 };
 
 const typeDescriptions = {
@@ -95,7 +95,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
       onCopy?.();
       setTimeout(() => setIsCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy text:', error);
+      console.error('Falha ao copiar texto:', error);
     }
   };
 
@@ -198,7 +198,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
               </motion.div>
               <div>
                 <h3 className={`text-lg font-semibold ${getTextColor()}`}>
-                  Enhanced {isEditingType ? 'AI Commands' : 'Prompt'}
+                  {isEditingType ? 'Comandos de IA' : 'Prompt'} Aprimorado
                 </h3>
                 <p className={`text-sm ${getSubtextColor()}`}>
                   {typeDescription}
@@ -257,7 +257,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
           {/* Enhanced Prompt Text */}
           <div className="relative">
             <motion.div
-              className={`text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap font-mono text-sm p-4 bg-white/50 dark:bg-black/20 rounded-xl border ${
+              className={`text-gray-800 dark:text-gray-100 leading-relaxed whitespace-pre-wrap font-mono text-sm p-4 bg-white/50 dark:bg-gray-900/30 rounded-xl border ${
                 isEditingType ? 'border-emerald-100 dark:border-emerald-800' :
                 isMediaType ? 'border-indigo-100 dark:border-indigo-800' : 
                 'border-purple-100 dark:border-purple-800'
