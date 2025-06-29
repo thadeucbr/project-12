@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Sparkles, RotateCcw, Type, Code, Lightbulb, Target, Image, Video, Wand2, Scissors, Download, Share2, Eye, Brush, Lightbulb as Concept, ShoppingBag, Film, FileText, Play, Store } from 'lucide-react';
+import { Copy, Check, Sparkles, RotateCcw, Type, Code, Lightbulb, Target, Image, Video, Wand2, Scissors, Download, Share2, Eye, Brush, Heart, ShoppingBag, Film, FileText, Play, Store } from 'lucide-react';
 import type { Prompt } from '../types';
 
 interface EnhancedPromptProps {
@@ -17,7 +17,7 @@ const typeIcons = {
   concise: Target,
   'image-realistic': Eye,
   'image-artistic': Brush,
-  'image-conceptual': Concept,
+  'image-anime': Heart,
   'image-commercial': ShoppingBag,
   'video-cinematic': Film,
   'video-documentary': FileText,
@@ -34,7 +34,7 @@ const typeColors = {
   concise: 'from-orange-500 to-red-500',
   'image-realistic': 'from-blue-600 to-indigo-600',
   'image-artistic': 'from-purple-600 to-pink-600',
-  'image-conceptual': 'from-emerald-600 to-teal-600',
+  'image-anime': 'from-pink-500 to-rose-500',
   'image-commercial': 'from-orange-600 to-red-600',
   'video-cinematic': 'from-slate-600 to-gray-700',
   'video-documentary': 'from-blue-700 to-indigo-700',
@@ -51,7 +51,7 @@ const typeLabels = {
   concise: 'Conciso',
   'image-realistic': 'Imagem Realista',
   'image-artistic': 'Imagem Artística',
-  'image-conceptual': 'Imagem Conceitual',
+  'image-anime': 'Imagem Anime/Desenho',
   'image-commercial': 'Imagem Comercial',
   'video-cinematic': 'Vídeo Cinematográfico',
   'video-documentary': 'Vídeo Documentário',
@@ -68,7 +68,7 @@ const typeDescriptions = {
   concise: 'Prompt direto e objetivo',
   'image-realistic': 'Otimizado para imagens fotorrealistas',
   'image-artistic': 'Especializado em arte digital e estilos artísticos',
-  'image-conceptual': 'Focado em conceitos abstratos e experimentais',
+  'image-anime': 'Focado em estilo anime, manga e desenho japonês',
   'image-commercial': 'Direcionado para uso comercial e marketing',
   'video-cinematic': 'Qualidade cinematográfica com narrativa visual',
   'video-documentary': 'Estilo documental informativo e educacional',
@@ -186,10 +186,14 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
   const isImageType = enhancementType.startsWith('image-');
   const isVideoType = enhancementType.startsWith('video-');
   const isEditingType = enhancementType.includes('-editing');
+  const isAnimeType = enhancementType === 'image-anime';
 
   const getBackgroundGradient = () => {
     if (isEditingType) {
       return 'from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20';
+    }
+    if (isAnimeType) {
+      return 'from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20';
     }
     if (isImageType) {
       return 'from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20';
@@ -204,6 +208,9 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
     if (isEditingType) {
       return 'border-emerald-200 dark:border-emerald-700';
     }
+    if (isAnimeType) {
+      return 'border-pink-200 dark:border-pink-700';
+    }
     if (isImageType) {
       return 'border-blue-200 dark:border-blue-700';
     }
@@ -217,6 +224,9 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
     if (isEditingType) {
       return 'text-emerald-800 dark:text-emerald-200';
     }
+    if (isAnimeType) {
+      return 'text-pink-800 dark:text-pink-200';
+    }
     if (isImageType) {
       return 'text-blue-800 dark:text-blue-200';
     }
@@ -229,6 +239,9 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
   const getSubtextColor = () => {
     if (isEditingType) {
       return 'text-emerald-600 dark:text-emerald-400';
+    }
+    if (isAnimeType) {
+      return 'text-pink-600 dark:text-pink-400';
     }
     if (isImageType) {
       return 'text-blue-600 dark:text-blue-400';
@@ -280,6 +293,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 >
                   <div className={`h-2 w-2 ${
                     isEditingType ? 'bg-emerald-500' : 
+                    isAnimeType ? 'bg-pink-500' :
                     isImageType ? 'bg-blue-500' :
                     isVideoType ? 'bg-slate-500' : 'bg-purple-500'
                   } rounded-full`} />
@@ -292,6 +306,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 onClick={toggleFullText}
                 className={`p-2 ${getSubtextColor()} ${
                   isEditingType ? 'hover:bg-emerald-100 dark:hover:bg-emerald-800' :
+                  isAnimeType ? 'hover:bg-pink-100 dark:hover:bg-pink-800' :
                   isImageType ? 'hover:bg-blue-100 dark:hover:bg-blue-800' :
                   isVideoType ? 'hover:bg-slate-100 dark:hover:bg-slate-800' : 
                   'hover:bg-purple-100 dark:hover:bg-purple-800'
@@ -307,6 +322,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 onClick={handleDownload}
                 className={`p-2 ${getSubtextColor()} ${
                   isEditingType ? 'hover:bg-emerald-100 dark:hover:bg-emerald-800' :
+                  isAnimeType ? 'hover:bg-pink-100 dark:hover:bg-pink-800' :
                   isImageType ? 'hover:bg-blue-100 dark:hover:bg-blue-800' :
                   isVideoType ? 'hover:bg-slate-100 dark:hover:bg-slate-800' : 
                   'hover:bg-purple-100 dark:hover:bg-purple-800'
@@ -322,6 +338,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 onClick={handleShare}
                 className={`p-2 ${getSubtextColor()} ${
                   isEditingType ? 'hover:bg-emerald-100 dark:hover:bg-emerald-800' :
+                  isAnimeType ? 'hover:bg-pink-100 dark:hover:bg-pink-800' :
                   isImageType ? 'hover:bg-blue-100 dark:hover:bg-blue-800' :
                   isVideoType ? 'hover:bg-slate-100 dark:hover:bg-slate-800' : 
                   'hover:bg-purple-100 dark:hover:bg-purple-800'
@@ -363,6 +380,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
             <motion.div
               className={`text-gray-800 dark:text-gray-100 leading-relaxed whitespace-pre-wrap font-mono text-sm p-6 bg-white/60 dark:bg-gray-900/40 rounded-xl border ${
                 isEditingType ? 'border-emerald-100 dark:border-emerald-800' :
+                isAnimeType ? 'border-pink-100 dark:border-pink-800' :
                 isImageType ? 'border-blue-100 dark:border-blue-800' :
                 isVideoType ? 'border-slate-100 dark:border-slate-800' : 
                 'border-purple-100 dark:border-purple-800'
@@ -378,6 +396,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                   transition={{ duration: 0.5, repeat: Infinity }}
                   className={`inline-block w-2 h-5 ${
                     isEditingType ? 'bg-emerald-500' :
+                    isAnimeType ? 'bg-pink-500' :
                     isImageType ? 'bg-blue-500' :
                     isVideoType ? 'bg-slate-500' : 'bg-purple-500'
                   } ml-1`}
@@ -419,11 +438,13 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
             <div className="flex items-center gap-2">
               <div className={`w-2 h-2 ${
                 isEditingType ? 'bg-emerald-500' :
+                isAnimeType ? 'bg-pink-500' :
                 isImageType ? 'bg-blue-500' :
                 isVideoType ? 'bg-slate-500' : 'bg-purple-500'
               } rounded-full`}></div>
               <span>
                 {isEditingType ? 'Otimizado para IA de Edição' : 
+                 isAnimeType ? 'Otimizado para Anime/Manga' :
                  isImageType ? 'Otimizado para Geração de Imagem' :
                  isVideoType ? 'Otimizado para Geração de Vídeo' : 'Otimizado para LLM'}
               </span>
@@ -442,7 +463,9 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 <Sparkles className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-blue-700 dark:text-blue-300">
                   <strong>Dica:</strong> {
-                    isImageType
+                    isAnimeType
+                      ? 'Use este prompt em ferramentas como NovelAI, Waifu Diffusion, Anything V3, ou outros modelos especializados em anime para melhores resultados.'
+                    : isImageType
                       ? 'Use este prompt em ferramentas como DALL-E, Midjourney, Stable Diffusion ou Leonardo AI para melhores resultados.'
                     : isVideoType
                       ? 'Use este prompt em ferramentas como RunwayML, Pika Labs, ou Stable Video Diffusion para criar vídeos incríveis.'

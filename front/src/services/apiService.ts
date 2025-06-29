@@ -66,11 +66,11 @@ Original: ${userPrompt}
 
 Enhanced artistic image prompt:`,
 
-      'image-conceptual': `Transform this into a detailed conceptual image generation prompt optimized for AI image tools. Focus on abstract concepts, symbolic elements, experimental compositions, and thought-provoking visuals. Include conceptual themes, symbolic meanings, and innovative visual approaches. Return only the enhanced prompt in English without any explanations.
+      'image-anime': `Transform this into a detailed anime/manga style image generation prompt optimized for AI image tools like NovelAI, Waifu Diffusion, or Anything V3. Focus on anime art style, manga aesthetics, Japanese animation characteristics, character design elements, and anime-specific visual features. Include anime art techniques, character expressions, and Japanese visual culture elements. Return only the enhanced prompt in English without any explanations.
 
 Original: ${userPrompt}
 
-Enhanced conceptual image prompt:`,
+Enhanced anime/manga image prompt:`,
 
       'image-commercial': `Transform this into a detailed commercial image generation prompt optimized for AI image tools. Focus on product photography, marketing visuals, brand aesthetics, and commercial appeal. Include professional lighting, commercial composition, and market-ready visual elements. Return only the enhanced prompt in English without any explanations.
 
@@ -367,28 +367,28 @@ Artistic Quality:
         "drawing inspiration from art movements and masters"
       ]
     },
-    'image-conceptual': {
-      prefix: "Create a conceptual image prompt describing",
+    'image-anime': {
+      prefix: "Create an anime/manga style image prompt describing",
       structure: `
-Concept: [Abstract idea or theme]
-Symbolism: [Symbolic elements and meanings]
-Visual Metaphor: [How concept is represented visually]
-Abstract Elements: [Non-literal visual components]
-Experimental Approach: [Unconventional techniques]
-Thought-provoking Elements: [Elements that challenge perception]
-Conceptual Depth: [Layers of meaning]
-Innovation: [Unique visual approach]
+Anime Style: [Specific anime art style - shounen, shoujo, seinen, etc.]
+Character Design: [Anime character features and proportions]
+Art Technique: [Cell shading, soft shading, line art style]
+Color Palette: [Vibrant anime colors, pastel tones, dramatic contrasts]
+Expression: [Anime facial expressions and emotions]
+Background: [Anime-style environments and settings]
+Visual Effects: [Anime-specific effects like speed lines, sparkles]
+Cultural Elements: [Japanese aesthetic elements]
 
-Conceptual Framework:
-- Ideas over literal representation
-- Symbolic and metaphorical content
-- Experimental visual language
-- Intellectual or philosophical depth`,
+Anime Quality Standards:
+- Authentic anime/manga art style
+- Characteristic anime proportions and features
+- Japanese animation aesthetics
+- Expressive character design`,
       modifiers: [
-        "with abstract concepts and symbolic representation",
-        "incorporating experimental visual techniques",
-        "emphasizing intellectual depth and meaning",
-        "challenging conventional visual representation"
+        "with authentic anime art style and character design",
+        "incorporating Japanese animation aesthetics and techniques",
+        "emphasizing anime-specific visual elements and expressions",
+        "maintaining traditional manga and anime artistic conventions"
       ]
     },
     'image-commercial': {

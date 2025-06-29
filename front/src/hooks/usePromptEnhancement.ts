@@ -142,6 +142,7 @@ const generateTags = (prompt: string, enhancementType: string): string[] => {
     'produto|product|comercial|commercial|publicidade|advertising': ['produto', 'comercial'],
     'abstrato|abstract|conceitual|conceptual|artístico|artistic': ['abstrato', 'artístico'],
     'realista|realistic|fotográfico|photographic|natural': ['realista', 'fotografia'],
+    'anime|manga|japonês|japanese|otaku|kawaii|chibi': ['anime', 'manga', 'japonês'],
     'cinematográfico|cinematic|filme|movie|drama': ['cinematográfico', 'filme'],
     'documentário|documentary|educacional|educational|informativo': ['documentário', 'educacional'],
     'animado|animated|cartoon|animação|motion': ['animado', 'animação'],
@@ -171,7 +172,7 @@ const generateTags = (prompt: string, enhancementType: string): string[] => {
     concise: 'conciso',
     'image-realistic': 'realista',
     'image-artistic': 'artístico',
-    'image-conceptual': 'conceitual',
+    'image-anime': 'anime',
     'image-commercial': 'comercial',
     'video-cinematic': 'cinematográfico',
     'video-documentary': 'documentário',
@@ -192,8 +193,8 @@ const generateTags = (prompt: string, enhancementType: string): string[] => {
       tags.push('fotografia', 'realismo');
     } else if (enhancementType === 'image-artistic') {
       tags.push('arte', 'criativo');
-    } else if (enhancementType === 'image-conceptual') {
-      tags.push('conceito', 'abstrato');
+    } else if (enhancementType === 'image-anime') {
+      tags.push('anime', 'manga', 'japonês', 'otaku');
     } else if (enhancementType === 'image-commercial') {
       tags.push('marketing', 'produto');
     }

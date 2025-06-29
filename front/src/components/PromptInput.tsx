@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Loader2, Zap, Type, Code, Lightbulb, Target, Image, Video, Palette, Camera, Edit, Scissors, Wand2, Sparkles, Eye, Brush, Lightbulb as Concept, ShoppingBag, Film, FileText, Play, Store } from 'lucide-react';
+import { Send, Loader2, Zap, Type, Code, Lightbulb, Target, Image, Video, Palette, Camera, Edit, Scissors, Wand2, Sparkles, Eye, Brush, Heart, ShoppingBag, Film, FileText, Play, Store } from 'lucide-react';
 import type { Prompt } from '../types';
 
 interface PromptInputProps {
@@ -62,11 +62,11 @@ const enhancementTypes = [
     category: 'image'
   },
   { 
-    id: 'image-conceptual' as const, 
-    label: 'Conceitual', 
-    icon: Concept, 
-    color: 'from-emerald-600 to-teal-600',
-    description: 'Prompts para imagens abstratas, conceituais e experimentais',
+    id: 'image-anime' as const, 
+    label: 'Desenho/Anime', 
+    icon: Heart, 
+    color: 'from-pink-500 to-rose-500',
+    description: 'Prompts para estilo anime, manga, desenho animado e ilustrações japonesas',
     category: 'image'
   },
   { 
@@ -167,7 +167,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
       "Analise as tendências de mercado de..."
     ],
     image: [
-      "Uma paisagem urbana futurista ao pôr do sol com carros voadores",
+      "Uma garota anime com cabelos rosa em um jardim de cerejeiras",
       "Retrato de um sábio mago idoso com olhos brilhantes",
       "Design de logo minimalista para uma startup de tecnologia",
       "Arte abstrata representando transformação digital",

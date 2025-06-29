@@ -6,7 +6,7 @@ export interface Prompt {
   tags: string[];
   characterCount: number;
   enhancementType: 'detailed' | 'creative' | 'technical' | 'concise' | 
-                   'image-realistic' | 'image-artistic' | 'image-conceptual' | 'image-commercial' |
+                   'image-realistic' | 'image-artistic' | 'image-anime' | 'image-commercial' |
                    'video-cinematic' | 'video-documentary' | 'video-animated' | 'video-commercial' |
                    'image-editing' | 'video-editing';
   mediaType?: 'text' | 'image' | 'video' | 'editing';
