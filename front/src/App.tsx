@@ -215,17 +215,6 @@ function AppContent() {
             enhancementType={currentEnhancementType}
           />
         </div>
-
-        {/* Keyboard Shortcuts Help */}
-        <motion.div
-          className="fixed bottom-4 left-4 text-xs text-gray-500 dark:text-gray-400 space-y-1 opacity-50 hover:opacity-100 transition-opacity duration-200"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 0.5, x: 0 }}
-          transition={{ delay: 2 }}
-        >
-          <p>⌘+S Copiar • ⌘+K Limpar • ⌘+⇧+H Histórico</p>
-          <p>⌘+⇧+T Tema • ⌘+⇧+R Surpresa</p>
-        </motion.div>
       </main>
 
       {/* Modals */}

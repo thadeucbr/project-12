@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Loader2, Zap, Type, Code, Lightbulb, Target, Image, Video, Palette, Camera, Edit, Scissors, Wand2 } from 'lucide-react';
+import { Send, Loader2, Zap, Type, Code, Lightbulb, Target, Image, Video, Palette, Camera, Edit, Scissors, Wand2, Sparkles } from 'lucide-react';
 import type { Prompt } from '../types';
 
 interface PromptInputProps {
@@ -100,6 +100,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<'text' | 'image' | 'video' | 'editing'>('text');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showTypeInfo, setShowTypeInfo] = useState(false);
+  const [focusedInput, setFocusedInput] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const suggestions = {
@@ -202,36 +203,42 @@ export const PromptInput: React.FC<PromptInputProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         {/* Category Selector */}
         <motion.div 
-          className="space-y-3"
+          className="space-y-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
         >
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Tipo de Conteúdo:
-          </h3>
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+              Escolha o tipo de conteúdo
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Selecione a categoria que melhor descreve o que você quer criar
+            </p>
+          </div>
           
-          <div className="flex flex-wrap gap-2 justify-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {Object.entries(categoryLabels).map(([key, label]) => {
               const Icon = categoryIcons[key as keyof typeof categoryIcons];
+              const isSelected = selectedCategory === key;
               return (
                 <motion.button
                   key={key}
                   type="button"
                   onClick={() => handleCategorySelect(key as 'text' | 'image' | 'video' | 'editing')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                    selectedCategory === key
-                      ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  className={`flex flex-col items-center gap-3 p-4 rounded-xl text-sm font-medium transition-all duration-200 border-2 ${
+                    isSelected
+                      ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white border-indigo-500 shadow-lg scale-105'
+                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-md'
                   }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: isSelected ? 1.05 : 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <Icon className="h-4 w-4" />
-                  {label}
+                  <Icon className={`h-6 w-6 ${isSelected ? 'text-white' : 'text-gray-500 dark:text-gray-400'}`} />
+                  <span className="text-center leading-tight">{label}</span>
                 </motion.button>
               );
             })}
@@ -240,70 +247,50 @@ export const PromptInput: React.FC<PromptInputProps> = ({
 
         {/* Enhancement Type Selector */}
         <motion.div 
-          className="space-y-3"
+          className="space-y-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-              <CategoryIcon className="h-4 w-4" />
-              Estilo de Aprimoramento:
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 flex items-center justify-center gap-2">
+              <CategoryIcon className="h-5 w-5" />
+              Estilo de aprimoramento
             </h3>
-            <button
-              type="button"
-              onClick={() => setShowTypeInfo(!showTypeInfo)}
-              className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
-            >
-              {showTypeInfo ? 'Ocultar detalhes' : 'Ver detalhes'}
-            </button>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Como você gostaria que seu prompt fosse otimizado?
+            </p>
           </div>
           
-          <div className="flex flex-wrap gap-2 justify-center">
-            {filteredTypes.map((type) => (
-              <motion.button
-                key={type.id}
-                type="button"
-                onClick={() => handleTypeSelect(type.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                  selectedType === type.id
-                    ? `bg-gradient-to-r ${type.color} text-white shadow-lg`
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <type.icon className="h-4 w-4" />
-                {type.label}
-              </motion.button>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            {filteredTypes.map((type) => {
+              const isSelected = selectedType === type.id;
+              return (
+                <motion.button
+                  key={type.id}
+                  type="button"
+                  onClick={() => handleTypeSelect(type.id)}
+                  className={`flex items-center gap-3 p-4 rounded-xl text-sm font-medium transition-all duration-200 border-2 text-left ${
+                    isSelected
+                      ? `bg-gradient-to-r ${type.color} text-white border-transparent shadow-lg`
+                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md'
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div className={`p-2 rounded-lg ${isSelected ? 'bg-white/20' : `bg-gradient-to-r ${type.color}`}`}>
+                    <type.icon className={`h-4 w-4 ${isSelected ? 'text-white' : 'text-white'}`} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-semibold">{type.label}</div>
+                    <div className={`text-xs mt-1 ${isSelected ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`}>
+                      {type.description.split(' ').slice(0, 6).join(' ')}...
+                    </div>
+                  </div>
+                </motion.button>
+              );
+            })}
           </div>
-
-          {/* Type Information Panel */}
-          <AnimatePresence>
-            {showTypeInfo && selectedTypeInfo && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-4 border border-purple-200 dark:border-purple-700"
-              >
-                <div className="flex items-start gap-3">
-                  <div className={`p-2 rounded-lg bg-gradient-to-r ${selectedTypeInfo.color}`}>
-                    <selectedTypeInfo.icon className="h-4 w-4 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-purple-800 dark:text-purple-200 mb-1">
-                      Aprimoramento {selectedTypeInfo.label}
-                    </h4>
-                    <p className="text-sm text-purple-700 dark:text-purple-300">
-                      {selectedTypeInfo.description}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </motion.div>
 
         {/* Input Area */}
@@ -313,41 +300,65 @@ export const PromptInput: React.FC<PromptInputProps> = ({
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3 }}
         >
-          <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl border-2 transition-all duration-200 overflow-hidden ${
+            focusedInput 
+              ? 'border-indigo-500 dark:border-indigo-400 shadow-2xl' 
+              : 'border-gray-200 dark:border-gray-700'
+          }`}>
             <textarea
               ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onFocus={() => setShowSuggestions(input.length === 0)}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+              onFocus={() => {
+                setFocusedInput(true);
+                setShowSuggestions(input.length === 0);
+              }}
+              onBlur={() => {
+                setFocusedInput(false);
+                setTimeout(() => setShowSuggestions(false), 200);
+              }}
               placeholder={getPlaceholder()}
-              className="w-full p-6 pb-16 text-lg bg-transparent border-none outline-none resize-none min-h-[120px] max-h-[300px] overflow-y-auto placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+              className="w-full p-6 pb-20 text-lg bg-transparent border-none outline-none resize-none min-h-[140px] max-h-[300px] overflow-y-auto placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
               maxLength={1000}
               disabled={isLoading}
             />
             
-            {/* Character Count */}
-            <div className={`absolute bottom-4 left-6 text-sm ${
-              isAtLimit ? 'text-red-500' : isNearLimit ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'
-            }`}>
-              {characterCount}/1000
-            </div>
+            {/* Bottom Bar */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 p-4">
+              <div className="flex items-center justify-between">
+                {/* Character Count */}
+                <div className={`text-sm flex items-center gap-2 ${
+                  isAtLimit ? 'text-red-500' : isNearLimit ? 'text-orange-500' : 'text-gray-500 dark:text-gray-400'
+                }`}>
+                  <span>{characterCount}/1000</span>
+                  {characterCount > 0 && (
+                    <span className="text-xs">• ~{Math.ceil(characterCount / 4)} tokens</span>
+                  )}
+                </div>
 
-            {/* Submit Button */}
-            <motion.button
-              type="submit"
-              disabled={!input.trim() || isLoading || isAtLimit}
-              className={`absolute bottom-4 right-4 p-3 bg-gradient-to-r ${selectedTypeInfo?.color} text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              title={`Aprimorar com estilo ${selectedTypeInfo?.label}`}
-            >
-              {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <Send className="h-5 w-5" />
-              )}
-            </motion.button>
+                {/* Submit Button */}
+                <motion.button
+                  type="submit"
+                  disabled={!input.trim() || isLoading || isAtLimit}
+                  className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${selectedTypeInfo?.color} text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200 font-medium`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  title={`Aprimorar com estilo ${selectedTypeInfo?.label}`}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span>Aprimorando...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-5 w-5" />
+                      <span>Aprimorar</span>
+                    </>
+                  )}
+                </motion.button>
+              </div>
+            </div>
           </div>
 
           {/* Quick Start Suggestions */}
@@ -357,23 +368,25 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                className="absolute top-full mt-2 w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-3 z-10"
+                className="absolute top-full mt-4 w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-4 z-10"
               >
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 px-2 flex items-center gap-2">
-                  <CategoryIcon className="h-3 w-3" />
-                  Ideias para {categoryLabels[selectedCategory].toLowerCase()}:
-                </p>
-                {suggestions[selectedCategory].map((suggestion, index) => (
-                  <motion.button
-                    key={index}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    className="w-full text-left p-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-150 text-gray-700 dark:text-gray-300"
-                    whileHover={{ x: 4 }}
-                  >
-                    <Zap className="h-3 w-3 inline mr-2 text-purple-500" />
-                    {suggestion}
-                  </motion.button>
-                ))}
+                <div className="flex items-center gap-2 mb-3 text-sm text-gray-600 dark:text-gray-400">
+                  <CategoryIcon className="h-4 w-4" />
+                  <span>Ideias para {categoryLabels[selectedCategory].toLowerCase()}:</span>
+                </div>
+                <div className="space-y-2">
+                  {suggestions[selectedCategory].map((suggestion, index) => (
+                    <motion.button
+                      key={index}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      className="w-full text-left p-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-150 text-gray-700 dark:text-gray-300 flex items-start gap-3"
+                      whileHover={{ x: 4 }}
+                    >
+                      <Zap className="h-4 w-4 text-indigo-500 mt-0.5 flex-shrink-0" />
+                      <span>{suggestion}</span>
+                    </motion.button>
+                  ))}
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -387,9 +400,12 @@ export const PromptInput: React.FC<PromptInputProps> = ({
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Seu prompt será aprimorado para: <span className="font-medium text-purple-600 dark:text-purple-400">{categoryLabels[selectedCategory]} - {selectedTypeInfo.label}</span>
-            </p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-full border border-indigo-200 dark:border-indigo-700">
+              <selectedTypeInfo.icon className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+              <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                {categoryLabels[selectedCategory]} • {selectedTypeInfo.label}
+              </span>
+            </div>
           </motion.div>
         )}
       </form>
