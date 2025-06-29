@@ -48,9 +48,9 @@ export const usePromptEnhancement = (
 
       // Determina o tipo de mídia baseado no enhancement type
       const mediaType: 'text' | 'image' | 'video' | 'editing' = 
-        enhancementType === 'image' ? 'image' :
-        enhancementType === 'video' ? 'video' :
-        enhancementType === 'image-editing' || enhancementType === 'video-editing' ? 'editing' : 'text';
+        enhancementType.startsWith('image-') ? 'image' :
+        enhancementType.startsWith('video-') ? 'video' :
+        enhancementType.includes('-editing') ? 'editing' : 'text';
 
       // Cria o objeto do prompt
       const newPrompt: Prompt = {
@@ -85,9 +85,9 @@ export const usePromptEnhancement = (
         const fallbackEnhanced = getLocalEnhancement(originalPrompt, enhancementType);
         
         const mediaType: 'text' | 'image' | 'video' | 'editing' = 
-          enhancementType === 'image' ? 'image' :
-          enhancementType === 'video' ? 'video' :
-          enhancementType === 'image-editing' || enhancementType === 'video-editing' ? 'editing' : 'text';
+          enhancementType.startsWith('image-') ? 'image' :
+          enhancementType.startsWith('video-') ? 'video' :
+          enhancementType.includes('-editing') ? 'editing' : 'text';
         
         const fallbackPrompt: Prompt = {
           id: crypto.randomUUID(),
@@ -141,6 +141,10 @@ const generateTags = (prompt: string, enhancementType: string): string[] => {
     'paisagem|landscape|natureza|nature|cenário|scenery': ['paisagem', 'natureza'],
     'produto|product|comercial|commercial|publicidade|advertising': ['produto', 'comercial'],
     'abstrato|abstract|conceitual|conceptual|artístico|artistic': ['abstrato', 'artístico'],
+    'realista|realistic|fotográfico|photographic|natural': ['realista', 'fotografia'],
+    'cinematográfico|cinematic|filme|movie|drama': ['cinematográfico', 'filme'],
+    'documentário|documentary|educacional|educational|informativo': ['documentário', 'educacional'],
+    'animado|animated|cartoon|animação|motion': ['animado', 'animação'],
     'editar|edição|retocar|ajustar|edit|editing|retouch|adjust': ['edição', 'pós-produção'],
     'photoshop|gimp|lightroom|adobe|software': ['photoshop', 'software'],
     'premiere|after effects|davinci|final cut|editor': ['edição-vídeo', 'software'],
@@ -165,14 +169,48 @@ const generateTags = (prompt: string, enhancementType: string): string[] => {
     creative: 'criativo',
     technical: 'técnico',
     concise: 'conciso',
-    image: 'imagem',
-    video: 'vídeo',
+    'image-realistic': 'realista',
+    'image-artistic': 'artístico',
+    'image-conceptual': 'conceitual',
+    'image-commercial': 'comercial',
+    'video-cinematic': 'cinematográfico',
+    'video-documentary': 'documentário',
+    'video-animated': 'animado',
+    'video-commercial': 'comercial',
     'image-editing': 'edição-imagem',
     'video-editing': 'edição-vídeo'
   };
 
   if (typeTagMap[enhancementType]) {
     tags.push(typeTagMap[enhancementType]);
+  }
+
+  // Adiciona tags específicas para cada tipo de imagem
+  if (enhancementType.startsWith('image-')) {
+    tags.push('imagem', 'visual');
+    if (enhancementType === 'image-realistic') {
+      tags.push('fotografia', 'realismo');
+    } else if (enhancementType === 'image-artistic') {
+      tags.push('arte', 'criativo');
+    } else if (enhancementType === 'image-conceptual') {
+      tags.push('conceito', 'abstrato');
+    } else if (enhancementType === 'image-commercial') {
+      tags.push('marketing', 'produto');
+    }
+  }
+
+  // Adiciona tags específicas para cada tipo de vídeo
+  if (enhancementType.startsWith('video-')) {
+    tags.push('vídeo', 'audiovisual');
+    if (enhancementType === 'video-cinematic') {
+      tags.push('cinema', 'filme');
+    } else if (enhancementType === 'video-documentary') {
+      tags.push('documentário', 'educacional');
+    } else if (enhancementType === 'video-animated') {
+      tags.push('animação', 'motion-graphics');
+    } else if (enhancementType === 'video-commercial') {
+      tags.push('publicidade', 'marketing');
+    }
   }
 
   // Adiciona tags específicas para edição

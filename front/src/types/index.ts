@@ -5,7 +5,10 @@ export interface Prompt {
   timestamp: string;
   tags: string[];
   characterCount: number;
-  enhancementType: 'detailed' | 'creative' | 'technical' | 'concise' | 'image' | 'video' | 'image-editing' | 'video-editing';
+  enhancementType: 'detailed' | 'creative' | 'technical' | 'concise' | 
+                   'image-realistic' | 'image-artistic' | 'image-conceptual' | 'image-commercial' |
+                   'video-cinematic' | 'video-documentary' | 'video-animated' | 'video-commercial' |
+                   'image-editing' | 'video-editing';
   mediaType?: 'text' | 'image' | 'video' | 'editing';
 }
 

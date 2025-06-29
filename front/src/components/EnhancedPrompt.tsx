@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Sparkles, RotateCcw, Type, Code, Lightbulb, Target, Image, Video, Wand2, Scissors, Download, Share2 } from 'lucide-react';
+import { Copy, Check, Sparkles, RotateCcw, Type, Code, Lightbulb, Target, Image, Video, Wand2, Scissors, Download, Share2, Eye, Brush, Lightbulb as Concept, ShoppingBag, Film, FileText, Play, Store } from 'lucide-react';
 import type { Prompt } from '../types';
 
 interface EnhancedPromptProps {
@@ -15,8 +15,14 @@ const typeIcons = {
   creative: Lightbulb,
   technical: Code,
   concise: Target,
-  image: Image,
-  video: Video,
+  'image-realistic': Eye,
+  'image-artistic': Brush,
+  'image-conceptual': Concept,
+  'image-commercial': ShoppingBag,
+  'video-cinematic': Film,
+  'video-documentary': FileText,
+  'video-animated': Play,
+  'video-commercial': Store,
   'image-editing': Wand2,
   'video-editing': Scissors
 };
@@ -26,8 +32,14 @@ const typeColors = {
   creative: 'from-purple-500 to-pink-500',
   technical: 'from-green-500 to-emerald-500',
   concise: 'from-orange-500 to-red-500',
-  image: 'from-pink-500 to-rose-500',
-  video: 'from-indigo-500 to-purple-600',
+  'image-realistic': 'from-blue-600 to-indigo-600',
+  'image-artistic': 'from-purple-600 to-pink-600',
+  'image-conceptual': 'from-emerald-600 to-teal-600',
+  'image-commercial': 'from-orange-600 to-red-600',
+  'video-cinematic': 'from-slate-600 to-gray-700',
+  'video-documentary': 'from-blue-700 to-indigo-700',
+  'video-animated': 'from-purple-700 to-pink-700',
+  'video-commercial': 'from-green-700 to-emerald-700',
   'image-editing': 'from-emerald-500 to-teal-500',
   'video-editing': 'from-violet-500 to-indigo-600'
 };
@@ -37,8 +49,14 @@ const typeLabels = {
   creative: 'Criativo',
   technical: 'Técnico',
   concise: 'Conciso',
-  image: 'Geração de Imagem',
-  video: 'Geração de Vídeo',
+  'image-realistic': 'Imagem Realista',
+  'image-artistic': 'Imagem Artística',
+  'image-conceptual': 'Imagem Conceitual',
+  'image-commercial': 'Imagem Comercial',
+  'video-cinematic': 'Vídeo Cinematográfico',
+  'video-documentary': 'Vídeo Documentário',
+  'video-animated': 'Vídeo Animado',
+  'video-commercial': 'Vídeo Comercial',
   'image-editing': 'Edição de Imagem com IA',
   'video-editing': 'Edição de Vídeo com IA'
 };
@@ -48,8 +66,14 @@ const typeDescriptions = {
   creative: 'Prompt criativo e inovador',
   technical: 'Prompt técnico e preciso',
   concise: 'Prompt direto e objetivo',
-  image: 'Otimizado para geração de imagens',
-  video: 'Especializado para criação de vídeos',
+  'image-realistic': 'Otimizado para imagens fotorrealistas',
+  'image-artistic': 'Especializado em arte digital e estilos artísticos',
+  'image-conceptual': 'Focado em conceitos abstratos e experimentais',
+  'image-commercial': 'Direcionado para uso comercial e marketing',
+  'video-cinematic': 'Qualidade cinematográfica com narrativa visual',
+  'video-documentary': 'Estilo documental informativo e educacional',
+  'video-animated': 'Animações e motion graphics dinâmicos',
+  'video-commercial': 'Conteúdo promocional e publicitário',
   'image-editing': 'Comandos para IA de edição de imagens',
   'video-editing': 'Comandos para IA de edição de vídeos'
 };
@@ -159,15 +183,19 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
   const typeLabel = typeLabels[enhancementType];
   const typeDescription = typeDescriptions[enhancementType];
 
-  const isMediaType = enhancementType === 'image' || enhancementType === 'video';
-  const isEditingType = enhancementType === 'image-editing' || enhancementType === 'video-editing';
+  const isImageType = enhancementType.startsWith('image-');
+  const isVideoType = enhancementType.startsWith('video-');
+  const isEditingType = enhancementType.includes('-editing');
 
   const getBackgroundGradient = () => {
     if (isEditingType) {
       return 'from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20';
     }
-    if (isMediaType) {
-      return 'from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20';
+    if (isImageType) {
+      return 'from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20';
+    }
+    if (isVideoType) {
+      return 'from-slate-50 to-gray-50 dark:from-slate-900/20 dark:to-gray-900/20';
     }
     return 'from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20';
   };
@@ -176,8 +204,11 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
     if (isEditingType) {
       return 'border-emerald-200 dark:border-emerald-700';
     }
-    if (isMediaType) {
-      return 'border-indigo-200 dark:border-indigo-700';
+    if (isImageType) {
+      return 'border-blue-200 dark:border-blue-700';
+    }
+    if (isVideoType) {
+      return 'border-slate-200 dark:border-slate-700';
     }
     return 'border-purple-200 dark:border-purple-700';
   };
@@ -186,8 +217,11 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
     if (isEditingType) {
       return 'text-emerald-800 dark:text-emerald-200';
     }
-    if (isMediaType) {
-      return 'text-indigo-800 dark:text-indigo-200';
+    if (isImageType) {
+      return 'text-blue-800 dark:text-blue-200';
+    }
+    if (isVideoType) {
+      return 'text-slate-800 dark:text-slate-200';
     }
     return 'text-purple-800 dark:text-purple-200';
   };
@@ -196,8 +230,11 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
     if (isEditingType) {
       return 'text-emerald-600 dark:text-emerald-400';
     }
-    if (isMediaType) {
-      return 'text-indigo-600 dark:text-indigo-400';
+    if (isImageType) {
+      return 'text-blue-600 dark:text-blue-400';
+    }
+    if (isVideoType) {
+      return 'text-slate-600 dark:text-slate-400';
     }
     return 'text-purple-600 dark:text-purple-400';
   };
@@ -243,7 +280,8 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 >
                   <div className={`h-2 w-2 ${
                     isEditingType ? 'bg-emerald-500' : 
-                    isMediaType ? 'bg-indigo-500' : 'bg-purple-500'
+                    isImageType ? 'bg-blue-500' :
+                    isVideoType ? 'bg-slate-500' : 'bg-purple-500'
                   } rounded-full`} />
                 </motion.div>
               )}
@@ -254,7 +292,8 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 onClick={toggleFullText}
                 className={`p-2 ${getSubtextColor()} ${
                   isEditingType ? 'hover:bg-emerald-100 dark:hover:bg-emerald-800' :
-                  isMediaType ? 'hover:bg-indigo-100 dark:hover:bg-indigo-800' : 
+                  isImageType ? 'hover:bg-blue-100 dark:hover:bg-blue-800' :
+                  isVideoType ? 'hover:bg-slate-100 dark:hover:bg-slate-800' : 
                   'hover:bg-purple-100 dark:hover:bg-purple-800'
                 } rounded-lg transition-colors duration-200`}
                 whileHover={{ scale: 1.05 }}
@@ -268,7 +307,8 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 onClick={handleDownload}
                 className={`p-2 ${getSubtextColor()} ${
                   isEditingType ? 'hover:bg-emerald-100 dark:hover:bg-emerald-800' :
-                  isMediaType ? 'hover:bg-indigo-100 dark:hover:bg-indigo-800' : 
+                  isImageType ? 'hover:bg-blue-100 dark:hover:bg-blue-800' :
+                  isVideoType ? 'hover:bg-slate-100 dark:hover:bg-slate-800' : 
                   'hover:bg-purple-100 dark:hover:bg-purple-800'
                 } rounded-lg transition-colors duration-200`}
                 whileHover={{ scale: 1.05 }}
@@ -282,7 +322,8 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 onClick={handleShare}
                 className={`p-2 ${getSubtextColor()} ${
                   isEditingType ? 'hover:bg-emerald-100 dark:hover:bg-emerald-800' :
-                  isMediaType ? 'hover:bg-indigo-100 dark:hover:bg-indigo-800' : 
+                  isImageType ? 'hover:bg-blue-100 dark:hover:bg-blue-800' :
+                  isVideoType ? 'hover:bg-slate-100 dark:hover:bg-slate-800' : 
                   'hover:bg-purple-100 dark:hover:bg-purple-800'
                 } rounded-lg transition-colors duration-200`}
                 whileHover={{ scale: 1.05 }}
@@ -322,7 +363,8 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
             <motion.div
               className={`text-gray-800 dark:text-gray-100 leading-relaxed whitespace-pre-wrap font-mono text-sm p-6 bg-white/60 dark:bg-gray-900/40 rounded-xl border ${
                 isEditingType ? 'border-emerald-100 dark:border-emerald-800' :
-                isMediaType ? 'border-indigo-100 dark:border-indigo-800' : 
+                isImageType ? 'border-blue-100 dark:border-blue-800' :
+                isVideoType ? 'border-slate-100 dark:border-slate-800' : 
                 'border-purple-100 dark:border-purple-800'
               } backdrop-blur-sm`}
               initial={{ opacity: 0 }}
@@ -336,7 +378,8 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                   transition={{ duration: 0.5, repeat: Infinity }}
                   className={`inline-block w-2 h-5 ${
                     isEditingType ? 'bg-emerald-500' :
-                    isMediaType ? 'bg-indigo-500' : 'bg-purple-500'
+                    isImageType ? 'bg-blue-500' :
+                    isVideoType ? 'bg-slate-500' : 'bg-purple-500'
                   } ml-1`}
                 />
               )}
@@ -376,17 +419,19 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
             <div className="flex items-center gap-2">
               <div className={`w-2 h-2 ${
                 isEditingType ? 'bg-emerald-500' :
-                isMediaType ? 'bg-indigo-500' : 'bg-purple-500'
+                isImageType ? 'bg-blue-500' :
+                isVideoType ? 'bg-slate-500' : 'bg-purple-500'
               } rounded-full`}></div>
               <span>
                 {isEditingType ? 'Otimizado para IA de Edição' : 
-                 isMediaType ? 'Otimizado para Mídia' : 'Otimizado para LLM'}
+                 isImageType ? 'Otimizado para Geração de Imagem' :
+                 isVideoType ? 'Otimizado para Geração de Vídeo' : 'Otimizado para LLM'}
               </span>
             </div>
           </motion.div>
 
           {/* Type-specific tips */}
-          {(isMediaType || isEditingType) && (
+          {(isImageType || isVideoType || isEditingType) && (
             <motion.div
               className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-700"
               initial={{ opacity: 0, y: 10 }}
@@ -397,9 +442,9 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 <Sparkles className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-blue-700 dark:text-blue-300">
                   <strong>Dica:</strong> {
-                    enhancementType === 'image' 
+                    isImageType
                       ? 'Use este prompt em ferramentas como DALL-E, Midjourney, Stable Diffusion ou Leonardo AI para melhores resultados.'
-                    : enhancementType === 'video'
+                    : isVideoType
                       ? 'Use este prompt em ferramentas como RunwayML, Pika Labs, ou Stable Video Diffusion para criar vídeos incríveis.'
                     : enhancementType === 'image-editing'
                       ? 'Use estes comandos em ferramentas de IA como Photoshop AI, Canva AI, Remove.bg, ou Upscale.media.'

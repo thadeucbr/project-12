@@ -53,17 +53,55 @@ Original: ${userPrompt}
 
 Enhanced prompt:`,
 
-      image: `Transform this into a detailed image generation prompt optimized for AI image tools like DALL-E, Midjourney, or Stable Diffusion. Include visual details, style, lighting, composition, and technical specifications. Return only the enhanced prompt in English without any explanations.
+      // Image Enhancement Types
+      'image-realistic': `Transform this into a detailed photorealistic image generation prompt optimized for AI image tools like DALL-E, Midjourney, or Stable Diffusion. Focus on realistic photography, natural lighting, accurate proportions, and photographic techniques. Include camera settings, lighting conditions, and realistic details. Return only the enhanced prompt in English without any explanations.
 
 Original: ${userPrompt}
 
-Enhanced image prompt:`,
+Enhanced realistic image prompt:`,
 
-      video: `Transform this into a detailed video generation prompt optimized for AI video tools like RunwayML or Pika Labs. Include movement, cinematography, duration, visual style, and technical specifications. Return only the enhanced prompt in English without any explanations.
+      'image-artistic': `Transform this into a detailed artistic image generation prompt optimized for AI image tools. Focus on artistic styles, creative techniques, color palettes, artistic movements, and unique visual aesthetics. Include artistic mediums, styles, and creative elements. Return only the enhanced prompt in English without any explanations.
 
 Original: ${userPrompt}
 
-Enhanced video prompt:`,
+Enhanced artistic image prompt:`,
+
+      'image-conceptual': `Transform this into a detailed conceptual image generation prompt optimized for AI image tools. Focus on abstract concepts, symbolic elements, experimental compositions, and thought-provoking visuals. Include conceptual themes, symbolic meanings, and innovative visual approaches. Return only the enhanced prompt in English without any explanations.
+
+Original: ${userPrompt}
+
+Enhanced conceptual image prompt:`,
+
+      'image-commercial': `Transform this into a detailed commercial image generation prompt optimized for AI image tools. Focus on product photography, marketing visuals, brand aesthetics, and commercial appeal. Include professional lighting, commercial composition, and market-ready visual elements. Return only the enhanced prompt in English without any explanations.
+
+Original: ${userPrompt}
+
+Enhanced commercial image prompt:`,
+
+      // Video Enhancement Types
+      'video-cinematic': `Transform this into a detailed cinematic video generation prompt optimized for AI video tools like RunwayML or Pika Labs. Focus on cinematic techniques, camera movements, dramatic lighting, storytelling elements, and film-quality production. Include cinematography details, visual narrative, and cinematic aesthetics. Return only the enhanced prompt in English without any explanations.
+
+Original: ${userPrompt}
+
+Enhanced cinematic video prompt:`,
+
+      'video-documentary': `Transform this into a detailed documentary video generation prompt optimized for AI video tools. Focus on informational content, educational value, realistic presentation, and documentary-style filming. Include documentary techniques, informational elements, and educational visual approaches. Return only the enhanced prompt in English without any explanations.
+
+Original: ${userPrompt}
+
+Enhanced documentary video prompt:`,
+
+      'video-animated': `Transform this into a detailed animated video generation prompt optimized for AI video tools. Focus on animation techniques, motion graphics, animated characters, and dynamic visual effects. Include animation styles, motion elements, and animated storytelling. Return only the enhanced prompt in English without any explanations.
+
+Original: ${userPrompt}
+
+Enhanced animated video prompt:`,
+
+      'video-commercial': `Transform this into a detailed commercial video generation prompt optimized for AI video tools. Focus on promotional content, marketing messages, brand presentation, and commercial appeal. Include commercial techniques, marketing elements, and promotional visual strategies. Return only the enhanced prompt in English without any explanations.
+
+Original: ${userPrompt}
+
+Enhanced commercial video prompt:`,
 
       'image-editing': `Transform this into a detailed AI image editing prompt optimized for AI photo editing tools like Photoshop AI, Canva AI, Remove.bg, or similar AI-powered editing services. Focus on specific AI editing commands, effects, and transformations. Return only the enhanced AI editing prompt without any explanations.
 
@@ -282,49 +320,195 @@ Format: Bullet points, numbered lists, maximum 200 words`,
         "providing immediate actionable value"
       ]
     },
-    image: {
-      prefix: "Create a detailed image generation prompt describing",
+    'image-realistic': {
+      prefix: "Create a photorealistic image prompt describing",
       structure: `
-Visual Description: [Central element of the image]
-Style & Technique: [Artistic style, photography, digital art]
-Composition: [Framing, perspective, rule of thirds]
-Lighting: [Type, direction, intensity, time of day]
-Colors & Palette: [Color scheme, saturation, temperature]
-Texture & Details: [Surfaces, materials, finishes]
-Atmosphere & Mood: [Emotion, feeling, energy]
-Technical Quality: [Resolution, sharpness, depth of field]
-Negative Prompts: [Elements to avoid]
+Subject: [Main subject with realistic details]
+Photography Style: [Portrait, landscape, macro, street photography]
+Camera Settings: [Aperture, focal length, ISO]
+Lighting: [Natural light, golden hour, studio lighting]
+Composition: [Rule of thirds, leading lines, depth of field]
+Environment: [Realistic setting and background]
+Details: [Textures, materials, realistic proportions]
+Quality: [High resolution, sharp focus, professional quality]
 
-Format: Optimized prompt for AI image generation`,
+Technical Specifications:
+- Camera: [Specific camera model if relevant]
+- Lens: [Lens type and focal length]
+- Post-processing: [Minimal, natural color grading]`,
       modifiers: [
-        "with specific visual descriptions and artistic details",
-        "specifying artistic style and rendering technique",
-        "defining lighting, colors, and composition precisely",
-        "adding technical quality specifications",
-        "including atmospheric and narrative visual elements"
+        "with photographic precision and realistic lighting",
+        "including camera technical specifications",
+        "focusing on natural textures and authentic details",
+        "emphasizing photorealistic quality and professional composition"
       ]
     },
-    video: {
-      prefix: "Create a specialized video generation prompt describing",
+    'image-artistic': {
+      prefix: "Create an artistic image prompt describing",
       structure: `
-Main Sequence: [Central action or movement]
-Duration & Pacing: [Time, speed, rhythm]
-Cinematography: [Angles, camera movements, transitions]
-Temporal Narrative: [Beginning, development, conclusion]
-Visual Elements: [Setting, characters, moving objects]
-Dynamic Lighting: [Light changes over time]
-Technical Quality: [FPS, resolution, stabilization]
-Visual Style: [Color treatment, filters, effects]
-Continuity: [Flow, temporal coherence]
-Specifications: [Format, codec, technical aspects]
+Artistic Style: [Impressionism, surrealism, abstract, digital art]
+Medium: [Oil painting, watercolor, digital illustration, mixed media]
+Color Palette: [Specific colors, temperature, saturation]
+Composition: [Artistic arrangement, visual flow]
+Technique: [Brushstrokes, texture, artistic methods]
+Mood: [Emotional tone, atmosphere]
+Inspiration: [Art movement, famous artist style]
+Visual Elements: [Shapes, patterns, artistic details]
 
-Format: Optimized prompt for AI video generation`,
+Artistic Quality:
+- Creative interpretation over realism
+- Expressive use of color and form
+- Unique artistic perspective
+- Emotional or conceptual depth`,
       modifiers: [
-        "describing movement and action specifically",
-        "including cinematography and direction details",
-        "specifying duration and sequence pacing",
-        "defining technical quality and specifications",
-        "adding temporal narrative elements"
+        "with distinctive artistic style and creative interpretation",
+        "incorporating expressive colors and artistic techniques",
+        "emphasizing creative composition and visual impact",
+        "drawing inspiration from art movements and masters"
+      ]
+    },
+    'image-conceptual': {
+      prefix: "Create a conceptual image prompt describing",
+      structure: `
+Concept: [Abstract idea or theme]
+Symbolism: [Symbolic elements and meanings]
+Visual Metaphor: [How concept is represented visually]
+Abstract Elements: [Non-literal visual components]
+Experimental Approach: [Unconventional techniques]
+Thought-provoking Elements: [Elements that challenge perception]
+Conceptual Depth: [Layers of meaning]
+Innovation: [Unique visual approach]
+
+Conceptual Framework:
+- Ideas over literal representation
+- Symbolic and metaphorical content
+- Experimental visual language
+- Intellectual or philosophical depth`,
+      modifiers: [
+        "with abstract concepts and symbolic representation",
+        "incorporating experimental visual techniques",
+        "emphasizing intellectual depth and meaning",
+        "challenging conventional visual representation"
+      ]
+    },
+    'image-commercial': {
+      prefix: "Create a commercial image prompt describing",
+      structure: `
+Product/Service: [What is being promoted]
+Target Audience: [Demographics and preferences]
+Brand Message: [Key selling points]
+Commercial Style: [Clean, modern, luxury, lifestyle]
+Marketing Goal: [Awareness, sales, brand building]
+Professional Quality: [High-end commercial standards]
+Market Appeal: [Broad or niche market focus]
+Call to Action: [Visual elements that drive engagement]
+
+Commercial Requirements:
+- Professional photography standards
+- Market-ready visual appeal
+- Brand-consistent presentation
+- Sales-oriented composition`,
+      modifiers: [
+        "with professional commercial quality and market appeal",
+        "incorporating brand messaging and target audience focus",
+        "emphasizing sales-oriented visual elements",
+        "maintaining high commercial photography standards"
+      ]
+    },
+    'video-cinematic': {
+      prefix: "Create a cinematic video prompt describing",
+      structure: `
+Scene: [Cinematic sequence description]
+Camera Work: [Shots, angles, movements]
+Cinematography: [Visual style, color grading]
+Lighting: [Dramatic, natural, studio lighting]
+Narrative: [Story elements, character development]
+Pacing: [Rhythm, timing, flow]
+Visual Effects: [Practical or digital effects]
+Audio: [Sound design, music, dialogue]
+
+Cinematic Quality:
+- Film-quality production values
+- Professional cinematography
+- Dramatic visual storytelling
+- Emotional engagement through visuals`,
+      modifiers: [
+        "with professional cinematography and film-quality production",
+        "incorporating dramatic lighting and camera techniques",
+        "emphasizing visual storytelling and narrative flow",
+        "maintaining cinematic standards and emotional impact"
+      ]
+    },
+    'video-documentary': {
+      prefix: "Create a documentary video prompt describing",
+      structure: `
+Subject: [Documentary topic or focus]
+Documentary Style: [Observational, expository, participatory]
+Information: [Key facts, data, insights]
+Interview Elements: [Expert opinions, testimonials]
+B-roll: [Supporting footage, visuals]
+Educational Value: [Learning objectives]
+Authenticity: [Real-world, factual content]
+Narrative Structure: [Beginning, middle, end]
+
+Documentary Standards:
+- Factual accuracy and credibility
+- Educational and informative content
+- Authentic real-world representation
+- Clear information delivery`,
+      modifiers: [
+        "with documentary authenticity and educational value",
+        "incorporating factual information and expert insights",
+        "emphasizing real-world representation and credibility",
+        "maintaining journalistic standards and objectivity"
+      ]
+    },
+    'video-animated': {
+      prefix: "Create an animated video prompt describing",
+      structure: `
+Animation Style: [2D, 3D, motion graphics, stop-motion]
+Characters: [Animated characters or elements]
+Movement: [Animation techniques, transitions]
+Visual Effects: [Particle effects, transformations]
+Color Scheme: [Vibrant, stylized color palette]
+Timing: [Animation pacing, keyframes]
+Style: [Cartoon, realistic, abstract animation]
+Storytelling: [Animated narrative elements]
+
+Animation Quality:
+- Smooth and fluid motion
+- Creative visual effects
+- Stylized artistic approach
+- Engaging animated storytelling`,
+      modifiers: [
+        "with smooth animation and creative visual effects",
+        "incorporating stylized artistic elements and motion",
+        "emphasizing animated storytelling and character development",
+        "maintaining high animation quality and visual appeal"
+      ]
+    },
+    'video-commercial': {
+      prefix: "Create a commercial video prompt describing",
+      structure: `
+Product/Service: [What is being advertised]
+Brand Message: [Key marketing points]
+Target Audience: [Demographics and interests]
+Commercial Format: [TV ad, social media, web commercial]
+Call to Action: [What viewers should do]
+Brand Identity: [Visual style, tone, personality]
+Marketing Strategy: [Awareness, conversion, retention]
+Production Value: [Professional commercial quality]
+
+Commercial Requirements:
+- Clear brand messaging
+- Audience-targeted content
+- Professional production standards
+- Effective call to action`,
+      modifiers: [
+        "with professional commercial production and clear messaging",
+        "incorporating brand identity and target audience appeal",
+        "emphasizing marketing effectiveness and call to action",
+        "maintaining broadcast-quality commercial standards"
       ]
     },
     'image-editing': {

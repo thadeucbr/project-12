@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Loader2, Zap, Type, Code, Lightbulb, Target, Image, Video, Palette, Camera, Edit, Scissors, Wand2, Sparkles } from 'lucide-react';
+import { Send, Loader2, Zap, Type, Code, Lightbulb, Target, Image, Video, Palette, Camera, Edit, Scissors, Wand2, Sparkles, Eye, Brush, Lightbulb as Concept, ShoppingBag, Film, FileText, Play, Store } from 'lucide-react';
 import type { Prompt } from '../types';
 
 interface PromptInputProps {
@@ -10,6 +10,7 @@ interface PromptInputProps {
 }
 
 const enhancementTypes = [
+  // Text Types
   { 
     id: 'detailed' as const, 
     label: 'Detalhado', 
@@ -42,22 +43,76 @@ const enhancementTypes = [
     description: 'Cria prompts diretos e objetivos focados em resultados imediatos',
     category: 'text'
   },
+  
+  // Image Types
   { 
-    id: 'image' as const, 
-    label: 'Geração de Imagem', 
-    icon: Image, 
-    color: 'from-pink-500 to-rose-500',
-    description: 'Otimiza prompts para geração de imagens com detalhes visuais específicos',
+    id: 'image-realistic' as const, 
+    label: 'Realista', 
+    icon: Eye, 
+    color: 'from-blue-600 to-indigo-600',
+    description: 'Prompts para imagens fotorrealistas com detalhes precisos e iluminação natural',
     category: 'image'
   },
   { 
-    id: 'video' as const, 
-    label: 'Geração de Vídeo', 
-    icon: Video, 
-    color: 'from-indigo-500 to-purple-600',
-    description: 'Especializa prompts para criação de vídeos com movimento e narrativa temporal',
+    id: 'image-artistic' as const, 
+    label: 'Artístico', 
+    icon: Brush, 
+    color: 'from-purple-600 to-pink-600',
+    description: 'Prompts para arte digital, pinturas e estilos artísticos únicos',
+    category: 'image'
+  },
+  { 
+    id: 'image-conceptual' as const, 
+    label: 'Conceitual', 
+    icon: Concept, 
+    color: 'from-emerald-600 to-teal-600',
+    description: 'Prompts para imagens abstratas, conceituais e experimentais',
+    category: 'image'
+  },
+  { 
+    id: 'image-commercial' as const, 
+    label: 'Comercial', 
+    icon: ShoppingBag, 
+    color: 'from-orange-600 to-red-600',
+    description: 'Prompts para fotografia de produto, marketing e uso comercial',
+    category: 'image'
+  },
+  
+  // Video Types
+  { 
+    id: 'video-cinematic' as const, 
+    label: 'Cinematográfico', 
+    icon: Film, 
+    color: 'from-slate-600 to-gray-700',
+    description: 'Prompts para vídeos com qualidade cinematográfica e narrativa visual',
     category: 'video'
   },
+  { 
+    id: 'video-documentary' as const, 
+    label: 'Documentário', 
+    icon: FileText, 
+    color: 'from-blue-700 to-indigo-700',
+    description: 'Prompts para vídeos informativos, educacionais e documentários',
+    category: 'video'
+  },
+  { 
+    id: 'video-animated' as const, 
+    label: 'Animado', 
+    icon: Play, 
+    color: 'from-purple-700 to-pink-700',
+    description: 'Prompts para animações, motion graphics e conteúdo animado',
+    category: 'video'
+  },
+  { 
+    id: 'video-commercial' as const, 
+    label: 'Comercial', 
+    icon: Store, 
+    color: 'from-green-700 to-emerald-700',
+    description: 'Prompts para vídeos promocionais, publicitários e de marketing',
+    category: 'video'
+  },
+  
+  // Editing Types
   { 
     id: 'image-editing' as const, 
     label: 'Edição de Imagem com IA', 
@@ -258,7 +313,10 @@ export const PromptInput: React.FC<PromptInputProps> = ({
               Estilo de aprimoramento
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Como você gostaria que seu prompt fosse otimizado?
+              {selectedCategory === 'image' && 'Escolha o estilo visual que melhor se adequa ao seu projeto'}
+              {selectedCategory === 'video' && 'Selecione o formato de vídeo que você deseja criar'}
+              {selectedCategory === 'text' && 'Como você gostaria que seu prompt fosse otimizado?'}
+              {selectedCategory === 'editing' && 'Tipo de edição com IA que você quer realizar'}
             </p>
           </div>
           
