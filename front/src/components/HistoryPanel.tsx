@@ -34,9 +34,9 @@ const mediaTypeIcons = {
 };
 
 const getMediaType = (enhancementType: Prompt['enhancementType']): 'text' | 'image' | 'video' | 'editing' => {
-  if (enhancementType === 'image') return 'image';
-  if (enhancementType === 'video') return 'video';
-  if (enhancementType === 'image-editing' || enhancementType === 'video-editing') return 'editing';
+  if (enhancementType.startsWith('image-')) return 'image';
+  if (enhancementType.startsWith('video-')) return 'video';
+  if (enhancementType.includes('-editing')) return 'editing';
   return 'text';
 };
 
@@ -65,7 +65,12 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
     tags: [],
     dateRange: 'all',
     enhancementType: '',
-    mediaType: ''
+    mediaType: '',
+    collections: [],
+    favorites: false,
+    qualityRange: [0, 10],
+    sortBy: 'date',
+    sortOrder: 'desc'
   });
   const [isCopied, setIsCopied] = useState<string | null>(null);
 
@@ -79,7 +84,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 
   const filteredPrompts = useMemo(() => {
     return prompts.filter(prompt => {
-      // Search term filter
+      // Filtro de busca
       if (filters.searchTerm) {
         const searchLower = filters.searchTerm.toLowerCase();
         if (!prompt.originalPrompt.toLowerCase().includes(searchLower) &&
@@ -88,19 +93,19 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
         }
       }
 
-      // Tags filter
+      // Filtro de tags
       if (filters.tags.length > 0) {
         if (!filters.tags.some(tag => prompt.tags.includes(tag))) {
           return false;
         }
       }
 
-      // Enhancement type filter
+      // Filtro de tipo de aprimoramento
       if (filters.enhancementType && prompt.enhancementType !== filters.enhancementType) {
         return false;
       }
 
-      // Media type filter
+      // Filtro de tipo de mídia
       if (filters.mediaType) {
         const promptMediaType = getMediaType(prompt.enhancementType);
         if (promptMediaType !== filters.mediaType) {
@@ -108,7 +113,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
         }
       }
 
-      // Date range filter
+      // Filtro de período
       if (filters.dateRange !== 'all') {
         const promptDate = new Date(prompt.timestamp);
         const now = new Date();
@@ -137,7 +142,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
       setIsCopied(id);
       setTimeout(() => setIsCopied(null), 2000);
     } catch (error) {
-      console.error('Failed to copy text:', error);
+      console.error('Falha ao copiar texto:', error);
     }
   };
 
@@ -156,13 +161,13 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
     
     if (diffInHours < 1) {
-      return 'Just now';
+      return 'Agora mesmo';
     } else if (diffInHours < 24) {
-      return `${diffInHours}h ago`;
+      return `${diffInHours}h atrás`;
     } else if (diffInHours < 48) {
-      return 'Yesterday';
+      return 'Ontem';
     } else {
-      return date.toLocaleDateString();
+      return date.toLocaleDateString('pt-BR');
     }
   };
 
@@ -190,7 +195,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
             <div className="sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  Prompt History
+                  Histórico de Prompts
                 </h2>
                 <div className="flex items-center gap-2">
                   <motion.button
@@ -198,7 +203,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                     className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-200"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    title="Clear all history"
+                    title="Limpar todo o histórico"
                   >
                     <Trash2 className="h-4 w-4" />
                   </motion.button>
@@ -213,55 +218,66 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                 </div>
               </div>
 
-              {/* Search */}
+              {/* Busca */}
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search prompts..."
+                  placeholder="Buscar prompts..."
                   value={filters.searchTerm}
                   onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
                   className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
               </div>
 
-              {/* Filters */}
+              {/* Filtros */}
               <div className="space-y-3">
-                {/* Date Range */}
+                {/* Período */}
                 <div className="flex items-center gap-2 flex-wrap">
                   <Calendar className="h-4 w-4 text-gray-500" />
-                  {['all', 'today', 'week', 'month'].map((range) => (
+                  {[
+                    { id: 'all', label: 'Todos' },
+                    { id: 'today', label: 'Hoje' },
+                    { id: 'week', label: 'Semana' },
+                    { id: 'month', label: 'Mês' }
+                  ].map((range) => (
                     <button
-                      key={range}
-                      onClick={() => setFilters(prev => ({ ...prev, dateRange: range as any }))}
+                      key={range.id}
+                      onClick={() => setFilters(prev => ({ ...prev, dateRange: range.id as any }))}
                       className={`px-3 py-1 text-xs rounded-full transition-colors duration-200 ${
-                        filters.dateRange === range
+                        filters.dateRange === range.id
                           ? 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300'
                           : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                       }`}
                     >
-                      {range.charAt(0).toUpperCase() + range.slice(1)}
+                      {range.label}
                     </button>
                   ))}
                 </div>
 
-                {/* Media Type Filter */}
+                {/* Filtro de Tipo de Mídia */}
                 <div className="flex items-center gap-2 flex-wrap">
                   <Filter className="h-4 w-4 text-gray-500" />
-                  {['all', 'text', 'image', 'video', 'editing'].map((type) => {
-                    const Icon = type === 'all' ? Filter : mediaTypeIcons[type as keyof typeof mediaTypeIcons];
+                  {[
+                    { id: 'all', label: 'Todos', icon: Filter },
+                    { id: 'text', label: 'Texto', icon: Type },
+                    { id: 'image', label: 'Imagem', icon: Image },
+                    { id: 'video', label: 'Vídeo', icon: Video },
+                    { id: 'editing', label: 'Edição', icon: Edit }
+                  ].map((type) => {
+                    const Icon = type.icon;
                     return (
                       <button
-                        key={type}
-                        onClick={() => setFilters(prev => ({ ...prev, mediaType: type === 'all' ? '' : type }))}
+                        key={type.id}
+                        onClick={() => setFilters(prev => ({ ...prev, mediaType: type.id === 'all' ? '' : type.id }))}
                         className={`flex items-center gap-1 px-3 py-1 text-xs rounded-full transition-colors duration-200 ${
-                          (type === 'all' && !filters.mediaType) || filters.mediaType === type
+                          (type.id === 'all' && !filters.mediaType) || filters.mediaType === type.id
                             ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300'
                             : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                         }`}
                       >
                         <Icon className="h-3 w-3" />
-                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                        {type.label}
                       </button>
                     );
                   })}
@@ -294,13 +310,13 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
               </div>
             </div>
 
-            {/* History List */}
+            {/* Lista do Histórico */}
             <div className="p-6 space-y-4">
               {filteredPrompts.length === 0 ? (
                 <div className="text-center py-12">
                   <Clock className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
                   <p className="text-gray-500 dark:text-gray-400">
-                    {prompts.length === 0 ? 'No prompts yet' : 'No prompts match your filters'}
+                    {prompts.length === 0 ? 'Nenhum prompt ainda' : 'Nenhum prompt corresponde aos seus filtros'}
                   </p>
                 </div>
               ) : (
@@ -324,9 +340,9 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                             prompt.enhancementType === 'creative' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300' :
                             prompt.enhancementType === 'technical' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
                             prompt.enhancementType === 'concise' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300' :
-                            prompt.enhancementType === 'image' ? 'bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300' :
-                            prompt.enhancementType === 'video' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300' :
-                            prompt.enhancementType === 'image-editing' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300' :
+                            prompt.enhancementType.startsWith('image-') ? 'bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300' :
+                            prompt.enhancementType.startsWith('video-') ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300' :
+                            prompt.enhancementType.includes('-editing') ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300' :
                             'bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300'
                           }`}>
                             {prompt.enhancementType}
@@ -341,7 +357,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                             className="p-1 text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-900 rounded transition-colors duration-200"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            title="Use this prompt"
+                            title="Usar este prompt"
                           >
                             <RotateCcw className="h-3 w-3" />
                           </motion.button>
@@ -350,16 +366,26 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                             className="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors duration-200"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            title="Copy enhanced prompt"
+                            title="Copiar prompt aprimorado"
                           >
-                            <Copy className="h-3 w-3" />
+                            {isCopied === prompt.id ? (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="text-green-500"
+                              >
+                                ✓
+                              </motion.div>
+                            ) : (
+                              <Copy className="h-3 w-3" />
+                            )}
                           </motion.button>
                           <motion.button
                             onClick={() => onPromptDelete(prompt.id)}
                             className="p-1 text-red-600 hover:bg-red-100 dark:hover:bg-red-900 rounded transition-colors duration-200"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            title="Delete prompt"
+                            title="Excluir prompt"
                           >
                             <Trash2 className="h-3 w-3" />
                           </motion.button>
@@ -377,7 +403,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 
                       <div className="mb-3">
                         <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-1">
-                          Enhanced:
+                          Aprimorado:
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
                           {prompt.enhancedPrompt}
