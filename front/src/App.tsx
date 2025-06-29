@@ -13,8 +13,11 @@ import { CollectionsManager } from './components/CollectionsManager';
 import { VersionManager } from './components/VersionManager';
 import { RecommendationEngine } from './components/RecommendationEngine';
 import { AchievementSystem } from './components/AchievementSystem';
+import { GamificationHub } from './components/GamificationHub';
+import { StreakTracker } from './components/StreakTracker';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorMessage } from './components/ErrorMessage';
+import { useXPNotification } from './components/XPNotification';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AppProvider, useApp } from './contexts/AppContext';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -38,8 +41,12 @@ function AppContent() {
   const [isCollectionsOpen, setIsCollectionsOpen] = useState(false);
   const [isVersionManagerOpen, setIsVersionManagerOpen] = useState(false);
   const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
+  const [isGamificationOpen, setIsGamificationOpen] = useState(false);
   const [comparisonData, setComparisonData] = useState<any>(null);
   const [selectedPromptForVersions, setSelectedPromptForVersions] = useState<Prompt | null>(null);
+
+  // XP Notification system
+  const { showXPNotification, XPNotificationComponent } = useXPNotification();
 
   // Hook personalizado para aprimoramento de prompts
   const { enhancePrompt, isLoading, error, clearError } = usePromptEnhancement(
@@ -57,6 +64,16 @@ function AppContent() {
     },
     (newPrompt) => {
       addPrompt(newPrompt);
+      
+      // Show XP notification
+      const xpGained = 10 + (newPrompt.characterCount > 200 ? 5 : 0);
+      const multiplier = state.userStats.comboMultiplier || 1;
+      showXPNotification(
+        Math.round(xpGained * multiplier),
+        'Prompt criado com sucesso!',
+        multiplier > 1 ? 'bonus' : 'normal',
+        multiplier
+      );
     }
   );
 
@@ -140,6 +157,9 @@ function AppContent() {
     if (navigator.vibrate) {
       navigator.vibrate(50);
     }
+    
+    // Show XP notification for copy action
+    showXPNotification(5, 'Prompt copiado!', 'normal');
   };
 
   const handleRetry = () => {
@@ -161,6 +181,7 @@ function AppContent() {
     onSave: () => {
       if (enhancedPrompt) {
         navigator.clipboard.writeText(enhancedPrompt);
+        showXPNotification(5, 'Prompt salvo!', 'normal');
       }
     },
     onClear: () => {
@@ -237,6 +258,40 @@ function AppContent() {
             enhancementType={currentEnhancementType}
           />
 
+          {/* Gamification Components */}
+          {state.prompts.length > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <StreakTracker />
+              <div className="space-y-4">
+                <button
+                  onClick={() => setIsGamificationOpen(true)}
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-2xl">🎮</span>
+                    <span className="font-semibold">Centro de Gamificação</span>
+                  </div>
+                  <div className="text-sm opacity-90 mt-1">
+                    Desafios, conquistas e muito mais!
+                  </div>
+                </button>
+                
+                <button
+                  onClick={() => setIsAchievementsOpen(true)}
+                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded-xl hover:from-yellow-600 hover:to-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-2xl">🏆</span>
+                    <span className="font-semibold">Conquistas</span>
+                  </div>
+                  <div className="text-sm opacity-90 mt-1">
+                    {state.achievements.length} desbloqueadas
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Recommendation Engine */}
           {state.prompts.length > 0 && (
             <motion.div
@@ -250,6 +305,9 @@ function AppContent() {
           )}
         </div>
       </main>
+
+      {/* XP Notifications */}
+      {XPNotificationComponent}
 
       {/* Modals */}
       <HistoryPanel
@@ -289,6 +347,11 @@ function AppContent() {
       <AchievementSystem
         isOpen={isAchievementsOpen}
         onClose={() => setIsAchievementsOpen(false)}
+      />
+
+      <GamificationHub
+        isOpen={isGamificationOpen}
+        onClose={() => setIsGamificationOpen(false)}
       />
 
       <PromptTemplates
@@ -359,7 +422,7 @@ function App() {
       <AppProvider>
         <AppContent />
       </AppProvider>
-    </ThemeProvider>
+    </Th emeProvider>
   );
 }
 
