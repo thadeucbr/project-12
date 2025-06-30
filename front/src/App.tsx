@@ -29,6 +29,7 @@ import type { Prompt } from './types';
 function AppContent() {
   const { state, addPrompt, updatePrompt, toggleFavorite } = useApp();
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(true);
   const [enhancedPrompt, setEnhancedPrompt] = useState<string>('');
   const [currentEnhancementType, setCurrentEnhancementType] = useState<Prompt['enhancementType']>('detailed');
   const [showEnhanced, setShowEnhanced] = useState(false);
@@ -177,6 +178,11 @@ function AppContent() {
     // Handle version creation
   };
 
+  const handleInputChange = (value: string) => {
+    setCurrentPrompt(value);
+    setShowSuggestions(value.trim() === ''); // Esconde sugestões ao digitar
+  };
+
   useKeyboardShortcuts({
     onSave: () => {
       if (enhancedPrompt) {
@@ -193,6 +199,19 @@ function AppContent() {
     onHistory: () => setIsHistoryOpen(!isHistoryOpen),
     onSurpriseMe: handleSurpriseMe
   });
+
+  useEffect(() => {
+    // Restaurar histórico de prompts ao carregar a página
+    const savedPrompts = localStorage.getItem('promptHistory');
+    if (savedPrompts) {
+      state.prompts = JSON.parse(savedPrompts); // Atualiza o estado com os prompts salvos
+    }
+  }, []);
+
+  useEffect(() => {
+    // Salvar histórico de prompts no localStorage sempre que ele mudar
+    localStorage.setItem('promptHistory', JSON.stringify(state.prompts));
+  }, [state.prompts]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-500">
@@ -226,7 +245,15 @@ function AppContent() {
             onSubmit={handlePromptSubmit}
             isLoading={isLoading}
             initialValue={currentPrompt}
+            onChange={handleInputChange} // Adiciona o evento de mudança
           />
+
+          {/* Lista de sugestões */}
+          {showSuggestions && !showEnhanced && !isLoading && (
+            <div className="suggestions-container">
+              {/* Renderizar sugestões aqui */}
+            </div>
+          )}
 
           {/* Mensagem de erro */}
           {error && (
@@ -239,18 +266,20 @@ function AppContent() {
           )}
 
           <AnimatePresence mode="wait">
-            {isLoading && (
+            {isLoading && !showEnhanced && (
               <motion.div
                 key="loading"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
               >
                 <LoadingSpinner />
               </motion.div>
             )}
           </AnimatePresence>
 
+          {/* Prompt aprimorado */}
           <EnhancedPrompt
             prompt={enhancedPrompt}
             isVisible={showEnhanced && !isLoading}
@@ -259,7 +288,7 @@ function AppContent() {
           />
 
           {/* Gamification Components */}
-          {state.prompts.length > 0 && (
+          {/* {state.prompts.length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <StreakTracker />
               <div className="space-y-4">
@@ -290,19 +319,19 @@ function AppContent() {
                 </button>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Recommendation Engine */}
-          {state.prompts.length > 0 && (
+          {/* {recommendations.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
               className="max-w-4xl mx-auto"
             >
-              <RecommendationEngine />
+              <RecommendationEngine recommendations={recommendations} />
             </motion.div>
-          )}
+          )} */}
         </div>
       </main>
 
@@ -422,7 +451,7 @@ function App() {
       <AppProvider>
         <AppContent />
       </AppProvider>
-    </Th emeProvider>
+    </ThemeProvider>
   );
 }
 
