@@ -7,7 +7,7 @@ export const sessionController = {
     res.cookie('sessionToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // Use secure in production (HTTPS)
-      sameSite: 'Lax', // Or 'Strict' depending on your needs
+      sameSite: 'lax', // Or 'strict' depending on your needs
       maxAge: 10 * 60 * 1000, // 10 minutes, matches token lifetime
       signed: true, // Assina o cookie com a COOKIE_SECRET
     });
