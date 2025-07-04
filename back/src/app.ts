@@ -10,10 +10,13 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import { env } from './config/env';
 import { IncomingMessage } from 'http';
+import { cloudflareAuthMiddleware } from './middlewares/cloudflareAuth.middleware';
 
 export const app = express();
 
 app.set('trust proxy', 1); // Confia no primeiro proxy (adequado para Cloudflare)
+
+app.use(cloudflareAuthMiddleware); // Adiciona o middleware de autenticação do Cloudflare
 
 app.use(helmet({
   contentSecurityPolicy: {
