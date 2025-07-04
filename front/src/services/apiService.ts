@@ -17,31 +17,13 @@ class ApiError extends Error {
 class PromptEnhancementService {
   private baseUrl: string;
   private timeout: number;
-  private sessionToken: string | null = null;
-  private tokenRefreshPromise: Promise<string> | null = null;
 
   constructor() {
     this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
     this.timeout = 30000; // 30 seconds
-    this.initializeSessionToken();
   }
 
-  private async initializeSessionToken() {
-    // Try to get token from sessionStorage first
-    const storedToken = sessionStorage.getItem('sessionToken');
-    console.log('Initializing session token. Stored token:', storedToken);
-    if (storedToken) {
-      this.sessionToken = storedToken;
-    }
-
-    // Request a new token if not available or if it's about to expire (simple check)
-    if (!this.sessionToken) {
-      console.log("No session token found or it's null, requesting new one...");
-      await this.requestNewSessionToken();
-    }
-  }
-
-  private async requestNewSessionToken(): Promise<string> {
+  private async requestNewSessionToken(): Promise<void> {
     if (this.tokenRefreshPromise) {
       console.log('Token refresh already in progress.');
       return this.tokenRefreshPromise;
@@ -55,6 +37,7 @@ class PromptEnhancementService {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
         });
 
         if (!response.ok) {
@@ -63,15 +46,11 @@ class PromptEnhancementService {
           throw new Error(`Failed to get session token: ${response.status} - ${response.statusText}`);
         }
 
-        const data = await response.json();
-        this.sessionToken = data.token;
-        sessionStorage.setItem('sessionToken', data.token);
-        console.log('Successfully obtained and stored new session token:', data.token);
-        resolve(data.token);
+        // Token is now set as an HttpOnly cookie by the backend, no need to store in sessionStorage
+        console.log('Successfully obtained new session token (set as HttpOnly cookie).');
+        resolve(); // Resolve without a value as token is in cookie
       } catch (error) {
         console.error('Error requesting session token:', error);
-        this.sessionToken = null; // Clear token on error
-        sessionStorage.removeItem('sessionToken');
         reject(error);
       } finally {
         this.tokenRefreshPromise = null;
@@ -128,14 +107,8 @@ class PromptEnhancementService {
   }
 
   private async makeRequest(method: string, url: string, body?: any, retryCount = 0): Promise<any> {
-    if (!this.sessionToken) {
-      console.log('Session token missing for makeRequest, attempting to request new one.');
-      await this.requestNewSessionToken();
-      if (!this.sessionToken) {
-        throw new Error('No session token available after request. Please refresh the page.');
-      }
-    }
-    console.log('Making request with session token:', this.sessionToken);
+    // No need to check this.sessionToken here, browser sends cookie automatically
+    // If 401, it means cookie is missing or invalid/expired
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
@@ -146,10 +119,11 @@ class PromptEnhancementService {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'x-session-token': this.sessionToken, // Use the session token
+          // 'x-session-token': this.sessionToken, // No longer needed, token is in cookie
         },
         body: body ? JSON.stringify(body) : undefined,
         signal: controller.signal,
+        credentials: 'include',
       });
 
       clearTimeout(timeoutId);
@@ -157,9 +131,8 @@ class PromptEnhancementService {
       if (!response.ok) {
         if (response.status === 401 && retryCount === 0) {
           console.warn('Received 401, attempting to refresh token and retry...');
-          this.sessionToken = null; // Invalidate current token
-          sessionStorage.removeItem('sessionToken');
-          await this.requestNewSessionToken(); // Request a new token
+          // No need to clear sessionToken or sessionStorage, just request new token
+          await this.requestNewSessionToken(); // Request a new token (will set new cookie)
           return this.makeRequest(method, url, body, 1); // Retry once
         }
         const errorBody = await response.text();
@@ -187,7 +160,7 @@ class PromptEnhancementService {
 
       return {
         success: true,
-        enhancedPrompt: enhancedPromptResponse.output.trim(),
+        enhancedPrompt: enhancedPromptResponse.trim(),
       };
     } catch (error) {
       return {

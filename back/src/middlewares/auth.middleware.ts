@@ -7,7 +7,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
     return next();
   }
 
-  const sessionToken = req.header('x-session-token');
+  const sessionToken = req.signedCookies.sessionToken; // Lê o cookie assinado
 
   if (!sessionToken || !sessionService.validateToken(sessionToken)) {
     return res.status(401).json({ error: 'Unauthorized: Invalid or missing session token' });

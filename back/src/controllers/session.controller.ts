@@ -3,10 +3,15 @@ import { sessionService } from '../services/session.service';
 
 export const sessionController = {
   async requestToken(req: Request, res: Response) {
-    // In a real application, you might add some rate limiting here
-    // or basic checks to prevent excessive token requests.
     const token = sessionService.generateToken();
-    res.json({ token });
+    res.cookie('sessionToken', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Use secure in production (HTTPS)
+      sameSite: 'Lax', // Or 'Strict' depending on your needs
+      maxAge: 10 * 60 * 1000, // 10 minutes, matches token lifetime
+      signed: true, // Assina o cookie com a COOKIE_SECRET
+    });
+    res.json({ message: 'Session token set in cookie' });
   },
 
   // Optional: Endpoint to invalidate a token if needed (e.g., on logout)

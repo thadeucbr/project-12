@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import { routes } from './routes';
 import { errorMiddleware } from './middlewares/error.middleware';
 import { loggingMiddleware } from './middlewares/logging.middleware';
@@ -19,7 +20,7 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:"],
-      connectSrc: ["'self'", env.CORS_ORIGINS.join(' ')],
+      connectSrc: ["'self'", ...env.CORS_ORIGINS],
     },
   },
 }));
@@ -30,6 +31,7 @@ app.use(cors({
   credentials: true, // Permite envio de cookies, se necessário
 }));
 app.use(express.json());
+app.use(cookieParser(env.COOKIE_SECRET)); // Adiciona o cookie-parser
 app.use(loggingMiddleware);
 app.use(rateLimitMiddleware);
 
