@@ -40,12 +40,16 @@ import { analyticsService } from '../services/analytics.service';
  *               properties:
  *                 totalAccesses:
  *                   type: integer
+ *                   description: Número total de acessos desde o início.
  *                 todayAccesses:
  *                   type: integer
+ *                   description: Número total de acessos hoje.
  *                 totalPrompts:
  *                   type: integer
+ *                   description: Número total de prompts aprimorados.
  *                 enhancementTypes:
  *                   type: object
+ *                   description: Contagem de cada tipo de aprimoramento utilizado.
  *       500:
  *         description: Erro interno
  */

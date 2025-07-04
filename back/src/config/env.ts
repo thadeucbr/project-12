@@ -29,4 +29,5 @@ export const env = {
   CORS_HEADERS: process.env.CORS_HEADERS || 'Content-Type,Authorization,x-api-key',
 
   PRIVATE_KEY: process.env.PRIVATE_KEY || '',
+  mongodbUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/llm',
 };

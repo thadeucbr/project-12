@@ -1,4 +1,13 @@
 services:
+  mongodb:
+    image: mongo
+    container_name: llm-mongodb
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - llm_network
+    restart: unless-stopped
+
   backend:
     image: node
     container_name: llm-backend
@@ -12,6 +21,10 @@ services:
       - "${PORT:-3000}:${PORT:-3000}"
     command: sh -c "npm install && npm run build && npm start"
     restart: unless-stopped
+    depends_on:
+      - mongodb
+    networks:
+      - llm_network
 
   frontend:
     image: node
@@ -26,3 +39,12 @@ services:
       - "8090:8090"
     command: sh -c "npm install && npm run dev -- --host"
     restart: unless-stopped
+    networks:
+      - llm_network
+
+networks:
+  llm_network:
+    driver: bridge
+
+volumes:
+  mongodb_data:

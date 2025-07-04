@@ -1,58 +1,34 @@
 import { AnalyticsRequestDto } from '../dtos/analytics.dto';
-
-interface AnalyticsData {
-  totalAccesses: number;
-  todayAccesses: Set<string>;
-  totalPrompts: number;
-  enhancementTypes: Record<string, number>;
-}
+import { Analytics } from '../models/analytics.model';
 
 class AnalyticsService {
-  private data: AnalyticsData = {
-    totalAccesses: 0,
-    todayAccesses: new Set(),
-    totalPrompts: 0,
-    enhancementTypes: {},
-  };
-
-  private lastReset: Date = new Date();
-
-  constructor() {
-    this.resetDailyStats();
-  }
-
-  private resetDailyStats() {
-    const now = new Date();
-    if (now.getDate() !== this.lastReset.getDate()) {
-      this.data.todayAccesses.clear();
-      this.lastReset = now;
-    }
-  }
-
   async track(dto: AnalyticsRequestDto) {
-    this.resetDailyStats();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    if (!this.data.todayAccesses.has(dto.ip)) {
-      this.data.todayAccesses.add(dto.ip);
-      this.data.totalAccesses++;
-    }
-
-    if (dto.prompt) {
-      this.data.totalPrompts++;
-    }
-
-    if (dto.enhancementType) {
-      this.data.enhancementTypes[dto.enhancementType] = (this.data.enhancementTypes[dto.enhancementType] || 0) + 1;
-    }
+    await Analytics.create({ date: today, ip: dto.ip, prompt: dto.prompt, enhancementType: dto.enhancementType });
   }
 
   async getStats() {
-    this.resetDailyStats();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const totalAccesses = await Analytics.countDocuments();
+    const todayAccesses = await Analytics.countDocuments({ date: today });
+    const totalPrompts = await Analytics.countDocuments({ prompt: { $exists: true } });
+    const enhancementTypes = await Analytics.aggregate([
+      { $match: { enhancementType: { $exists: true } } },
+      { $group: { _id: '$enhancementType', count: { $sum: 1 } } },
+    ]);
+
     return {
-      totalAccesses: this.data.totalAccesses,
-      todayAccesses: this.data.todayAccesses.size,
-      totalPrompts: this.data.totalPrompts,
-      enhancementTypes: this.data.enhancementTypes,
+      totalAccesses,
+      todayAccesses,
+      totalPrompts,
+      enhancementTypes: enhancementTypes.reduce((acc, item) => {
+        acc[item._id] = item.count;
+        return acc;
+      }, {}),
     };
   }
 }
