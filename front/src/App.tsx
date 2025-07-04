@@ -200,18 +200,7 @@ function AppContent() {
     onSurpriseMe: handleSurpriseMe
   });
 
-  useEffect(() => {
-    // Restaurar histórico de prompts ao carregar a página
-    const savedPrompts = localStorage.getItem('promptHistory');
-    if (savedPrompts) {
-      state.prompts = JSON.parse(savedPrompts); // Atualiza o estado com os prompts salvos
-    }
-  }, []);
-
-  useEffect(() => {
-    // Salvar histórico de prompts no localStorage sempre que ele mudar
-    localStorage.setItem('promptHistory', JSON.stringify(state.prompts));
-  }, [state.prompts]);
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-500">
