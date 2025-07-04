@@ -9,10 +9,10 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {
-        console.log('SW registered: ', registration);
+        // SW registered
       })
       .catch((registrationError) => {
-        console.log('SW registration failed: ', registrationError);
+        // SW registration failed
       });
   });
 }
@@ -25,7 +25,7 @@ if ('Notification' in window && Notification.permission === 'default') {
 async function initializeApp() {
   try {
     await promptEnhancementService.requestNewSessionToken();
-    console.log('Session token initialized successfully.');
+    // Session token initialized successfully.
   } catch (error) {
     console.error('Failed to initialize session token:', error);
   }

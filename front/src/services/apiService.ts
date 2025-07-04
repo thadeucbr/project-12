@@ -25,13 +25,13 @@ class PromptEnhancementService {
 
   private async requestNewSessionToken(): Promise<void> {
     if (this.tokenRefreshPromise) {
-      console.log('Token refresh already in progress.');
+      // console.log('Token refresh already in progress.');
       return this.tokenRefreshPromise;
     }
 
     this.tokenRefreshPromise = new Promise(async (resolve, reject) => {
       try {
-        console.log('Requesting new session token from back-end...');
+        // console.log('Requesting new session token from back-end...');
         const response = await fetch(`${this.baseUrl}/session/token`, {
           method: 'POST',
           headers: {
@@ -47,7 +47,7 @@ class PromptEnhancementService {
         }
 
         // Token is now set as an HttpOnly cookie by the backend, no need to store in sessionStorage
-        console.log('Successfully obtained new session token (set as HttpOnly cookie).');
+        // console.log('Successfully obtained new session token (set as HttpOnly cookie).');
         resolve(); // Resolve without a value as token is in cookie
       } catch (error) {
         console.error('Error requesting session token:', error);
@@ -130,7 +130,7 @@ class PromptEnhancementService {
 
       if (!response.ok) {
         if (response.status === 401 && retryCount === 0) {
-          console.warn('Received 401, attempting to refresh token and retry...');
+          // console.warn('Received 401, attempting to refresh token and retry...');
           // No need to clear sessionToken or sessionStorage, just request new token
           await this.requestNewSessionToken(); // Request a new token (will set new cookie)
           return this.makeRequest(method, url, body, 1); // Retry once
