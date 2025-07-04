@@ -29,23 +29,27 @@ class PromptEnhancementService {
   private async initializeSessionToken() {
     // Try to get token from sessionStorage first
     const storedToken = sessionStorage.getItem('sessionToken');
+    console.log('Initializing session token. Stored token:', storedToken);
     if (storedToken) {
       this.sessionToken = storedToken;
     }
 
     // Request a new token if not available or if it's about to expire (simple check)
     if (!this.sessionToken) {
+      console.log('No session token found or it's null, requesting new one...');
       await this.requestNewSessionToken();
     }
   }
 
   private async requestNewSessionToken(): Promise<string> {
     if (this.tokenRefreshPromise) {
+      console.log('Token refresh already in progress.');
       return this.tokenRefreshPromise;
     }
 
     this.tokenRefreshPromise = new Promise(async (resolve, reject) => {
       try {
+        console.log('Requesting new session token from back-end...');
         const response = await fetch(`${this.baseUrl}/session/token`, {
           method: 'POST',
           headers: {
@@ -54,12 +58,15 @@ class PromptEnhancementService {
         });
 
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Failed to get session token: ${response.status} - ${response.statusText}. Body: ${errorText}`);
           throw new Error(`Failed to get session token: ${response.status} - ${response.statusText}`);
         }
 
         const data = await response.json();
         this.sessionToken = data.token;
         sessionStorage.setItem('sessionToken', data.token);
+        console.log('Successfully obtained and stored new session token:', data.token);
         resolve(data.token);
       } catch (error) {
         console.error('Error requesting session token:', error);
@@ -111,12 +118,13 @@ class PromptEnhancementService {
 
   private async makeRequest(prompt: string, enhancementType: string): Promise<string> {
     if (!this.sessionToken) {
-      // Attempt to get a token if it's missing
+      console.log('Session token missing for makeRequest, attempting to request new one.');
       await this.requestNewSessionToken();
       if (!this.sessionToken) {
-        throw new Error('No session token available. Please refresh the page.');
+        throw new Error('No session token available after request. Please refresh the page.');
       }
     }
+    console.log('Making request with session token:', this.sessionToken);
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
