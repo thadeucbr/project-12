@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { sessionService } from '../services/session.service';
 
-export function authMiddleware(req: Request, res: Response, next: NextFunction) {
+export async function authMiddleware(req: Request, res: Response, next: NextFunction) {
   // Excluir o endpoint de solicitação de token da autenticação
   if (req.path === '/session/token' && req.method === 'POST') {
     return next();
