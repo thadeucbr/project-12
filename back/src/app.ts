@@ -24,13 +24,7 @@ app.use(helmet({
   },
 }));
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || env.CORS_ORIGINS.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`Origin ${origin} not allowed by CORS`));
-    }
-  },
+  origin: env.CORS_ORIGINS,
   methods: env.CORS_METHODS,
   allowedHeaders: `${env.CORS_HEADERS},x-session-token`, // Inclua o novo cabeçalho de sessão
   credentials: true, // Permite envio de cookies, se necessário
