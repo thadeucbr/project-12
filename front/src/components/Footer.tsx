@@ -35,7 +35,7 @@ export const Footer: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-2">
-            <span>em colaboração com</span>
+            <span>com muita ajuda de</span>
             <motion.a
               href="https://bolt.new"
               target="_blank"
