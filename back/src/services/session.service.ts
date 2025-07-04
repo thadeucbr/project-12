@@ -24,22 +24,29 @@ class SessionService {
 
   public async validateToken(token: string): Promise<boolean> {
     console.log(`DEBUG: Validando token: ${token}`);
-    const session = await Session.findOne({ token });
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY_MS = 50; // 50ms delay
 
-    if (!session) {
-      console.log(`DEBUG: Token ${token} não encontrado no DB.`);
-      return false; // Token not found
+    for (let i = 0; i < MAX_RETRIES; i++) {
+      const session = await Session.findOne({ token });
+
+      if (session) {
+        console.log(`DEBUG: Token ${token} encontrado no DB. Expira em: ${session.expiresAt.toISOString()}. Agora: ${new Date().toISOString()}`);
+        if (session.expiresAt.getTime() < Date.now()) {
+          console.log(`DEBUG: Token ${token} expirado. Removendo do DB.`);
+          await Session.deleteOne({ token }); // Token expired, remove it
+          return false;
+        }
+        console.log(`DEBUG: Token ${token} válido.`);
+        return true; // Token is valid
+      }
+
+      console.log(`DEBUG: Token ${token} não encontrado no DB na tentativa ${i + 1}/${MAX_RETRIES}. Tentando novamente em ${RETRY_DELAY_MS}ms.`);
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
     }
 
-    console.log(`DEBUG: Token ${token} encontrado no DB. Expira em: ${session.expiresAt.toISOString()}. Agora: ${new Date().toISOString()}`);
-    if (session.expiresAt.getTime() < Date.now()) {
-      console.log(`DEBUG: Token ${token} expirado. Removendo do DB.`);
-      await Session.deleteOne({ token }); // Token expired, remove it
-      return false;
-    }
-
-    console.log(`DEBUG: Token ${token} válido.`);
-    return true; // Token is valid
+    console.log(`DEBUG: Token ${token} não encontrado no DB após ${MAX_RETRIES} tentativas.`);
+    return false; // Token not found after all retries
   }
 
   public async invalidateToken(token: string): Promise<void> {
