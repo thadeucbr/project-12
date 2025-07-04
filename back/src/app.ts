@@ -13,7 +13,7 @@ import { IncomingMessage } from 'http';
 
 export const app = express();
 
-app.set('trust proxy', true); // Confia em todos os proxies (adequado para Cloudflare)
+app.set('trust proxy', 1); // Confia no primeiro proxy (adequado para Cloudflare)
 
 app.use(helmet({
   contentSecurityPolicy: {
