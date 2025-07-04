@@ -5,8 +5,7 @@ export const sessionController = {
   async requestToken(req: Request, res: Response) {
     // In a real application, you might add some rate limiting here
     // or basic checks to prevent excessive token requests.
-    const clientIp = req.ip; // Express's req.ip gets the client IP
-    const token = sessionService.generateToken(clientIp);
+    const token = sessionService.generateToken();
     res.json({ token });
   },
 

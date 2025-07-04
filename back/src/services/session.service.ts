@@ -17,7 +17,7 @@ class SessionService {
     setInterval(() => this.cleanupExpiredTokens(), 60 * 1000); // Every minute
   }
 
-  public generateToken(ip?: string): string {
+  public generateToken(): string {
     const token = uuidv4();
     const now = Date.now();
     const expiresAt = now + this.TOKEN_LIFETIME_MS;
@@ -26,12 +26,11 @@ class SessionService {
       token,
       createdAt: now,
       expiresAt,
-      ip,
     });
     return token;
   }
 
-  public validateToken(token: string, ip?: string): boolean {
+  public validateToken(token: string): boolean {
     const sessionToken = this.tokens.get(token);
 
     if (!sessionToken) {
@@ -41,11 +40,6 @@ class SessionService {
     if (sessionToken.expiresAt < Date.now()) {
       this.tokens.delete(token); // Token expired, remove it
       return false;
-    }
-
-    // Optional: IP binding check
-    if (sessionToken.ip && ip && sessionToken.ip !== ip) {
-      return false; // Token used from different IP
     }
 
     return true; // Token is valid
