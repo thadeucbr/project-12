@@ -21,7 +21,7 @@ import { getRandomPrompt } from './utils/randomPrompts';
 import type { Prompt } from './types';
 
 function AppContent() {
-  const { state, addPrompt, updatePrompt, toggleFavorite } = useApp();
+  const { state, addPrompt, updatePrompt, toggleFavorite, deletePrompt, clearPrompts } = useApp();
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const [enhancedPrompt, setEnhancedPrompt] = useState<string>('');
   const [currentEnhancementType, setCurrentEnhancementType] = useState<Prompt['enhancementType']>('detailed');
@@ -123,12 +123,12 @@ function AppContent() {
   };
 
   const handlePromptDelete = (id: string) => {
-    // This would be handled by the context
+    deletePrompt(id);
   };
 
   const handleClearHistory = () => {
     if (window.confirm('Tem certeza que deseja limpar todo o histórico?')) {
-      // This would be handled by the context
+      clearPrompts();
     }
   };
 

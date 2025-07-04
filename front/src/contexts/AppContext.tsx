@@ -31,6 +31,7 @@ type AppAction =
   | { type: 'ADD_PROMPT'; payload: Prompt }
   | { type: 'UPDATE_PROMPT'; payload: { id: string; updates: Partial<Prompt> } }
   | { type: 'DELETE_PROMPT'; payload: string }
+  | { type: 'CLEAR_PROMPTS' }
   | { type: 'TOGGLE_FAVORITE'; payload: string }
   | { type: 'ADD_COLLECTION'; payload: Collection }
   | { type: 'UPDATE_COLLECTION'; payload: { id: string; updates: Partial<Collection> } }
@@ -144,6 +145,19 @@ function appReducer(state: AppState, action: AppAction): AppState {
           ...state.userStats,
           totalPrompts: Math.max(0, state.userStats.totalPrompts - 1),
           totalCharacters: Math.max(0, state.userStats.totalCharacters - (deletedPrompt?.characterCount || 0))
+        }
+      };
+
+    case 'CLEAR_PROMPTS':
+      return {
+        ...state,
+        prompts: [],
+        favorites: state.favorites.filter(favId => !state.prompts.some(p => p.id === favId)), // Remove favorites if prompt is cleared
+        userStats: {
+          ...state.userStats,
+          totalPrompts: 0,
+          totalCharacters: 0,
+          favoritePrompts: 0 // Reset favorite count as well
         }
       };
 
@@ -304,6 +318,7 @@ interface AppContextType {
   addPrompt: (prompt: Prompt) => void;
   updatePrompt: (id: string, updates: Partial<Prompt>) => void;
   deletePrompt: (id: string) => void;
+  clearPrompts: () => void;
   toggleFavorite: (id: string) => void;
   addCollection: (collection: Collection) => void;
   updateCollection: (id: string, updates: Partial<Collection>) => void;
@@ -389,6 +404,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const deletePrompt = (id: string) => {
     dispatch({ type: 'DELETE_PROMPT', payload: id });
+  };
+
+  const clearPrompts = () => {
+    dispatch({ type: 'CLEAR_PROMPTS' });
   };
 
   const toggleFavorite = (id: string) => {
@@ -525,6 +544,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addPrompt,
     updatePrompt,
     deletePrompt,
+    clearPrompts,
     toggleFavorite,
     addCollection,
     updateCollection,
