@@ -17,25 +17,28 @@ import { GamificationHub } from './components/GamificationHub';
 import { StreakTracker } from './components/StreakTracker';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorMessage } from './components/ErrorMessage';
+import { LiveAnalyticsDashboard } from './components/LiveAnalyticsDashboard';
+import { PublicStatsWidget } from './components/PublicStatsWidget';
 import { useXPNotification } from './components/XPNotification';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AppProvider, useApp } from './contexts/AppContext';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { usePromptEnhancement } from './hooks/usePromptEnhancement';
+import { useAnalytics } from './hooks/useAnalytics';
 import { getRandomPrompt } from './utils/randomPrompts';
 import type { Prompt } from './types';
 
 function AppContent() {
   const { state, addPrompt, updatePrompt, toggleFavorite } = useApp();
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
-  const [showSuggestions, setShowSuggestions] = useState<boolean>(true);
   const [enhancedPrompt, setEnhancedPrompt] = useState<string>('');
   const [currentEnhancementType, setCurrentEnhancementType] = useState<Prompt['enhancementType']>('detailed');
   const [showEnhanced, setShowEnhanced] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
+  const [isLiveAnalyticsOpen, setIsLiveAnalyticsOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isComparisonOpen, setIsComparisonOpen] = useState(false);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
@@ -45,6 +48,9 @@ function AppContent() {
   const [isGamificationOpen, setIsGamificationOpen] = useState(false);
   const [comparisonData, setComparisonData] = useState<any>(null);
   const [selectedPromptForVersions, setSelectedPromptForVersions] = useState<Prompt | null>(null);
+
+  // Analytics hook
+  const { trackPromptCreation } = useAnalytics();
 
   // XP Notification system
   const { showXPNotification, XPNotificationComponent } = useXPNotification();
@@ -65,6 +71,9 @@ function AppContent() {
     },
     (newPrompt) => {
       addPrompt(newPrompt);
+      
+      // Track prompt creation
+      trackPromptCreation(newPrompt.originalPrompt, newPrompt.enhancementType);
       
       // Show XP notification
       const xpGained = 10 + (newPrompt.characterCount > 200 ? 5 : 0);
@@ -178,11 +187,6 @@ function AppContent() {
     // Handle version creation
   };
 
-  const handleInputChange = (value: string) => {
-    setCurrentPrompt(value);
-    setShowSuggestions(value.trim() === ''); // Esconde sugestões ao digitar
-  };
-
   useKeyboardShortcuts({
     onSave: () => {
       if (enhancedPrompt) {
@@ -200,19 +204,6 @@ function AppContent() {
     onSurpriseMe: handleSurpriseMe
   });
 
-  useEffect(() => {
-    // Restaurar histórico de prompts ao carregar a página
-    const savedPrompts = localStorage.getItem('promptHistory');
-    if (savedPrompts) {
-      state.prompts = JSON.parse(savedPrompts); // Atualiza o estado com os prompts salvos
-    }
-  }, []);
-
-  useEffect(() => {
-    // Salvar histórico de prompts no localStorage sempre que ele mudar
-    localStorage.setItem('promptHistory', JSON.stringify(state.prompts));
-  }, [state.prompts]);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-500">
       <AdvancedHeader
@@ -220,6 +211,7 @@ function AppContent() {
         onSurpriseMe={handleSurpriseMe}
         onTemplatesOpen={() => setIsTemplatesOpen(true)}
         onAnalyticsOpen={() => setIsAnalyticsOpen(true)}
+        onLiveAnalyticsOpen={() => setIsLiveAnalyticsOpen(true)}
         onExportOpen={() => setIsExportOpen(true)}
         onComparisonOpen={() => comparisonData && setIsComparisonOpen(true)}
         isHistoryOpen={isHistoryOpen}
@@ -241,19 +233,21 @@ function AppContent() {
         </motion.div>
 
         <div className="max-w-6xl mx-auto space-y-8">
+          {/* Public Stats Widget */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="max-w-2xl mx-auto"
+          >
+            <PublicStatsWidget />
+          </motion.div>
+
           <PromptInput
             onSubmit={handlePromptSubmit}
             isLoading={isLoading}
             initialValue={currentPrompt}
-            onChange={handleInputChange} // Adiciona o evento de mudança
           />
-
-          {/* Lista de sugestões */}
-          {showSuggestions && !showEnhanced && !isLoading && (
-            <div className="suggestions-container">
-              {/* Renderizar sugestões aqui */}
-            </div>
-          )}
 
           {/* Mensagem de erro */}
           {error && (
@@ -266,20 +260,18 @@ function AppContent() {
           )}
 
           <AnimatePresence mode="wait">
-            {isLoading && !showEnhanced && (
+            {isLoading && (
               <motion.div
                 key="loading"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
               >
                 <LoadingSpinner />
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Prompt aprimorado */}
           <EnhancedPrompt
             prompt={enhancedPrompt}
             isVisible={showEnhanced && !isLoading}
@@ -288,7 +280,7 @@ function AppContent() {
           />
 
           {/* Gamification Components */}
-          {/* {state.prompts.length > 0 && (
+          {state.prompts.length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <StreakTracker />
               <div className="space-y-4">
@@ -319,19 +311,19 @@ function AppContent() {
                 </button>
               </div>
             </div>
-          )} */}
+          )}
 
           {/* Recommendation Engine */}
-          {/* {recommendations.length > 0 && (
+          {state.prompts.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
               className="max-w-4xl mx-auto"
             >
-              <RecommendationEngine recommendations={recommendations} />
+              <RecommendationEngine />
             </motion.div>
-          )} */}
+          )}
         </div>
       </main>
 
@@ -402,6 +394,12 @@ function AppContent() {
           onClose={() => setIsComparisonOpen(false)}
         />
       )}
+
+      {/* Live Analytics Dashboard */}
+      <LiveAnalyticsDashboard
+        isOpen={isLiveAnalyticsOpen}
+        onClose={() => setIsLiveAnalyticsOpen(false)}
+      />
 
       {/* Analytics Modal - Agora apenas acessível via menu de ferramentas */}
       <AnimatePresence>
