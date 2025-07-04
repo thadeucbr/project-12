@@ -32,7 +32,7 @@ app.use(cors({
     }
   },
   methods: env.CORS_METHODS,
-  allowedHeaders: `${env.CORS_HEADERS},x-signature,x-timestamp`, // Inclua os cabeçalhos personalizados
+  allowedHeaders: `${env.CORS_HEADERS},x-session-token`, // Inclua o novo cabeçalho de sessão
   credentials: true, // Permite envio de cookies, se necessário
 }));
 app.use(express.json());
