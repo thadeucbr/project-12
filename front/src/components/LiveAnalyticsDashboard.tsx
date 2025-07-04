@@ -91,7 +91,6 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
     setRealtimeUsers(Math.floor(Math.random() * 50) + 10);
 
     return () => {
-      clearInterval(interval);
       clearInterval(realtimeInterval);
       clearInterval(connectionInterval);
       setIsLive(false);
