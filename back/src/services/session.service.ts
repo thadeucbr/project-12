@@ -23,14 +23,17 @@ class SessionService {
     const session = await Session.findOne({ token });
 
     if (!session) {
+      console.log(`DEBUG: Token ${token} não encontrado no DB.`);
       return false; // Token not found
     }
 
     if (session.expiresAt.getTime() < Date.now()) {
+      console.log(`DEBUG: Token ${token} expirado. Removendo do DB.`);
       await Session.deleteOne({ token }); // Token expired, remove it
       return false;
     }
 
+    console.log(`DEBUG: Token ${token} válido.`);
     return true; // Token is valid
   }
 

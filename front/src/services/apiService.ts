@@ -158,9 +158,13 @@ class PromptEnhancementService {
     try {
       const enhancedPromptResponse = await this.makeLlmRequest(userPrompt.trim(), enhancementType);
 
+      if (!enhancedPromptResponse || typeof enhancedPromptResponse.output !== 'string') {
+        throw new Error('Resposta inválida da API de aprimoramento de prompt.');
+      }
+
       return {
         success: true,
-        enhancedPrompt: enhancedPromptResponse.trim(),
+        enhancedPrompt: enhancedPromptResponse.output.trim(),
       };
     } catch (error) {
       return {
