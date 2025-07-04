@@ -36,7 +36,7 @@ class PromptEnhancementService {
 
     // Request a new token if not available or if it's about to expire (simple check)
     if (!this.sessionToken) {
-      console.log('No session token found or it's null, requesting new one...');
+      console.log("No session token found or it's null, requesting new one...");
       await this.requestNewSessionToken();
     }
   }
