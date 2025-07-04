@@ -10,6 +10,7 @@ export const sessionController = {
       sameSite: 'lax', // Or 'strict' depending on your needs
       maxAge: 10 * 60 * 1000, // 10 minutes, matches token lifetime
       signed: true, // Assina o cookie com a COOKIE_SECRET
+      domain: process.env.COOKIE_DOMAIN, // Define o domínio do cookie para compartilhamento entre subdomínios
     });
     res.json({ message: 'Session token set in cookie' });
   },

@@ -31,4 +31,5 @@ export const env = {
   PRIVATE_KEY: process.env.PRIVATE_KEY || '',
   mongodbUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/llm',
   COOKIE_SECRET: process.env.COOKIE_SECRET || 'supersecretcookiekey', // Chave secreta para assinar cookies
+  COOKIE_DOMAIN: process.env.COOKIE_DOMAIN || '',
 };
