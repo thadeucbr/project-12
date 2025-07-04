@@ -125,51 +125,6 @@ class PromptEnhancementService {
     const method = 'POST';
 
     return this.makeRequest(method, url, body, retryCount);
-
-  private async makeRequest(method: string, url: string, body?: any, retryCount = 0): Promise<any> {
-    if (!this.sessionToken) {
-      console.log('Session token missing for makeRequest, attempting to request new one.');
-      await this.requestNewSessionToken();
-      if (!this.sessionToken) {
-        throw new Error('No session token available after request. Please refresh the page.');
-      }
-    }
-    console.log('Making request with session token:', this.sessionToken);
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-
-    try {
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'x-session-token': this.sessionToken, // Use the session token
-        },
-        body: body ? JSON.stringify(body) : undefined,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        if (response.status === 401 && retryCount === 0) {
-          console.warn('Received 401, attempting to refresh token and retry...');
-          this.sessionToken = null; // Invalidate current token
-          sessionStorage.removeItem('sessionToken');
-          await this.requestNewSessionToken(); // Request a new token
-          return this.makeRequest(method, url, body, 1); // Retry once
-        }
-        const errorBody = await response.text();
-        throw new Error(`Erro na API: ${response.status} - ${response.statusText}. Detalhes: ${errorBody}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      clearTimeout(timeoutId);
-      throw error;
-    }
   }
 
   private async makeRequest(method: string, url: string, body?: any, retryCount = 0): Promise<any> {
