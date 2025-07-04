@@ -116,7 +116,7 @@ class PromptEnhancementService {
     return templates[enhancementType] || templates.detailed;
   }
 
-  private async makeRequest(prompt: string, enhancementType: string): Promise<string> {
+  private async makeRequest(prompt: string, enhancementType: string, retryCount = 0): Promise<string> {
     if (!this.sessionToken) {
       console.log('Session token missing for makeRequest, attempting to request new one.');
       await this.requestNewSessionToken();
@@ -147,8 +147,15 @@ class PromptEnhancementService {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
+        if (response.status === 401 && retryCount === 0) {
+          console.warn('Received 401, attempting to refresh token and retry...');
+          this.sessionToken = null; // Invalidate current token
+          sessionStorage.removeItem('sessionToken');
+          await this.requestNewSessionToken(); // Request a new token
+          return this.makeRequest(prompt, enhancementType, 1); // Retry once
+        }
         const errorBody = await response.text();
-        throw new Error(`Erro na API: ${response.status} - ${response.statusText}`);
+        throw new Error(`Erro na API: ${response.status} - ${response.statusText}. Detalhes: ${errorBody}`);
       }
 
       const data = await response.json();
