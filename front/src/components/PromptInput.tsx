@@ -153,41 +153,8 @@ export const PromptInput: React.FC<PromptInputProps> = ({
   const [input, setInput] = useState(initialValue);
   const [selectedType, setSelectedType] = useState<Prompt['enhancementType']>('detailed');
   const [selectedCategory, setSelectedCategory] = useState<'text' | 'image' | 'video' | 'editing'>('text');
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [showTypeInfo, setShowTypeInfo] = useState(false);
   const [focusedInput, setFocusedInput] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const suggestions = {
-    text: [
-      "Escreva um email profissional para...",
-      "Crie uma estratégia de marketing para...",
-      "Desenvolva um guia técnico para...",
-      "Projete uma interface de usuário para...",
-      "Analise as tendências de mercado de..."
-    ],
-    image: [
-      "Uma garota anime com cabelos rosa em um jardim de cerejeiras",
-      "Retrato de um sábio mago idoso com olhos brilhantes",
-      "Design de logo minimalista para uma startup de tecnologia",
-      "Arte abstrata representando transformação digital",
-      "Fotografia de produto de um relógio de luxo"
-    ],
-    video: [
-      "Time-lapse de uma flor desabrochando na primavera",
-      "Trailer cinematográfico para uma aventura de ficção científica",
-      "Tutorial mostrando como cozinhar macarrão",
-      "Revelação de logo animado com efeitos de partículas",
-      "Configuração de entrevista estilo documentário"
-    ],
-    editing: [
-      "Remover fundo de foto de produto usando IA",
-      "Melhorar foto de retrato com filtros de beleza IA",
-      "Corrigir cores de vídeo do pôr do sol automaticamente",
-      "Gerar transições suaves entre clipes",
-      "Aumentar resolução de foto antiga para 4K usando IA"
-    ]
-  };
 
   useEffect(() => {
     if (initialValue) {
@@ -217,20 +184,12 @@ export const PromptInput: React.FC<PromptInputProps> = ({
     }
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setInput(suggestion);
-    setShowSuggestions(false);
-    textareaRef.current?.focus();
-  };
-
   const handleTypeSelect = (type: Prompt['enhancementType']) => {
     setSelectedType(type);
-    setShowTypeInfo(false);
   };
 
   const handleCategorySelect = (category: 'text' | 'image' | 'video' | 'editing') => {
     setSelectedCategory(category);
-    setShowSuggestions(false);
   };
 
   const characterCount = input.length;
@@ -367,14 +326,8 @@ export const PromptInput: React.FC<PromptInputProps> = ({
               ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onFocus={() => {
-                setFocusedInput(true);
-                setShowSuggestions(input.length === 0);
-              }}
-              onBlur={() => {
-                setFocusedInput(false);
-                setTimeout(() => setShowSuggestions(false), 200);
-              }}
+              onFocus={() => setFocusedInput(true)}
+              onBlur={() => setFocusedInput(false)}
               placeholder={getPlaceholder()}
               className="w-full p-6 pb-20 text-lg bg-transparent border-none outline-none resize-none min-h-[140px] max-h-[300px] overflow-y-auto placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
               maxLength={1000}
@@ -418,36 +371,6 @@ export const PromptInput: React.FC<PromptInputProps> = ({
               </div>
             </div>
           </div>
-
-          {/* Quick Start Suggestions */}
-          <AnimatePresence>
-            {showSuggestions && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="absolute top-full mt-4 w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-4 z-10 backdrop-blur-sm"
-              >
-                <div className="flex items-center gap-2 mb-3 text-sm text-gray-600 dark:text-gray-400">
-                  <CategoryIcon className="h-4 w-4" />
-                  <span>Ideias para {categoryLabels[selectedCategory].toLowerCase()}:</span>
-                </div>
-                <div className="space-y-2">
-                  {suggestions[selectedCategory].map((suggestion, index) => (
-                    <motion.button
-                      key={index}
-                      onClick={() => handleSuggestionClick(suggestion)}
-                      className="w-full text-left p-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-150 text-gray-700 dark:text-gray-300 flex items-start gap-3"
-                      whileHover={{ x: 4 }}
-                    >
-                      <Zap className="h-4 w-4 text-indigo-500 mt-0.5 flex-shrink-0" />
-                      <span>{suggestion}</span>
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </motion.div>
 
         {/* Enhancement Preview */}

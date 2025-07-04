@@ -8,46 +8,34 @@ import { PromptTemplates } from './components/PromptTemplates';
 import { PromptAnalytics } from './components/PromptAnalytics';
 import { PromptExport } from './components/PromptExport';
 import { PromptComparison } from './components/PromptComparison';
-import { FavoritesManager } from './components/FavoritesManager';
-import { CollectionsManager } from './components/CollectionsManager';
-import { VersionManager } from './components/VersionManager';
-import { RecommendationEngine } from './components/RecommendationEngine';
-import { AchievementSystem } from './components/AchievementSystem';
-import { GamificationHub } from './components/GamificationHub';
-import { StreakTracker } from './components/StreakTracker';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorMessage } from './components/ErrorMessage';
-import { useXPNotification } from './components/XPNotification';
+import { LiveAnalyticsDashboard } from './components/LiveAnalyticsDashboard';
+import { Footer } from './components/Footer';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AppProvider, useApp } from './contexts/AppContext';
-import { useLocalStorage } from './hooks/useLocalStorage';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { usePromptEnhancement } from './hooks/usePromptEnhancement';
+import { useAnalytics } from './hooks/useAnalytics';
 import { getRandomPrompt } from './utils/randomPrompts';
 import type { Prompt } from './types';
 
 function AppContent() {
   const { state, addPrompt, updatePrompt, toggleFavorite } = useApp();
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
-  const [showSuggestions, setShowSuggestions] = useState<boolean>(true);
   const [enhancedPrompt, setEnhancedPrompt] = useState<string>('');
   const [currentEnhancementType, setCurrentEnhancementType] = useState<Prompt['enhancementType']>('detailed');
   const [showEnhanced, setShowEnhanced] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
+  const [isLiveAnalyticsOpen, setIsLiveAnalyticsOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isComparisonOpen, setIsComparisonOpen] = useState(false);
-  const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
-  const [isCollectionsOpen, setIsCollectionsOpen] = useState(false);
-  const [isVersionManagerOpen, setIsVersionManagerOpen] = useState(false);
-  const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
-  const [isGamificationOpen, setIsGamificationOpen] = useState(false);
   const [comparisonData, setComparisonData] = useState<any>(null);
-  const [selectedPromptForVersions, setSelectedPromptForVersions] = useState<Prompt | null>(null);
 
-  // XP Notification system
-  const { showXPNotification, XPNotificationComponent } = useXPNotification();
+  // Analytics hook
+  const { trackPromptCreation } = useAnalytics();
 
   // Hook personalizado para aprimoramento de prompts
   const { enhancePrompt, isLoading, error, clearError } = usePromptEnhancement(
@@ -66,15 +54,8 @@ function AppContent() {
     (newPrompt) => {
       addPrompt(newPrompt);
       
-      // Show XP notification
-      const xpGained = 10 + (newPrompt.characterCount > 200 ? 5 : 0);
-      const multiplier = state.userStats.comboMultiplier || 1;
-      showXPNotification(
-        Math.round(xpGained * multiplier),
-        'Prompt criado com sucesso!',
-        multiplier > 1 ? 'bonus' : 'normal',
-        multiplier
-      );
+      // Track prompt creation
+      trackPromptCreation(newPrompt.originalPrompt, newPrompt.enhancementType);
     }
   );
 
@@ -124,8 +105,6 @@ function AppContent() {
     setCurrentEnhancementType(prompt.enhancementType);
     setShowEnhanced(true);
     setIsHistoryOpen(false);
-    setIsFavoritesOpen(false);
-    setIsCollectionsOpen(false);
     clearError();
     
     // Prepara dados para comparação
@@ -158,9 +137,6 @@ function AppContent() {
     if (navigator.vibrate) {
       navigator.vibrate(50);
     }
-    
-    // Show XP notification for copy action
-    showXPNotification(5, 'Prompt copiado!', 'normal');
   };
 
   const handleRetry = () => {
@@ -169,25 +145,10 @@ function AppContent() {
     }
   };
 
-  const handleVersionSelect = (version: any) => {
-    // Handle version selection
-    setIsVersionManagerOpen(false);
-  };
-
-  const handleCreateVersion = (content: string, changes: string) => {
-    // Handle version creation
-  };
-
-  const handleInputChange = (value: string) => {
-    setCurrentPrompt(value);
-    setShowSuggestions(value.trim() === ''); // Esconde sugestões ao digitar
-  };
-
   useKeyboardShortcuts({
     onSave: () => {
       if (enhancedPrompt) {
         navigator.clipboard.writeText(enhancedPrompt);
-        showXPNotification(5, 'Prompt salvo!', 'normal');
       }
     },
     onClear: () => {
@@ -200,21 +161,21 @@ function AppContent() {
     onSurpriseMe: handleSurpriseMe
   });
 
-  
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-500">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-500 flex flex-col">
       <AdvancedHeader
         onHistoryToggle={() => setIsHistoryOpen(!isHistoryOpen)}
         onSurpriseMe={handleSurpriseMe}
         onTemplatesOpen={() => setIsTemplatesOpen(true)}
         onAnalyticsOpen={() => setIsAnalyticsOpen(true)}
+        onLiveAnalyticsOpen={() => setIsLiveAnalyticsOpen(true)}
         onExportOpen={() => setIsExportOpen(true)}
         onComparisonOpen={() => comparisonData && setIsComparisonOpen(true)}
         isHistoryOpen={isHistoryOpen}
       />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="flex-1 container mx-auto px-4 py-8">
         <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0, y: -20 }}
@@ -234,15 +195,7 @@ function AppContent() {
             onSubmit={handlePromptSubmit}
             isLoading={isLoading}
             initialValue={currentPrompt}
-            onChange={handleInputChange} // Adiciona o evento de mudança
           />
-
-          {/* Lista de sugestões */}
-          {showSuggestions && !showEnhanced && !isLoading && (
-            <div className="suggestions-container">
-              {/* Renderizar sugestões aqui */}
-            </div>
-          )}
 
           {/* Mensagem de erro */}
           {error && (
@@ -255,77 +208,28 @@ function AppContent() {
           )}
 
           <AnimatePresence mode="wait">
-            {isLoading && !showEnhanced && (
+            {isLoading && (
               <motion.div
                 key="loading"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
               >
                 <LoadingSpinner />
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Prompt aprimorado */}
           <EnhancedPrompt
             prompt={enhancedPrompt}
             isVisible={showEnhanced && !isLoading}
             onCopy={handleCopy}
             enhancementType={currentEnhancementType}
           />
-
-          {/* Gamification Components */}
-          {/* {state.prompts.length > 0 && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <StreakTracker />
-              <div className="space-y-4">
-                <button
-                  onClick={() => setIsGamificationOpen(true)}
-                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl"
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-2xl">🎮</span>
-                    <span className="font-semibold">Centro de Gamificação</span>
-                  </div>
-                  <div className="text-sm opacity-90 mt-1">
-                    Desafios, conquistas e muito mais!
-                  </div>
-                </button>
-                
-                <button
-                  onClick={() => setIsAchievementsOpen(true)}
-                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded-xl hover:from-yellow-600 hover:to-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl"
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-2xl">🏆</span>
-                    <span className="font-semibold">Conquistas</span>
-                  </div>
-                  <div className="text-sm opacity-90 mt-1">
-                    {state.achievements.length} desbloqueadas
-                  </div>
-                </button>
-              </div>
-            </div>
-          )} */}
-
-          {/* Recommendation Engine */}
-          {/* {recommendations.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="max-w-4xl mx-auto"
-            >
-              <RecommendationEngine recommendations={recommendations} />
-            </motion.div>
-          )} */}
         </div>
       </main>
 
-      {/* XP Notifications */}
-      {XPNotificationComponent}
+      <Footer />
 
       {/* Modals */}
       <HistoryPanel
@@ -337,39 +241,10 @@ function AppContent() {
         onClose={() => setIsHistoryOpen(false)}
       />
 
-      <FavoritesManager
-        isOpen={isFavoritesOpen}
-        onClose={() => setIsFavoritesOpen(false)}
-        onPromptSelect={handlePromptSelect}
-      />
-
-      <CollectionsManager
-        isOpen={isCollectionsOpen}
-        onClose={() => setIsCollectionsOpen(false)}
-        onPromptSelect={handlePromptSelect}
-      />
-
-      {selectedPromptForVersions && (
-        <VersionManager
-          prompt={selectedPromptForVersions}
-          isOpen={isVersionManagerOpen}
-          onClose={() => {
-            setIsVersionManagerOpen(false);
-            setSelectedPromptForVersions(null);
-          }}
-          onVersionSelect={handleVersionSelect}
-          onCreateVersion={handleCreateVersion}
-        />
-      )}
-
-      <AchievementSystem
-        isOpen={isAchievementsOpen}
-        onClose={() => setIsAchievementsOpen(false)}
-      />
-
-      <GamificationHub
-        isOpen={isGamificationOpen}
-        onClose={() => setIsGamificationOpen(false)}
+      {/* Live Analytics Dashboard */}
+      <LiveAnalyticsDashboard
+        isOpen={isLiveAnalyticsOpen}
+        onClose={() => setIsLiveAnalyticsOpen(false)}
       />
 
       <PromptTemplates

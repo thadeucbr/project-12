@@ -10,7 +10,9 @@ import {
   BarChart3,
   Download,
   Settings,
-  ChevronDown
+  ChevronDown,
+  Activity,
+  TrendingUp
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -21,6 +23,7 @@ interface AdvancedHeaderProps {
   onAnalyticsOpen: () => void;
   onExportOpen: () => void;
   onComparisonOpen: () => void;
+  onLiveAnalyticsOpen?: () => void;
   isHistoryOpen: boolean;
 }
 
@@ -31,6 +34,7 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
   onAnalyticsOpen,
   onExportOpen,
   onComparisonOpen,
+  onLiveAnalyticsOpen,
   isHistoryOpen 
 }) => {
   const { theme, toggleTheme } = useTheme();
@@ -49,7 +53,15 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
       label: 'Estatísticas', 
       icon: BarChart3, 
       action: onAnalyticsOpen,
-      description: 'Análise de uso'
+      description: 'Análise de uso pessoal'
+    },
+    { 
+      id: 'live-analytics', 
+      label: 'Analytics Globais', 
+      icon: Activity, 
+      action: onLiveAnalyticsOpen || (() => {}),
+      description: 'Impacto global em tempo real',
+      highlight: true
     },
     { 
       id: 'export', 
@@ -103,6 +115,29 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
           >
+            {/* Live Analytics Button */}
+            {onLiveAnalyticsOpen && (
+              <motion.button
+                onClick={onLiveAnalyticsOpen}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Activity className="h-4 w-4" />
+                </motion.div>
+                <span className="text-sm font-medium">Analytics</span>
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="w-2 h-2 bg-green-400 rounded-full"
+                />
+              </motion.button>
+            )}
+
             {/* Tools Dropdown */}
             <div className="relative">
               <motion.button
@@ -133,19 +168,38 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
                             tool.action();
                             setShowToolsMenu(false);
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                          className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left ${
+                            tool.highlight ? 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20' : ''
+                          }`}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.1 }}
                         >
-                          <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
+                          <div className={`p-2 rounded-lg ${
+                            tool.highlight 
+                              ? 'bg-gradient-to-br from-blue-500 to-purple-600' 
+                              : 'bg-gradient-to-br from-purple-500 to-pink-500'
+                          }`}>
                             <Icon className="h-4 w-4 text-white" />
                           </div>
-                          <div>
-                            <div className="font-medium text-gray-900 dark:text-white">
+                          <div className="flex-1">
+                            <div className={`font-medium ${
+                              tool.highlight ? 'text-blue-700 dark:text-blue-300' : 'text-gray-900 dark:text-white'
+                            }`}>
                               {tool.label}
+                              {tool.highlight && (
+                                <motion.span
+                                  animate={{ scale: [1, 1.1, 1] }}
+                                  transition={{ duration: 2, repeat: Infinity }}
+                                  className="ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded-full"
+                                >
+                                  LIVE
+                                </motion.span>
+                              )}
                             </div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                            <div className={`text-sm ${
+                              tool.highlight ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'
+                            }`}>
                               {tool.description}
                             </div>
                           </div>
