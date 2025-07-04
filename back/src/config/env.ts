@@ -2,6 +2,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+console.log('DEBUG: CORS_ORIGINS do .env:', process.env.CORS_ORIGINS);
+console.log('DEBUG: COOKIE_SECRET do .env:', process.env.COOKIE_SECRET);
+
 export const env = {
   PORT: process.env.PORT,
   API_KEYS: (process.env.API_KEYS || '').split(',').map(k => k.trim()),

@@ -11,5 +11,5 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 const port = env.PORT || 3000;
 
 app.listen(port, () => {
-  logger.info(`API running on port ${port}`);
+  // logger.info(`API running on port ${port}`);
 });
