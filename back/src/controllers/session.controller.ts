@@ -3,7 +3,7 @@ import { sessionService } from '../services/session.service';
 
 export const sessionController = {
   async requestToken(req: Request, res: Response) {
-    const token = sessionService.generateToken();
+    const token = await sessionService.generateToken();
     res.cookie('sessionToken', token, {
       httpOnly: true,
       secure: true, // Forçando true para testes com HTTPS no frontend
@@ -19,7 +19,7 @@ export const sessionController = {
   async invalidateToken(req: Request, res: Response) {
     const token = req.body.token; // Assuming token is sent in body for invalidation
     if (token) {
-      sessionService.invalidateToken(token);
+      await sessionService.invalidateToken(token);
       res.status(200).json({ message: 'Token invalidated' });
     } else {
       res.status(400).json({ error: 'Token not provided' });
