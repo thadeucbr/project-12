@@ -116,12 +116,12 @@ class PromptEnhancementService {
     return templates[enhancementType] || templates.detailed;
   }
 
-  private async makeLlmRequest(prompt: string, enhancementType: string, retryCount = 0): Promise<string> {
+  private async makeLlmRequest(prompt: string, enhancementType: string, retryCount = 0): Promise<any> {
     const url = `${this.baseUrl}/llm`;
-    const body = JSON.stringify({
+    const body = {
       prompt: this.createPromptTemplate(prompt, enhancementType),
       provider: 'openai',
-    });
+    };
     const method = 'POST';
 
     return this.makeRequest(method, url, body, retryCount);
