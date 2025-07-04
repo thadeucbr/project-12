@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
 import type { 
   Prompt, 
   Collection, 
@@ -331,6 +331,7 @@ export const useApp = () => {
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
+  const isInitialMount = useRef(true);
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -348,6 +349,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Save data to localStorage whenever state changes
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
     const dataToSave = {
       prompts: state.prompts,
       collections: state.collections,
