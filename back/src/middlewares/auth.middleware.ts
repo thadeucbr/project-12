@@ -8,9 +8,8 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
   }
 
   const sessionToken = req.header('x-session-token');
-  const clientIp = req.ip;
 
-  if (!sessionToken || !sessionService.validateToken(sessionToken, clientIp)) {
+  if (!sessionToken || !sessionService.validateToken(sessionToken)) {
     return res.status(401).json({ error: 'Unauthorized: Invalid or missing session token' });
   }
 
