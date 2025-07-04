@@ -335,6 +335,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Load data from localStorage on mount
   useEffect(() => {
     const savedData = localStorage.getItem('promptcraft-data');
+    console.log('Loading data from localStorage:', savedData);
     if (savedData) {
       try {
         const data = JSON.parse(savedData);
@@ -355,6 +356,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       settings: state.settings,
       achievements: state.achievements
     };
+    console.log('Saving data to localStorage:', dataToSave);
     localStorage.setItem('promptcraft-data', JSON.stringify(dataToSave));
   }, [state.prompts, state.collections, state.favorites, state.userStats, state.settings, state.achievements]);
 

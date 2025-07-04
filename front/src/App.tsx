@@ -22,6 +22,7 @@ import type { Prompt } from './types';
 
 function AppContent() {
   const { state, addPrompt, updatePrompt, toggleFavorite } = useApp();
+  console.log('AppContent rendered with prompts:', state.prompts);
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const [enhancedPrompt, setEnhancedPrompt] = useState<string>('');
   const [currentEnhancementType, setCurrentEnhancementType] = useState<Prompt['enhancementType']>('detailed');
