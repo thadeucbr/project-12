@@ -16,134 +16,107 @@ class ApiError extends Error {
 
 class PromptEnhancementService {
   private baseUrl: string;
-  private apiKey: string;
-  private privateKey: string;
   private timeout: number;
+  private sessionToken: string | null = null;
+  private tokenRefreshPromise: Promise<string> | null = null;
 
   constructor() {
     this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-    this.apiKey = import.meta.env.VITE_API_KEY || '';
-    this.privateKey = import.meta.env.VITE_PRIVATE_KEY || '';
     this.timeout = 30000; // 30 seconds
+    this.initializeSessionToken();
+  }
+
+  private async initializeSessionToken() {
+    // Try to get token from sessionStorage first
+    const storedToken = sessionStorage.getItem('sessionToken');
+    if (storedToken) {
+      this.sessionToken = storedToken;
+    }
+
+    // Request a new token if not available or if it's about to expire (simple check)
+    if (!this.sessionToken) {
+      await this.requestNewSessionToken();
+    }
+  }
+
+  private async requestNewSessionToken(): Promise<string> {
+    if (this.tokenRefreshPromise) {
+      return this.tokenRefreshPromise;
+    }
+
+    this.tokenRefreshPromise = new Promise(async (resolve, reject) => {
+      try {
+        const response = await fetch(`${this.baseUrl}/session/token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to get session token: ${response.status} - ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        this.sessionToken = data.token;
+        sessionStorage.setItem('sessionToken', data.token);
+        resolve(data.token);
+      } catch (error) {
+        console.error('Error requesting session token:', error);
+        this.sessionToken = null; // Clear token on error
+        sessionStorage.removeItem('sessionToken');
+        reject(error);
+      } finally {
+        this.tokenRefreshPromise = null;
+      }
+    });
+    return this.tokenRefreshPromise;
   }
 
   private createPromptTemplate(userPrompt: string, enhancementType: string): string {
     const templates = {
-      detailed: `Transform this simple prompt into a comprehensive, detailed version with clear instructions, context, and specific requirements. Return only the enhanced prompt without any explanations.
+      detailed: `Transform this simple prompt into a comprehensive, detailed version with clear instructions, context, and specific requirements. Return only the enhanced prompt without any explanations.\n\nOriginal: ${userPrompt}\n\nEnhanced prompt:`,
 
-Original: ${userPrompt}
+      creative: `Transform this prompt into a creative, innovative version that encourages original thinking and unique approaches. Return only the enhanced prompt without any explanations.\n\nOriginal: ${userPrompt}\n\nEnhanced prompt:`,
 
-Enhanced prompt:`,
+      technical: `Transform this prompt into a technical, precise version with specific requirements, best practices, and implementation details. Return only the enhanced prompt without any explanations.\n\nOriginal: ${userPrompt}\n\nEnhanced prompt:`,
 
-      creative: `Transform this prompt into a creative, innovative version that encourages original thinking and unique approaches. Return only the enhanced prompt without any explanations.
-
-Original: ${userPrompt}
-
-Enhanced prompt:`,
-
-      technical: `Transform this prompt into a technical, precise version with specific requirements, best practices, and implementation details. Return only the enhanced prompt without any explanations.
-
-Original: ${userPrompt}
-
-Enhanced prompt:`,
-
-      concise: `Transform this prompt into a clear, direct, and concise version focused on immediate actionable results. Return only the enhanced prompt without any explanations.
-
-Original: ${userPrompt}
-
-Enhanced prompt:`,
+      concise: `Transform this prompt into a clear, direct, and concise version focused on immediate actionable results. Return only the enhanced prompt without any explanations.\n\nOriginal: ${userPrompt}\n\nEnhanced prompt:`,
 
       // Image Enhancement Types
-      'image-realistic': `Transform this into a detailed photorealistic image generation prompt optimized for AI image tools like DALL-E, Midjourney, or Stable Diffusion. Focus on realistic photography, natural lighting, accurate proportions, and photographic techniques. Include camera settings, lighting conditions, and realistic details. Return only the enhanced prompt in English without any explanations.
+      'image-realistic': `Transform this into a detailed photorealistic image generation prompt optimized for AI image tools like DALL-E, Midjourney, or Stable Diffusion. Focus on realistic photography, natural lighting, accurate proportions, and photographic techniques. Include camera settings, lighting conditions, and realistic details. Return only the enhanced prompt in English without any explanations.\n\nOriginal: ${userPrompt}\n\nEnhanced realistic image prompt:`,
 
-Original: ${userPrompt}
+      'image-artistic': `Transform this into a detailed artistic image generation prompt optimized for AI image tools. Focus on artistic styles, creative techniques, color palettes, artistic movements, and unique visual aesthetics. Include artistic mediums, styles, and creative elements. Return only the enhanced prompt in English without any explanations.\n\nOriginal: ${userPrompt}\n\nEnhanced artistic image prompt:`,
 
-Enhanced realistic image prompt:`,
+      'image-anime': `Transform this into a detailed anime/manga style image generation prompt optimized for AI image tools like NovelAI, Waifu Diffusion, or Anything V3. Focus on anime art style, manga aesthetics, Japanese animation characteristics, character design elements, and anime-specific visual features. Include anime art techniques, character expressions, and Japanese visual culture elements. Return only the enhanced prompt in English without any explanations.\n\nOriginal: ${userPrompt}\n\nEnhanced anime/manga image prompt:`,
 
-      'image-artistic': `Transform this into a detailed artistic image generation prompt optimized for AI image tools. Focus on artistic styles, creative techniques, color palettes, artistic movements, and unique visual aesthetics. Include artistic mediums, styles, and creative elements. Return only the enhanced prompt in English without any explanations.
-
-Original: ${userPrompt}
-
-Enhanced artistic image prompt:`,
-
-      'image-anime': `Transform this into a detailed anime/manga style image generation prompt optimized for AI image tools like NovelAI, Waifu Diffusion, or Anything V3. Focus on anime art style, manga aesthetics, Japanese animation characteristics, character design elements, and anime-specific visual features. Include anime art techniques, character expressions, and Japanese visual culture elements. Return only the enhanced prompt in English without any explanations.
-
-Original: ${userPrompt}
-
-Enhanced anime/manga image prompt:`,
-
-      'image-commercial': `Transform this into a detailed commercial image generation prompt optimized for AI image tools. Focus on product photography, marketing visuals, brand aesthetics, and commercial appeal. Include professional lighting, commercial composition, and market-ready visual elements. Return only the enhanced prompt in English without any explanations.
-
-Original: ${userPrompt}
-
-Enhanced commercial image prompt:`,
+      'image-commercial': `Transform this into a detailed commercial image generation prompt optimized for AI image tools. Focus on product photography, marketing visuals, brand aesthetics, and commercial appeal. Include professional lighting, commercial composition, and market-ready visual elements. Return only the enhanced prompt in English without any explanations.\n\nOriginal: ${userPrompt}\n\nEnhanced commercial image prompt:`,
 
       // Video Enhancement Types
-      'video-cinematic': `Transform this into a detailed cinematic video generation prompt optimized for AI video tools like RunwayML or Pika Labs. Focus on cinematic techniques, camera movements, dramatic lighting, storytelling elements, and film-quality production. Include cinematography details, visual narrative, and cinematic aesthetics. Return only the enhanced prompt in English without any explanations.
+      'video-cinematic': `Transform this into a detailed cinematic video generation prompt optimized for AI video tools like RunwayML or Pika Labs. Focus on cinematic techniques, camera movements, dramatic lighting, storytelling elements, and film-quality production. Include cinematography details, visual narrative, and cinematic aesthetics. Return only the enhanced prompt in English without any explanations.\n\nOriginal: ${userPrompt}\n\nEnhanced cinematic video prompt:`,
 
-Original: ${userPrompt}
+      'video-documentary': `Transform this into a detailed documentary video generation prompt optimized for AI video tools. Focus on informational content, educational value, realistic presentation, and documentary-style filming. Include documentary techniques, informational elements, and educational visual approaches. Return only the enhanced prompt in English without any explanations.\n\nOriginal: ${userPrompt}\n\nEnhanced documentary video prompt:`,
 
-Enhanced cinematic video prompt:`,
+      'video-animated': `Transform this into a detailed animated video generation prompt optimized for AI video tools. Focus on animation techniques, motion graphics, animated characters, and dynamic visual effects. Include animation styles, motion elements, and animated storytelling. Return only the enhanced prompt in English without any explanations.\n\nOriginal: ${userPrompt}\n\nEnhanced animated video prompt:`,
 
-      'video-documentary': `Transform this into a detailed documentary video generation prompt optimized for AI video tools. Focus on informational content, educational value, realistic presentation, and documentary-style filming. Include documentary techniques, informational elements, and educational visual approaches. Return only the enhanced prompt in English without any explanations.
+      'video-commercial': `Transform this into a detailed commercial video generation prompt optimized for AI video tools. Focus on promotional content, marketing messages, brand presentation, and commercial appeal. Include commercial techniques, marketing elements, and promotional visual strategies. Return only the enhanced prompt in English without any explanations.\n\nOriginal: ${userPrompt}\n\nEnhanced commercial video prompt:`,
 
-Original: ${userPrompt}
+      'image-editing': `Transform this into a detailed AI image editing prompt optimized for AI photo editing tools like Photoshop AI, Canva AI, Remove.bg, or similar AI-powered editing services. Focus on specific AI editing commands, effects, and transformations. Return only the enhanced AI editing prompt without any explanations.\n\nOriginal: ${userPrompt}\n\nEnhanced AI image editing prompt:`,
 
-Enhanced documentary video prompt:`,
-
-      'video-animated': `Transform this into a detailed animated video generation prompt optimized for AI video tools. Focus on animation techniques, motion graphics, animated characters, and dynamic visual effects. Include animation styles, motion elements, and animated storytelling. Return only the enhanced prompt in English without any explanations.
-
-Original: ${userPrompt}
-
-Enhanced animated video prompt:`,
-
-      'video-commercial': `Transform this into a detailed commercial video generation prompt optimized for AI video tools. Focus on promotional content, marketing messages, brand presentation, and commercial appeal. Include commercial techniques, marketing elements, and promotional visual strategies. Return only the enhanced prompt in English without any explanations.
-
-Original: ${userPrompt}
-
-Enhanced commercial video prompt:`,
-
-      'image-editing': `Transform this into a detailed AI image editing prompt optimized for AI photo editing tools like Photoshop AI, Canva AI, Remove.bg, or similar AI-powered editing services. Focus on specific AI editing commands, effects, and transformations. Return only the enhanced AI editing prompt without any explanations.
-
-Original: ${userPrompt}
-
-Enhanced AI image editing prompt:`,
-
-      'video-editing': `Transform this into a detailed AI video editing prompt optimized for AI video editing tools like RunwayML, Kapwing AI, Descript, or similar AI-powered video editing services. Focus on specific AI editing commands, effects, transitions, and automated editing tasks. Return only the enhanced AI video editing prompt without any explanations.
-
-Original: ${userPrompt}
-
-Enhanced AI video editing prompt:`
+      'video-editing': `Transform this into a detailed AI video editing prompt optimized for AI video editing tools like RunwayML, Kapwing AI, Descript, or similar AI-powered video editing services. Focus on specific AI editing commands, effects, transitions, and automated editing tasks. Return only the enhanced AI video editing prompt without any explanations.\n\nOriginal: ${userPrompt}\n\nEnhanced AI video editing prompt:`
     };
 
     return templates[enhancementType] || templates.detailed;
   }
 
-  private async generateSignature(method: string, url: string): Promise<{ signature: string; timestamp: string }> {
-    const timestamp = new Date().toISOString();
-    const apiUrl = `/api${url}`;
-    const payload = `${method}:${apiUrl}:${timestamp}`;
-    const encoder = new TextEncoder();
-    const privateKey = encoder.encode(import.meta.env.VITE_PRIVATE_KEY);
-
-    const key = await window.crypto.subtle.importKey(
-      'raw',
-      privateKey,
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign']
-    );
-
-    const signatureBuffer = await window.crypto.subtle.sign('HMAC', key, encoder.encode(payload));
-    const signature = Array.from(new Uint8Array(signatureBuffer))
-      .map(byte => byte.toString(16).padStart(2, '0'))
-      .join('');
-
-    return { signature, timestamp };
-  }
-
   private async makeRequest(prompt: string, enhancementType: string): Promise<string> {
-    const { signature, timestamp } = await this.generateSignature('POST', '/llm');
+    if (!this.sessionToken) {
+      // Attempt to get a token if it's missing
+      await this.requestNewSessionToken();
+      if (!this.sessionToken) {
+        throw new Error('No session token available. Please refresh the page.');
+      }
+    }
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
@@ -154,9 +127,7 @@ Enhanced AI video editing prompt:`
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'x-api-key': this.apiKey,
-          'x-signature': signature,
-          'x-timestamp': timestamp,
+          'x-session-token': this.sessionToken, // Use the session token
         },
         body: JSON.stringify({
           prompt: this.createPromptTemplate(prompt, enhancementType),
