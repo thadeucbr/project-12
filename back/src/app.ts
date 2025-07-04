@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import { routes } from './routes';
 import { errorMiddleware } from './middlewares/error.middleware';
 import { loggingMiddleware } from './middlewares/logging.middleware';
@@ -9,8 +10,15 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import { env } from './config/env';
 import { IncomingMessage } from 'http';
+import { cloudflareAuthMiddleware } from './middlewares/cloudflareAuth.middleware';
+import { refererAuthMiddleware } from './middlewares/refererAuth.middleware';
 
 export const app = express();
+
+app.set('trust proxy', 1); // Confia no primeiro proxy (adequado para Cloudflare)
+
+app.use(cloudflareAuthMiddleware); // Adiciona o middleware de autenticação do Cloudflare
+app.use(refererAuthMiddleware); // Adiciona o middleware de autenticação por Referer
 
 app.use(helmet({
   contentSecurityPolicy: {
@@ -19,23 +27,18 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:"],
-      connectSrc: ["'self'", env.CORS_ORIGINS.join(' ')],
+      connectSrc: ["'self'", ...env.CORS_ORIGINS],
     },
   },
 }));
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || env.CORS_ORIGINS.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`Origin ${origin} not allowed by CORS`));
-    }
-  },
+  origin: env.CORS_ORIGINS,
   methods: env.CORS_METHODS,
-  allowedHeaders: `${env.CORS_HEADERS},x-signature,x-timestamp`, // Inclua os cabeçalhos personalizados
+  allowedHeaders: `${env.CORS_HEADERS},x-session-token`, // Inclua o novo cabeçalho de sessão
   credentials: true, // Permite envio de cookies, se necessário
 }));
 app.use(express.json());
+app.use(cookieParser(env.COOKIE_SECRET)); // Adiciona o cookie-parser
 app.use(loggingMiddleware);
 app.use(rateLimitMiddleware);
 
