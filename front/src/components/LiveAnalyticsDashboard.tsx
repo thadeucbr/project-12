@@ -72,8 +72,7 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
 
     fetchData();
 
-    // Atualiza a cada 30 segundos
-    const interval = setInterval(fetchData, 30000);
+    
 
     // Simula usuários online em tempo real
     const realtimeInterval = setInterval(() => {
