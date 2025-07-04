@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Loader2, Zap, Type, Code, Lightbulb, Target, Image, Video, Palette, Camera, Edit, Scissors, Wand2, Sparkles, Eye, Brush, Heart, ShoppingBag, Film, FileText, Play, Store } from 'lucide-react';
+import { PromptSuggestions } from './PromptSuggestions';
 import type { Prompt } from '../types';
 
 interface PromptInputProps {
@@ -154,6 +155,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
   const [selectedType, setSelectedType] = useState<Prompt['enhancementType']>('detailed');
   const [selectedCategory, setSelectedCategory] = useState<'text' | 'image' | 'video' | 'editing'>('text');
   const [focusedInput, setFocusedInput] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -181,7 +183,14 @@ export const PromptInput: React.FC<PromptInputProps> = ({
     e.preventDefault();
     if (input.trim() && !isLoading) {
       onSubmit(input.trim(), selectedType);
+      setShowSuggestions(false);
     }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setInput(suggestion);
+    setShowSuggestions(false);
+    textareaRef.current?.focus();
   };
 
   const handleTypeSelect = (type: Prompt['enhancementType']) => {
@@ -190,6 +199,31 @@ export const PromptInput: React.FC<PromptInputProps> = ({
 
   const handleCategorySelect = (category: 'text' | 'image' | 'video' | 'editing') => {
     setSelectedCategory(category);
+  };
+
+  const handleInputFocus = () => {
+    setFocusedInput(true);
+    if (input.trim() === '') {
+      setShowSuggestions(true);
+    }
+  };
+
+  const handleInputBlur = () => {
+    setFocusedInput(false);
+    // Delay para permitir clique nas sugestões
+    setTimeout(() => setShowSuggestions(false), 200);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    setInput(value);
+    
+    // Mostra sugestões apenas quando o campo está vazio
+    if (value.trim() === '' && focusedInput) {
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
   };
 
   const characterCount = input.length;
@@ -325,9 +359,9 @@ export const PromptInput: React.FC<PromptInputProps> = ({
             <textarea
               ref={textareaRef}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onFocus={() => setFocusedInput(true)}
-              onBlur={() => setFocusedInput(false)}
+              onChange={handleInputChange}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
               placeholder={getPlaceholder()}
               className="w-full p-6 pb-20 text-lg bg-transparent border-none outline-none resize-none min-h-[140px] max-h-[300px] overflow-y-auto placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
               maxLength={1000}
@@ -371,6 +405,13 @@ export const PromptInput: React.FC<PromptInputProps> = ({
               </div>
             </div>
           </div>
+
+          {/* Suggestions */}
+          <PromptSuggestions
+            isVisible={showSuggestions}
+            selectedCategory={selectedCategory}
+            onSuggestionClick={handleSuggestionClick}
+          />
         </motion.div>
 
         {/* Enhancement Preview */}
