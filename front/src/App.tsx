@@ -287,7 +287,7 @@ function AppContent() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-xl sm:text-2xl font-bold">Painel de Estatísticas</h2>
-                    <p className="text-indigo-100 text-sm sm:text-base">Insights sobre seu uso do PromptCraft</p>
+                    <p className="text-indigo-100 text-sm sm:text-base">Insights sobre seu uso do Prompts Barbudas</p>
                   </div>
                   <button
                     onClick={() => setIsAnalyticsOpen(false)}

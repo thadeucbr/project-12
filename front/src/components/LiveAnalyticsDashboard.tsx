@@ -49,9 +49,7 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
 }) => {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLive, setIsLive] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const [realtimeUsers, setRealtimeUsers] = useState(0);
   const [todayGrowth, setTodayGrowth] = useState(0);
   const [isConnected, setIsConnected] = useState(true);
 
@@ -72,28 +70,13 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
 
     fetchData();
 
-    
-
-    // Simula usuários online em tempo real
-    const realtimeInterval = setInterval(() => {
-      setRealtimeUsers(prev => {
-        const change = Math.floor(Math.random() * 6) - 2; // -2 a +3
-        return Math.max(0, prev + change);
-      });
-    }, 3000);
-
     // Simula status de conexão
     const connectionInterval = setInterval(() => {
       setIsConnected(Math.random() > 0.05); // 95% uptime
     }, 10000);
 
-    setIsLive(true);
-    setRealtimeUsers(Math.floor(Math.random() * 50) + 10);
-
     return () => {
-      clearInterval(realtimeInterval);
       clearInterval(connectionInterval);
-      setIsLive(false);
     };
   }, [isOpen]);
 
@@ -181,49 +164,39 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="fixed inset-4 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden"
+          className="fixed inset-2 sm:inset-4 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-6 text-white relative overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-4 sm:p-6 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-pulse" />
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="p-3 bg-white/20 rounded-xl"
+                    className="p-2 sm:p-3 bg-white/20 rounded-xl"
                   >
-                    <Activity className="h-8 w-8" />
+                    <Activity className="h-6 w-6 sm:h-8 sm:w-8" />
                   </motion.div>
                   <div>
-                    <h2 className="text-3xl font-bold">Analytics em Tempo Real</h2>
-                    <p className="text-blue-100">Impacto global do PromptCraft</p>
+                    <h2 className="text-2xl sm:text-3xl font-bold">Analytics Globais</h2>
+                    <p className="text-blue-100 text-sm sm:text-base">Impacto global do Prompts Barbudas</p>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4">
                   {/* Status de Conexão */}
                   <div className="flex items-center gap-2">
                     {isConnected ? (
-                      <Wifi className="h-5 w-5 text-green-300" />
+                      <Wifi className="h-4 w-4 sm:h-5 sm:w-5 text-green-300" />
                     ) : (
-                      <WifiOff className="h-5 w-5 text-red-300" />
+                      <WifiOff className="h-4 w-4 sm:h-5 sm:w-5 text-red-300" />
                     )}
-                    <span className="text-sm">
+                    <span className="text-xs sm:text-sm">
                       {isConnected ? 'Online' : 'Reconectando...'}
                     </span>
-                  </div>
-                  
-                  {/* Indicador Live */}
-                  <div className="flex items-center gap-2">
-                    <motion.div
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="w-3 h-3 bg-red-500 rounded-full"
-                    />
-                    <span className="text-sm font-medium">AO VIVO</span>
                   </div>
                   
                   <button
@@ -236,14 +209,14 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
               </div>
 
               {/* Última Atualização */}
-              <div className="flex items-center gap-2 text-sm text-blue-100">
-                <Clock className="h-4 w-4" />
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-100">
+                <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span>Última atualização: {lastUpdate.toLocaleTimeString()}</span>
               </div>
             </div>
           </div>
 
-          <div className="p-6 overflow-y-auto max-h-[calc(100vh-200px)]">
+          <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(100vh-200px)]">
             {isLoading ? (
               <div className="flex items-center justify-center h-64">
                 <motion.div
@@ -253,43 +226,20 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
                 />
               </div>
             ) : data ? (
-              <div className="space-y-8">
+              <div className="space-y-6 sm:space-y-8">
                 {/* Métricas Principais */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {/* Usuários Online */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-gradient-to-br from-green-500 to-emerald-600 p-6 rounded-xl text-white shadow-lg"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <Users className="h-8 w-8" />
-                      <motion.div
-                        animate={{ scale: [1, 1.1, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className="w-3 h-3 bg-green-300 rounded-full"
-                      />
-                    </div>
-                    <div className="text-3xl font-bold mb-2">
-                      {realtimeUsers}
-                    </div>
-                    <div className="text-green-100 text-sm">
-                      Usuários online agora
-                    </div>
-                  </motion.div>
-
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {/* Total de Acessos */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 rounded-xl text-white shadow-lg"
+                    className="bg-gradient-to-br from-blue-500 to-indigo-600 p-4 sm:p-6 rounded-xl text-white shadow-lg"
                   >
                     <div className="flex items-center justify-between mb-4">
-                      <Globe className="h-8 w-8" />
-                      <TrendingUp className="h-5 w-5 text-blue-300" />
+                      <Globe className="h-6 w-6 sm:h-8 sm:w-8" />
+                      <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-blue-300" />
                     </div>
-                    <div className="text-3xl font-bold mb-2">
+                    <div className="text-2xl sm:text-3xl font-bold mb-2">
                       {formatNumber(data.totalAccesses)}
                     </div>
                     <div className="text-blue-100 text-sm">
@@ -301,16 +251,16 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="bg-gradient-to-br from-purple-500 to-pink-600 p-6 rounded-xl text-white shadow-lg"
+                    transition={{ delay: 0.1 }}
+                    className="bg-gradient-to-br from-purple-500 to-pink-600 p-4 sm:p-6 rounded-xl text-white shadow-lg"
                   >
                     <div className="flex items-center justify-between mb-4">
-                      <Calendar className="h-8 w-8" />
+                      <Calendar className="h-6 w-6 sm:h-8 sm:w-8" />
                       <div className="text-xs bg-white/20 px-2 py-1 rounded-full">
                         +{todayGrowth.toFixed(1)}%
                       </div>
                     </div>
-                    <div className="text-3xl font-bold mb-2">
+                    <div className="text-2xl sm:text-3xl font-bold mb-2">
                       {formatNumber(data.todayAccesses)}
                     </div>
                     <div className="text-purple-100 text-sm">
@@ -322,14 +272,14 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="bg-gradient-to-br from-orange-500 to-red-600 p-6 rounded-xl text-white shadow-lg"
+                    transition={{ delay: 0.2 }}
+                    className="bg-gradient-to-br from-orange-500 to-red-600 p-4 sm:p-6 rounded-xl text-white shadow-lg"
                   >
                     <div className="flex items-center justify-between mb-4">
-                      <Zap className="h-8 w-8" />
-                      <Flame className="h-5 w-5 text-orange-300" />
+                      <Zap className="h-6 w-6 sm:h-8 sm:w-8" />
+                      <Flame className="h-4 w-4 sm:h-5 sm:w-5 text-orange-300" />
                     </div>
-                    <div className="text-3xl font-bold mb-2">
+                    <div className="text-2xl sm:text-3xl font-bold mb-2">
                       {formatNumber(data.totalPrompts)}
                     </div>
                     <div className="text-orange-100 text-sm">
@@ -339,26 +289,26 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
                 </div>
 
                 {/* Métricas Avançadas */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                   {/* Taxa de Engajamento */}
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg"
+                    transition={{ delay: 0.3 }}
+                    className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg"
                   >
                     <div className="flex items-center gap-3 mb-4">
                       <div className="p-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg">
-                        <Target className="h-5 w-5 text-white" />
+                        <Target className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                      <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
                         Taxa de Engajamento
                       </h3>
                     </div>
-                    <div className="text-3xl font-bold text-cyan-600 dark:text-cyan-400 mb-2">
+                    <div className="text-2xl sm:text-3xl font-bold text-cyan-600 dark:text-cyan-400 mb-2">
                       {getEngagementScore().toFixed(1)}%
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                       Usuários que criam prompts
                     </div>
                     <div className="mt-4 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -375,26 +325,26 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg"
+                    transition={{ delay: 0.4 }}
+                    className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg"
                   >
                     <div className="flex items-center gap-3 mb-4">
                       <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg">
-                        <TrendingUp className="h-5 w-5 text-white" />
+                        <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                      <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
                         Crescimento Diário
                       </h3>
                     </div>
-                    <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
+                    <div className="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
                       +{todayGrowth.toFixed(1)}%
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                       Comparado a ontem
                     </div>
                     <div className="mt-4 flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-green-500" />
-                      <span className="text-sm text-green-600 dark:text-green-400">
+                      <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
+                      <span className="text-xs sm:text-sm text-green-600 dark:text-green-400">
                         Tendência positiva
                       </span>
                     </div>
@@ -404,30 +354,30 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6 }}
-                    className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg"
+                    transition={{ delay: 0.5 }}
+                    className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg"
                   >
                     <div className="flex items-center gap-3 mb-4">
                       <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
-                        <Star className="h-5 w-5 text-white" />
+                        <Star className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                      <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
                         Mais Popular
                       </h3>
                     </div>
                     {getMostPopularType() && (
                       <>
-                        <div className="text-lg font-bold text-purple-600 dark:text-purple-400 mb-2">
+                        <div className="text-base sm:text-lg font-bold text-purple-600 dark:text-purple-400 mb-2">
                           {getEnhancementTypeLabel(getMostPopularType()![0])}
                         </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3">
                           {getMostPopularType()![1]} usos
                         </div>
                         <div className="flex items-center gap-2">
                           {React.createElement(getEnhancementTypeIcon(getMostPopularType()![0]), {
-                            className: "h-4 w-4 text-purple-500"
+                            className: "h-3 w-3 sm:h-4 sm:w-4 text-purple-500"
                           })}
-                          <span className="text-sm text-purple-600 dark:text-purple-400">
+                          <span className="text-xs sm:text-sm text-purple-600 dark:text-purple-400">
                             Tendência #1
                           </span>
                         </div>
@@ -440,19 +390,19 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 }}
-                  className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg"
+                  transition={{ delay: 0.6 }}
+                  className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg"
                 >
-                  <div className="flex items-center gap-3 mb-6">
+                  <div className="flex items-center gap-3 mb-4 sm:mb-6">
                     <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg">
-                      <BarChart3 className="h-5 w-5 text-white" />
+                      <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                       Tipos de Enhancement Mais Utilizados
                     </h3>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {Object.entries(data.enhancementTypes)
                       .sort(([,a], [,b]) => b - a)
                       .slice(0, 8)
@@ -465,28 +415,28 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
                             key={type}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.8 + index * 0.1 }}
-                            className="flex items-center gap-4"
+                            transition={{ delay: 0.7 + index * 0.1 }}
+                            className="flex items-center gap-3 sm:gap-4"
                           >
-                            <div className="flex items-center gap-3 w-48">
-                              <Icon className="h-5 w-5 text-indigo-500" />
-                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <div className="flex items-center gap-2 sm:gap-3 w-32 sm:w-48">
+                              <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-500" />
+                              <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
                                 {getEnhancementTypeLabel(type)}
                               </span>
                             </div>
                             
-                            <div className="flex-1 flex items-center gap-3">
-                              <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                            <div className="flex-1 flex items-center gap-2 sm:gap-3">
+                              <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 sm:h-3 overflow-hidden">
                                 <motion.div
                                   initial={{ width: 0 }}
                                   animate={{ width: `${percentage}%` }}
-                                  transition={{ duration: 1, delay: 0.8 + index * 0.1 }}
-                                  className="h-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
+                                  transition={{ duration: 1, delay: 0.7 + index * 0.1 }}
+                                  className="h-2 sm:h-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
                                 />
                               </div>
                               
-                              <div className="text-right min-w-[80px]">
-                                <div className="text-sm font-bold text-gray-900 dark:text-white">
+                              <div className="text-right min-w-[60px] sm:min-w-[80px]">
+                                <div className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">
                                   {formatNumber(count)}
                                 </div>
                                 <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -505,7 +455,7 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1 }}
-                  className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 p-8 rounded-xl text-white shadow-2xl"
+                  className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 p-6 sm:p-8 rounded-xl text-white shadow-2xl"
                 >
                   <div className="text-center">
                     <motion.div
@@ -513,43 +463,43 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
                       transition={{ duration: 2, repeat: Infinity }}
                       className="inline-block mb-4"
                     >
-                      <Rocket className="h-16 w-16" />
+                      <Rocket className="h-12 w-12 sm:h-16 sm:w-16" />
                     </motion.div>
                     
-                    <h3 className="text-3xl font-bold mb-4">
-                      🚀 PromptCraft está Revolucionando a IA!
+                    <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+                      🚀 Prompts Barbudas está Revolucionando a IA!
                     </h3>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6">
                       <div className="text-center">
-                        <div className="text-4xl font-bold mb-2">
+                        <div className="text-3xl sm:text-4xl font-bold mb-2">
                           {formatNumber(data.totalPrompts)}
                         </div>
-                        <div className="text-yellow-100">
+                        <div className="text-yellow-100 text-sm">
                           Prompts Aprimorados
                         </div>
                       </div>
                       
                       <div className="text-center">
-                        <div className="text-4xl font-bold mb-2">
+                        <div className="text-3xl sm:text-4xl font-bold mb-2">
                           {formatNumber(data.totalAccesses)}
                         </div>
-                        <div className="text-yellow-100">
+                        <div className="text-yellow-100 text-sm">
                           Vidas Impactadas
                         </div>
                       </div>
                       
                       <div className="text-center">
-                        <div className="text-4xl font-bold mb-2">
+                        <div className="text-3xl sm:text-4xl font-bold mb-2">
                           {getEngagementScore().toFixed(0)}%
                         </div>
-                        <div className="text-yellow-100">
+                        <div className="text-yellow-100 text-sm">
                           Taxa de Sucesso
                         </div>
                       </div>
                     </div>
                     
-                    <p className="text-lg text-yellow-100 max-w-2xl mx-auto">
+                    <p className="text-base sm:text-lg text-yellow-100 max-w-2xl mx-auto">
                       Cada prompt criado aqui está transformando a forma como as pessoas interagem com IA. 
                       Juntos, estamos construindo o futuro da comunicação humano-máquina! 🌟
                     </p>
