@@ -128,7 +128,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
     try {
       if (navigator.share) {
         await navigator.share({
-          title: 'Prompt Aprimorado - PromptCraft',
+          title: 'Prompt Aprimorado - Prompts Barbudas',
           text: prompt,
         });
       } else {

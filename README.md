@@ -1,8 +1,8 @@
-# PromptCraft - AI Prompt Enhancement Tool
+# Prompt Barbudas - AI Prompt Enhancement Tool
 
 ## Descrição do Projeto
 
-O **PromptCraft** é uma aplicação completa que transforma prompts simples em instruções poderosas e otimizadas para modelos de linguagem (LLMs - Large Language Models). Ele utiliza uma combinação de lógica local e integração com APIs externas para aprimorar prompts, tornando-os mais claros, eficazes e prontos para uso em aplicações de IA.
+O **Prompt Barbudas** é uma aplicação completa que transforma prompts simples em instruções poderosas e otimizadas para modelos de linguagem (LLMs - Large Language Models). Ele utiliza uma combinação de lógica local e integração com APIs externas para aprimorar prompts, tornando-os mais claros, eficazes e prontos para uso em aplicações de IA.
 
 O projeto é dividido em duas partes principais:
 
