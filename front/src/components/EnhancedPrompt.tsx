@@ -259,29 +259,29 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -20, scale: 0.95 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-4xl mx-auto mt-8"
+        className="w-full max-w-4xl mx-auto mt-6 sm:mt-8"
       >
         <motion.div
-          className={`bg-gradient-to-br ${getBackgroundGradient()} rounded-2xl p-6 border-2 ${getBorderColor()} shadow-xl backdrop-blur-sm`}
+          className={`bg-gradient-to-br ${getBackgroundGradient()} rounded-2xl p-4 sm:p-6 border-2 ${getBorderColor()} shadow-xl backdrop-blur-sm`}
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2 }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
               <motion.div
                 animate={{ rotate: isTyping ? 360 : 0 }}
                 transition={{ duration: 2, repeat: isTyping ? Infinity : 0, ease: "linear" }}
-                className={`p-3 rounded-xl bg-gradient-to-r ${typeColor} shadow-lg`}
+                className={`p-2 sm:p-3 rounded-xl bg-gradient-to-r ${typeColor} shadow-lg flex-shrink-0`}
               >
-                <TypeIcon className="h-6 w-6 text-white" />
+                <TypeIcon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </motion.div>
-              <div>
-                <h3 className={`text-xl font-bold ${getTextColor()}`}>
+              <div className="min-w-0 flex-1">
+                <h3 className={`text-lg sm:text-xl font-bold ${getTextColor()} truncate`}>
                   {isEditingType ? 'Comandos de IA' : 'Prompt'} Aprimorado
                 </h3>
-                <p className={`text-sm ${getSubtextColor()}`}>
+                <p className={`text-xs sm:text-sm ${getSubtextColor()} line-clamp-2`}>
                   {typeDescription}
                 </p>
               </div>
@@ -289,7 +289,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 <motion.div
                   animate={{ opacity: [1, 0] }}
                   transition={{ duration: 0.8, repeat: Infinity }}
-                  className="ml-2"
+                  className="ml-2 flex-shrink-0"
                 >
                   <div className={`h-2 w-2 ${
                     isEditingType ? 'bg-emerald-500' : 
@@ -301,10 +301,10 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
               )}
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 ml-2">
               <motion.button
                 onClick={toggleFullText}
-                className={`p-2 ${getSubtextColor()} ${
+                className={`p-1.5 sm:p-2 ${getSubtextColor()} ${
                   isEditingType ? 'hover:bg-emerald-100 dark:hover:bg-emerald-800' :
                   isAnimeType ? 'hover:bg-pink-100 dark:hover:bg-pink-800' :
                   isImageType ? 'hover:bg-blue-100 dark:hover:bg-blue-800' :
@@ -315,60 +315,60 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 whileTap={{ scale: 0.95 }}
                 title={showFullText ? "Mostrar efeito de digitação" : "Mostrar texto completo"}
               >
-                <RotateCcw className="h-4 w-4" />
+                <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4" />
               </motion.button>
               
               <motion.button
                 onClick={handleDownload}
-                className={`p-2 ${getSubtextColor()} ${
+                className={`p-1.5 sm:p-2 ${getSubtextColor()} ${
                   isEditingType ? 'hover:bg-emerald-100 dark:hover:bg-emerald-800' :
                   isAnimeType ? 'hover:bg-pink-100 dark:hover:bg-pink-800' :
                   isImageType ? 'hover:bg-blue-100 dark:hover:bg-blue-800' :
                   isVideoType ? 'hover:bg-slate-100 dark:hover:bg-slate-800' : 
                   'hover:bg-purple-100 dark:hover:bg-purple-800'
-                } rounded-lg transition-colors duration-200`}
+                } rounded-lg transition-colors duration-200 hidden sm:block`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 title="Baixar como arquivo"
               >
-                <Download className="h-4 w-4" />
+                <Download className="h-3 w-3 sm:h-4 sm:w-4" />
               </motion.button>
 
               <motion.button
                 onClick={handleShare}
-                className={`p-2 ${getSubtextColor()} ${
+                className={`p-1.5 sm:p-2 ${getSubtextColor()} ${
                   isEditingType ? 'hover:bg-emerald-100 dark:hover:bg-emerald-800' :
                   isAnimeType ? 'hover:bg-pink-100 dark:hover:bg-pink-800' :
                   isImageType ? 'hover:bg-blue-100 dark:hover:bg-blue-800' :
                   isVideoType ? 'hover:bg-slate-100 dark:hover:bg-slate-800' : 
                   'hover:bg-purple-100 dark:hover:bg-purple-800'
-                } rounded-lg transition-colors duration-200`}
+                } rounded-lg transition-colors duration-200 hidden sm:block`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 title="Compartilhar"
               >
                 {isShared ? (
-                  <Check className="h-4 w-4" />
+                  <Check className="h-3 w-3 sm:h-4 sm:w-4" />
                 ) : (
-                  <Share2 className="h-4 w-4" />
+                  <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
                 )}
               </motion.button>
               
               <motion.button
                 onClick={handleCopy}
-                className={`flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${typeColor} text-white rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl`}
+                className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r ${typeColor} text-white rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl text-sm`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 {isCopied ? (
                   <>
-                    <Check className="h-4 w-4" />
-                    <span className="text-sm font-medium">Copiado!</span>
+                    <Check className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="text-xs sm:text-sm font-medium hidden sm:inline">Copiado!</span>
                   </>
                 ) : (
                   <>
-                    <Copy className="h-4 w-4" />
-                    <span className="text-sm font-medium">Copiar</span>
+                    <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="text-xs sm:text-sm font-medium">Copiar</span>
                   </>
                 )}
               </motion.button>
@@ -378,7 +378,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
           {/* Enhanced Prompt Text */}
           <div className="relative">
             <motion.div
-              className={`text-gray-800 dark:text-gray-100 leading-relaxed whitespace-pre-wrap font-mono text-sm p-6 bg-white/60 dark:bg-gray-900/40 rounded-xl border ${
+              className={`text-gray-800 dark:text-gray-100 leading-relaxed whitespace-pre-wrap font-mono text-sm sm:text-sm p-4 sm:p-6 bg-white/60 dark:bg-gray-900/40 rounded-xl border ${
                 isEditingType ? 'border-emerald-100 dark:border-emerald-800' :
                 isAnimeType ? 'border-pink-100 dark:border-pink-800' :
                 isImageType ? 'border-blue-100 dark:border-blue-800' :
@@ -405,16 +405,16 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
             </motion.div>
             
             {/* Character count and stats */}
-            <div className={`flex items-center justify-between mt-4 text-xs ${getSubtextColor()}`}>
-              <div className="flex items-center gap-4">
+            <div className={`flex items-center justify-between mt-3 sm:mt-4 text-xs ${getSubtextColor()}`}>
+              <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
                 <span>
                   {prompt.length} caracteres • {prompt.split(' ').length} palavras
                 </span>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${typeColor} text-white`}>
+                <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${typeColor} text-white`}>
                   {typeLabel}
                 </span>
               </div>
-              <span>
+              <span className="hidden sm:inline">
                 ~{Math.ceil(prompt.length / 4)} tokens
               </span>
             </div>
@@ -422,7 +422,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
 
           {/* Enhancement Quality Indicators */}
           <motion.div
-            className={`mt-6 flex items-center justify-center gap-6 text-xs ${getSubtextColor()}`}
+            className={`mt-4 sm:mt-6 flex items-center justify-center gap-4 sm:gap-6 text-xs ${getSubtextColor()} flex-wrap`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -442,7 +442,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
                 isImageType ? 'bg-blue-500' :
                 isVideoType ? 'bg-slate-500' : 'bg-purple-500'
               } rounded-full`}></div>
-              <span>
+              <span className="text-center">
                 {isEditingType ? 'Otimizado para IA de Edição' : 
                  isAnimeType ? 'Otimizado para Anime/Manga' :
                  isImageType ? 'Otimizado para Geração de Imagem' :
@@ -454,14 +454,14 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
           {/* Type-specific tips */}
           {(isImageType || isVideoType || isEditingType) && (
             <motion.div
-              className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-700"
+              className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-700"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
             >
               <div className="flex items-start gap-3">
-                <Sparkles className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-blue-700 dark:text-blue-300">
+                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                <div className="text-xs sm:text-sm text-blue-700 dark:text-blue-300">
                   <strong>Dica:</strong> {
                     isAnimeType
                       ? 'Use este prompt em ferramentas como NovelAI, Waifu Diffusion, Anything V3, ou outros modelos especializados em anime para melhores resultados.'

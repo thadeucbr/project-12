@@ -12,7 +12,9 @@ import {
   Settings,
   ChevronDown,
   Activity,
-  TrendingUp
+  TrendingUp,
+  Menu,
+  X
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -39,6 +41,7 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
 }) => {
   const { theme, toggleTheme } = useTheme();
   const [showToolsMenu, setShowToolsMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const tools = [
     { 
@@ -79,6 +82,12 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
     }
   ];
 
+  const handleToolClick = (tool: typeof tools[0]) => {
+    tool.action();
+    setShowToolsMenu(false);
+    setShowMobileMenu(false);
+  };
+
   return (
     <motion.header 
       className="sticky top-0 z-50 backdrop-blur-xl bg-white/90 dark:bg-gray-900/90 border-b border-gray-200 dark:border-gray-700"
@@ -86,31 +95,31 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
           <motion.div 
-            className="flex items-center space-x-3"
+            className="flex items-center space-x-2 sm:space-x-3"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl">
-              <Wand2 className="h-6 w-6 text-white" />
+            <div className="p-1.5 sm:p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl">
+              <Wand2 className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 PromptCraft
               </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
                 Motor de Aprimoramento de IA
               </p>
             </div>
           </motion.div>
 
-          {/* Tools Menu */}
+          {/* Desktop Navigation */}
           <motion.div 
-            className="flex items-center space-x-2"
+            className="hidden md:flex items-center space-x-2"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
@@ -164,10 +173,7 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
                       return (
                         <motion.button
                           key={tool.id}
-                          onClick={() => {
-                            tool.action();
-                            setShowToolsMenu(false);
-                          }}
+                          onClick={() => handleToolClick(tool)}
                           className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left ${
                             tool.highlight ? 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20' : ''
                           }`}
@@ -250,14 +256,155 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
               )}
             </motion.button>
           </motion.div>
+
+          {/* Mobile Navigation */}
+          <div className="flex md:hidden items-center space-x-2">
+            {/* Live Analytics Button - Mobile */}
+            {onLiveAnalyticsOpen && (
+              <motion.button
+                onClick={onLiveAnalyticsOpen}
+                className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Activity className="h-4 w-4" />
+              </motion.button>
+            )}
+
+            {/* Mobile Menu Button */}
+            <motion.button
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {showMobileMenu ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </motion.button>
+          </div>
         </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {showMobileMenu && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4"
+            >
+              <div className="space-y-3">
+                {/* Quick Actions Row */}
+                <div className="flex items-center justify-between">
+                  <motion.button
+                    onClick={() => {
+                      onSurpriseMe();
+                      setShowMobileMenu(false);
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-pink-500 text-white text-sm"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    <span>Surpresa</span>
+                  </motion.button>
+
+                  <motion.button
+                    onClick={() => {
+                      onHistoryToggle();
+                      setShowMobileMenu(false);
+                    }}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${
+                      isHistoryOpen
+                        ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                    }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <History className="h-4 w-4" />
+                    <span>Histórico</span>
+                  </motion.button>
+
+                  <motion.button
+                    onClick={() => {
+                      toggleTheme();
+                      setShowMobileMenu(false);
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-sm"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {theme === 'light' ? (
+                      <>
+                        <Moon className="h-4 w-4" />
+                        <span>Escuro</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sun className="h-4 w-4" />
+                        <span>Claro</span>
+                      </>
+                    )}
+                  </motion.button>
+                </div>
+
+                {/* Tools Grid */}
+                <div className="grid grid-cols-2 gap-2">
+                  {tools.map((tool) => {
+                    const Icon = tool.icon;
+                    return (
+                      <motion.button
+                        key={tool.id}
+                        onClick={() => handleToolClick(tool)}
+                        className={`flex items-center gap-2 p-3 rounded-lg text-left text-sm ${
+                          tool.highlight 
+                            ? 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-700' 
+                            : 'bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
+                        }`}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <div className={`p-1.5 rounded-lg ${
+                          tool.highlight 
+                            ? 'bg-gradient-to-br from-blue-500 to-purple-600' 
+                            : 'bg-gradient-to-br from-purple-500 to-pink-500'
+                        }`}>
+                          <Icon className="h-3 w-3 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className={`font-medium truncate ${
+                            tool.highlight ? 'text-blue-700 dark:text-blue-300' : 'text-gray-900 dark:text-white'
+                          }`}>
+                            {tool.label}
+                            {tool.highlight && (
+                              <span className="ml-1 text-xs bg-blue-500 text-white px-1.5 py-0.5 rounded-full">
+                                LIVE
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* Click outside to close menu */}
-      {showToolsMenu && (
+      {/* Click outside to close menus */}
+      {(showToolsMenu || showMobileMenu) && (
         <div 
           className="fixed inset-0 z-40" 
-          onClick={() => setShowToolsMenu(false)}
+          onClick={() => {
+            setShowToolsMenu(false);
+            setShowMobileMenu(false);
+          }}
         />
       )}
     </motion.header>

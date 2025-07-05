@@ -91,18 +91,18 @@ export const PromptSuggestions: React.FC<PromptSuggestionsProps> = ({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 10, scale: 0.95 }}
         transition={{ duration: 0.2 }}
-        className="absolute top-full mt-4 w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 z-20 backdrop-blur-sm"
+        className="absolute top-full mt-3 sm:mt-4 w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 z-20 backdrop-blur-sm"
       >
         {/* Header */}
-        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
-          <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
-            <CategoryIcon className="h-5 w-5 text-white" />
+        <div className="flex items-center gap-3 mb-3 sm:mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-1.5 sm:p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
+            <CategoryIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
           </div>
-          <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white">
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
               Ideias para {categoryLabel}
             </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
               Clique em uma sugestão para começar rapidamente
             </p>
           </div>
@@ -111,12 +111,12 @@ export const PromptSuggestions: React.FC<PromptSuggestionsProps> = ({
             transition={{ duration: 2, repeat: Infinity }}
             className="ml-auto"
           >
-            <Sparkles className="h-5 w-5 text-purple-500" />
+            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
           </motion.div>
         </div>
 
         {/* Suggestions Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-80 overflow-y-auto">
+        <div className="grid grid-cols-1 gap-2 sm:gap-3 max-h-64 sm:max-h-80 overflow-y-auto">
           {categorySuggestions.map((suggestion, index) => {
             const Icon = icons[index % icons.length];
             
@@ -124,19 +124,19 @@ export const PromptSuggestions: React.FC<PromptSuggestionsProps> = ({
               <motion.button
                 key={index}
                 onClick={() => onSuggestionClick(suggestion)}
-                className="group flex items-start gap-3 p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 border border-transparent hover:border-purple-200 dark:hover:border-purple-700"
+                className="group flex items-start gap-2 sm:gap-3 p-3 sm:p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 border border-transparent hover:border-purple-200 dark:hover:border-purple-700"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="p-2 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-lg group-hover:from-purple-200 group-hover:to-pink-200 dark:group-hover:from-purple-800/40 dark:group-hover:to-pink-800/40 transition-all duration-200">
-                  <Icon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                <div className="p-1.5 sm:p-2 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-lg group-hover:from-purple-200 group-hover:to-pink-200 dark:group-hover:from-purple-800/40 dark:group-hover:to-pink-800/40 transition-all duration-200 flex-shrink-0">
+                  <Icon className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600 dark:text-purple-400" />
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors duration-200 line-clamp-2">
+                  <p className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors duration-200 line-clamp-3">
                     {suggestion}
                   </p>
                   <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -152,7 +152,7 @@ export const PromptSuggestions: React.FC<PromptSuggestionsProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-3 sm:mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
               <Lightbulb className="h-3 w-3" />
@@ -165,7 +165,7 @@ export const PromptSuggestions: React.FC<PromptSuggestionsProps> = ({
                 className="w-2 h-2 bg-green-500 rounded-full"
               />
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                {categorySuggestions.length} sugestões disponíveis
+                {categorySuggestions.length} sugestões
               </span>
             </div>
           </div>

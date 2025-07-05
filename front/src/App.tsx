@@ -161,7 +161,6 @@ function AppContent() {
     onSurpriseMe: handleSurpriseMe
   });
 
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-500 flex flex-col">
       <AdvancedHeader
@@ -175,22 +174,22 @@ function AppContent() {
         isHistoryOpen={isHistoryOpen}
       />
       
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <main className="flex-1 container mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent leading-tight">
             Transforme Suas Ideias
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-2">
             Converta prompts simples em instruções poderosas para IA - texto, imagem, vídeo e edição
           </p>
         </motion.div>
 
-        <div className="max-w-6xl mx-auto space-y-8">
+        <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
           <PromptInput
             onSubmit={handlePromptSubmit}
             isLoading={isLoading}
@@ -281,14 +280,14 @@ function AppContent() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="fixed inset-4 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-y-auto"
+              className="fixed inset-2 sm:inset-4 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-6 text-white">
+              <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-4 sm:p-6 text-white">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-2xl font-bold">Painel de Estatísticas</h2>
-                    <p className="text-indigo-100">Insights sobre seu uso do PromptCraft</p>
+                    <h2 className="text-xl sm:text-2xl font-bold">Painel de Estatísticas</h2>
+                    <p className="text-indigo-100 text-sm sm:text-base">Insights sobre seu uso do PromptCraft</p>
                   </div>
                   <button
                     onClick={() => setIsAnalyticsOpen(false)}
@@ -298,7 +297,7 @@ function AppContent() {
                   </button>
                 </div>
               </div>
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 <PromptAnalytics prompts={state.prompts} />
               </div>
             </motion.div>
