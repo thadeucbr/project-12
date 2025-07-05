@@ -109,10 +109,10 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
             </div>
             <div>
               <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                PromptCraft
+                Prompts Barbudas
               </h1>
               <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
-                Motor de Aprimoramento de IA
+                Aprimoramento Inteligente de Prompts
               </p>
             </div>
           </motion.div>

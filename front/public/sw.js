@@ -1,4 +1,4 @@
-const CACHE_NAME = 'promptcraft-v1';
+const CACHE_NAME = 'prompts-barbudas-v1';
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',
@@ -49,7 +49,7 @@ function getOfflineData() {
 // Push notifications
 self.addEventListener('push', (event) => {
   const options = {
-    body: event.data ? event.data.text() : 'Nova notificação do PromptCraft',
+    body: event.data ? event.data.text() : 'Nova notificação do Prompts Barbudas',
     icon: '/icon-192x192.png',
     badge: '/badge-72x72.png',
     vibrate: [100, 50, 100],
@@ -60,7 +60,7 @@ self.addEventListener('push', (event) => {
     actions: [
       {
         action: 'explore',
-        title: 'Abrir PromptCraft',
+        title: 'Abrir Prompts Barbudas',
         icon: '/icon-192x192.png'
       },
       {
@@ -72,7 +72,7 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification('PromptCraft', options)
+    self.registration.showNotification('Prompts Barbudas', options)
   );
 });
 

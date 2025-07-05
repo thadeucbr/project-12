@@ -1,6 +1,6 @@
-# Front-End do PromptCraft
+# Front-End do Prompts Barbudas
 
-Bem-vindo ao projeto **Front-End do PromptCraft**! Este aplicativo foi projetado para aprimorar prompts de usuários em instruções poderosas para modelos de IA. Ele utiliza tecnologias modernas como React, TypeScript, Tailwind CSS e Vite para uma experiência de desenvolvimento fluida.
+Bem-vindo ao projeto **Front-End do Prompts Barbudas**! Este aplicativo foi projetado para aprimorar prompts de usuários em instruções poderosas para modelos de IA. Ele utiliza tecnologias modernas como React, TypeScript, Tailwind CSS e Vite para uma experiência de desenvolvimento fluida.
 
 ---
 

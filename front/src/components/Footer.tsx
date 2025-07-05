@@ -53,7 +53,7 @@ export const Footer: React.FC = () => {
         
         <div className="text-center mt-3 sm:mt-4">
           <p className="text-xs text-gray-500 dark:text-gray-500">
-            © 2024 PromptCraft. Transformando ideias em prompts poderosos.
+            © 2024 Prompts Barbudas. Transformando ideias em prompts poderosos.
           </p>
         </div>
       </div>
