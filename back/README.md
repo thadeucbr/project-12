@@ -116,7 +116,57 @@ http://<host-do-servidor>:<porta>/api/docs
 
 ---
 
+## Como Usar a API
+
+Para interagir com a API, você precisa primeiro obter um token de sessão e depois usá-lo para fazer requisições aos endpoints protegidos.
+
+### Passo 1: Obter o Token de Sessão
+
+Faça uma requisição `POST` para o endpoint `/api/session/token` para receber um cookie `HttpOnly` contendo o seu token de sessão.
+
+**Endpoint:**
+`POST /api/session/token`
+
+**Exemplo com cURL:**
+```bash
+curl -X POST -c cookie.txt -v http://localhost:3000/api/session/token
+```
+
+O cookie `sessionToken` será usado automaticamente nas próximas requisições pelo seu cliente HTTP.
+
+### Passo 2: Enviar um Prompt para o LLM
+
+Com o token de sessão ativo, você pode fazer uma requisição `POST` para o endpoint `/api/llm` para gerar uma resposta de um provedor de LLM.
+
+**Endpoint:**
+`POST /api/llm`
+
+**Corpo da Requisição:**
+```json
+{
+  "prompt": "O seu prompt aqui.",
+  "provider": "openai"
+}
+```
+
+**Exemplo com cURL:**
+```bash
+curl -X POST \
+  -b cookie.txt \
+  -H "Content-Type: application/json" \
+  -d '{
+        "prompt": "Traduza a frase a seguir para o inglês: Onde fica a biblioteca mais próxima?",
+        "provider": "openai"
+      }' \
+  http://localhost:3000/api/llm
+```
+
+A resposta conterá a saída do provedor LLM selecionado.
+
+---
+
 ## Estrutura do Projeto
+
 
 ```
 back/
