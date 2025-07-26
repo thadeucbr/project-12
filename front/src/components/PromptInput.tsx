@@ -227,8 +227,8 @@ export const PromptInput: React.FC<PromptInputProps> = ({
   };
 
   const characterCount = input.length;
-  const isNearLimit = characterCount > 800;
-  const isAtLimit = characterCount >= 1000;
+  const isNearLimit = characterCount > 4000;
+  const isAtLimit = characterCount >= 5000;
 
   const selectedTypeInfo = enhancementTypes.find(type => type.id === selectedType);
   const filteredTypes = enhancementTypes.filter(type => type.category === selectedCategory);
@@ -364,7 +364,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
               onBlur={handleInputBlur}
               placeholder={getPlaceholder()}
               className="w-full p-4 sm:p-6 pb-16 sm:pb-20 text-base sm:text-lg bg-transparent border-none outline-none resize-none min-h-[120px] sm:min-h-[140px] max-h-[250px] sm:max-h-[300px] overflow-y-auto placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
-              maxLength={1000}
+              maxLength={5000}
               disabled={isLoading}
             />
             
@@ -375,7 +375,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
                 <div className={`text-xs sm:text-sm flex items-center gap-2 ${
                   isAtLimit ? 'text-red-500' : isNearLimit ? 'text-orange-500' : 'text-gray-500 dark:text-gray-400'
                 }`}>
-                  <span>{characterCount}/1000</span>
+                  <span>{characterCount}/5000</span>
                   {characterCount > 0 && (
                     <span className="text-xs hidden sm:inline">• ~{Math.ceil(characterCount / 4)} tokens</span>
                   )}
