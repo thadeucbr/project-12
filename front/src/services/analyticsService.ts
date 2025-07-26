@@ -15,14 +15,46 @@ interface AnalyticsRequest {
 
 class AnalyticsService {
   private baseUrl: string;
+  private timeout: number;
 
   constructor() {
     this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+    this.timeout = 30000; // 30 seconds
+  }
+
+  private async makeRequest(method: string, url: string, body?: any): Promise<any> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+
+    try {
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: body ? JSON.stringify(body) : undefined,
+        signal: controller.signal,
+        credentials: 'include',
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`API Error: ${response.status} - ${response.statusText}. Details: ${errorBody}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
+    }
   }
 
   async trackAccess(data: AnalyticsRequest): Promise<void> {
     try {
-      await promptEnhancementService.makeRequest(
+      await this.makeRequest(
         'POST',
         `${this.baseUrl}/analytics/track`,
         data
@@ -34,7 +66,7 @@ class AnalyticsService {
 
   async getStats(): Promise<AnalyticsData | null> {
     try {
-      const response = await promptEnhancementService.makeRequest(
+      const response = await this.makeRequest(
         'GET',
         `${this.baseUrl}/analytics/stats`
       );
