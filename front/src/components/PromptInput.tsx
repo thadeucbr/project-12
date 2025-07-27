@@ -1,150 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Loader2, Type, Code, Lightbulb, Target, Palette, Camera, Scissors, Wand2, Sparkles, Eye, Brush, Heart, ShoppingBag, Film, FileText, Play, Store } from 'lucide-react';
 import { PromptSuggestions } from './PromptSuggestions';
 import type { Prompt } from '../types';
+import { enhancementTypes, categoryLabels, categoryIcons } from '../utils/promptConstants';
+import { PromptCategorySelector } from './PromptInput/components/PromptCategorySelector';
+import { PromptEnhancementTypeSelector } from './PromptInput/components/PromptEnhancementTypeSelector';
+import { PromptInputArea } from './PromptInput/components/PromptInputArea';
+import { PromptEnhancementPreview } from './PromptInput/components/PromptEnhancementPreview';
+
 
 interface PromptInputProps {
   onSubmit: (prompt: string, enhancementType: Prompt['enhancementType']) => void;
   isLoading: boolean;
   initialValue?: string;
 }
-
-const enhancementTypes = [
-  // Text Types
-  { 
-    id: 'detailed' as const, 
-    label: 'Detalhado', 
-    icon: Type, 
-    color: 'from-blue-500 to-cyan-500',
-    description: 'Cria prompts abrangentes com instruções passo a passo e contexto detalhado',
-    category: 'text'
-  },
-  { 
-    id: 'creative' as const, 
-    label: 'Criativo', 
-    icon: Lightbulb, 
-    color: 'from-purple-500 to-pink-500',
-    description: 'Gera prompts inovadores que estimulam pensamento criativo e soluções originais',
-    category: 'text'
-  },
-  { 
-    id: 'technical' as const, 
-    label: 'Técnico', 
-    icon: Code, 
-    color: 'from-green-500 to-emerald-500',
-    description: 'Produz prompts técnicos precisos com especificações e melhores práticas',
-    category: 'text'
-  },
-  { 
-    id: 'concise' as const, 
-    label: 'Conciso', 
-    icon: Target, 
-    color: 'from-orange-500 to-red-500',
-    description: 'Cria prompts diretos e objetivos focados em resultados imediatos',
-    category: 'text'
-  },
-  
-  // Image Types
-  { 
-    id: 'image-realistic' as const, 
-    label: 'Realista', 
-    icon: Eye, 
-    color: 'from-blue-600 to-indigo-600',
-    description: 'Prompts para imagens fotorrealistas com detalhes precisos e iluminação natural',
-    category: 'image'
-  },
-  { 
-    id: 'image-artistic' as const, 
-    label: 'Artístico', 
-    icon: Brush, 
-    color: 'from-purple-600 to-pink-600',
-    description: 'Prompts para arte digital, pinturas e estilos artísticos únicos',
-    category: 'image'
-  },
-  { 
-    id: 'image-anime' as const, 
-    label: 'Desenho/Anime', 
-    icon: Heart, 
-    color: 'from-pink-500 to-rose-500',
-    description: 'Prompts para estilo anime, manga, desenho animado e ilustrações japonesas',
-    category: 'image'
-  },
-  { 
-    id: 'image-commercial' as const, 
-    label: 'Comercial', 
-    icon: ShoppingBag, 
-    color: 'from-orange-600 to-red-600',
-    description: 'Prompts para fotografia de produto, marketing e uso comercial',
-    category: 'image'
-  },
-  
-  // Video Types
-  { 
-    id: 'video-cinematic' as const, 
-    label: 'Cinematográfico', 
-    icon: Film, 
-    color: 'from-slate-600 to-gray-700',
-    description: 'Prompts para vídeos com qualidade cinematográfica e narrativa visual',
-    category: 'video'
-  },
-  { 
-    id: 'video-documentary' as const, 
-    label: 'Documentário', 
-    icon: FileText, 
-    color: 'from-blue-700 to-indigo-700',
-    description: 'Prompts para vídeos informativos, educacionais e documentários',
-    category: 'video'
-  },
-  { 
-    id: 'video-animated' as const, 
-    label: 'Animado', 
-    icon: Play, 
-    color: 'from-purple-700 to-pink-700',
-    description: 'Prompts para animações, motion graphics e conteúdo animado',
-    category: 'video'
-  },
-  { 
-    id: 'video-commercial' as const, 
-    label: 'Comercial', 
-    icon: Store, 
-    color: 'from-green-700 to-emerald-700',
-    description: 'Prompts para vídeos promocionais, publicitários e de marketing',
-    category: 'video'
-  },
-  
-  // Editing Types
-  { 
-    id: 'image-editing' as const, 
-    label: 'Edição de Imagem com IA', 
-    icon: Wand2, 
-    color: 'from-emerald-500 to-teal-500',
-    description: 'Prompts para IAs de edição de imagem como Photoshop AI, Canva AI, Remove.bg',
-    category: 'editing'
-  },
-  { 
-    id: 'video-editing' as const, 
-    label: 'Edição de Vídeo com IA', 
-    icon: Scissors, 
-    color: 'from-violet-500 to-indigo-600',
-    description: 'Prompts para IAs de edição de vídeo como RunwayML, Kapwing AI, Descript',
-    category: 'editing'
-  }
-];
-
-const categoryLabels = {
-  text: 'Texto',
-  image: 'Geração de Imagem',
-  video: 'Geração de Vídeo',
-  editing: 'Edição com IA'
-};
-
-const categoryIcons = {
-  text: Type,
-  image: Palette,
-  video: Camera,
-  editing: Wand2
-};
 
 export const PromptInput: React.FC<PromptInputProps> = ({ 
   onSubmit, 
@@ -252,184 +121,36 @@ export const PromptInput: React.FC<PromptInputProps> = ({
       transition={{ duration: 0.5 }}
     >
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-        {/* Category Selector */}
-        <motion.div 
-          className="space-y-3 sm:space-y-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-        >
-          <div className="text-center">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-              Escolha o tipo de conteúdo
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 sm:mb-4 px-2">
-              Selecione a categoria que melhor descreve o que você quer criar
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-            {Object.entries(categoryLabels).map(([key, label]) => {
-              const Icon = categoryIcons[key as keyof typeof categoryIcons];
-              const isSelected = selectedCategory === key;
-              return (
-                <motion.button
-                  key={key}
-                  type="button"
-                  onClick={() => handleCategorySelect(key as 'text' | 'image' | 'video' | 'editing')}
-                  className={`flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 border-2 ${
-                    isSelected
-                      ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white border-indigo-500 shadow-lg scale-105'
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-md'
-                  }`}
-                  whileHover={{ scale: isSelected ? 1.05 : 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${isSelected ? 'text-white' : 'text-gray-500 dark:text-gray-400'}`} />
-                  <span className="text-center leading-tight">{label}</span>
-                </motion.button>
-              );
-            })}
-          </div>
-        </motion.div>
+        <PromptCategorySelector
+          selectedCategory={selectedCategory}
+          onSelectCategory={handleCategorySelect}
+        />
 
-        {/* Enhancement Type Selector */}
-        <motion.div 
-          className="space-y-3 sm:space-y-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div className="text-center">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 flex items-center justify-center gap-2">
-              <CategoryIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-              Estilo de aprimoramento
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 sm:mb-4 px-2">
-              {selectedCategory === 'image' && 'Escolha o estilo visual que melhor se adequa ao seu projeto'}
-              {selectedCategory === 'video' && 'Selecione o formato de vídeo que você deseja criar'}
-              {selectedCategory === 'text' && 'Como você gostaria que seu prompt fosse otimizado?'}
-              {selectedCategory === 'editing' && 'Tipo de edição com IA que você quer realizar'}
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-            {filteredTypes.map((type) => {
-              const isSelected = selectedType === type.id;
-              return (
-                <motion.button
-                  key={type.id}
-                  type="button"
-                  onClick={() => handleTypeSelect(type.id)}
-                  className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 border-2 text-left ${
-                    isSelected
-                      ? `bg-gradient-to-r ${type.color} text-white border-transparent shadow-lg`
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md'
-                  }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className={`p-1.5 sm:p-2 rounded-lg ${isSelected ? 'bg-white/20' : `bg-gradient-to-r ${type.color}`}`}>
-                    <type.icon className={`h-3 w-3 sm:h-4 sm:w-4 ${isSelected ? 'text-white' : 'text-white'}`} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold truncate">{type.label}</div>
-                    <div className={`text-xs mt-1 line-clamp-2 ${isSelected ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`}>
-                      {type.description.split(' ').slice(0, 6).join(' ')}...
-                    </div>
-                  </div>
-                </motion.button>
-              );
-            })}
-          </div>
-        </motion.div>
+        <PromptEnhancementTypeSelector
+          selectedCategory={selectedCategory}
+          selectedType={selectedType}
+          onSelectType={handleTypeSelect}
+        />
 
-        {/* Input Area */}
-        <motion.div 
-          className="relative"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-        >
-          <div className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl border-2 transition-all duration-200 overflow-hidden ${
-            focusedInput 
-              ? 'border-indigo-500 dark:border-indigo-400 shadow-2xl' 
-              : 'border-gray-200 dark:border-gray-700'
-          }`}>
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={handleInputChange}
-              onFocus={handleInputFocus}
-              onBlur={handleInputBlur}
-              placeholder={getPlaceholder()}
-              className="w-full p-4 sm:p-6 pb-16 sm:pb-20 text-base sm:text-lg bg-transparent border-none outline-none resize-none min-h-[120px] sm:min-h-[140px] max-h-[250px] sm:max-h-[300px] overflow-y-auto placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
-              maxLength={5000}
-              disabled={isLoading}
-            />
-            
-            {/* Bottom Bar */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4">
-              <div className="flex items-center justify-between">
-                {/* Character Count */}
-                <div className={`text-xs sm:text-sm flex items-center gap-2 ${
-                  isAtLimit ? 'text-red-500' : isNearLimit ? 'text-orange-500' : 'text-gray-500 dark:text-gray-400'
-                }`}>
-                  <span>{characterCount}/5000</span>
-                  {characterCount > 0 && (
-                    <span className="text-xs hidden sm:inline">• ~{Math.ceil(characterCount / 4)} tokens</span>
-                  )}
-                </div>
+        <PromptInputArea
+          input={input}
+          setInput={setInput}
+          isLoading={isLoading}
+          focusedInput={focusedInput}
+          setFocusedInput={setFocusedInput}
+          showSuggestions={showSuggestions}
+          setShowSuggestions={setShowSuggestions}
+          textareaRef={textareaRef}
+          selectedCategory={selectedCategory}
+          selectedTypeInfo={selectedTypeInfo}
+          handleSubmit={handleSubmit}
+          handleSuggestionClick={handleSuggestionClick}
+        />
 
-                {/* Submit Button */}
-                <motion.button
-                  type="submit"
-                  disabled={!input.trim() || isLoading || isAtLimit}
-                  className={`flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r ${selectedTypeInfo?.color} text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200 font-medium text-sm sm:text-base`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  title={`Aprimorar com estilo ${selectedTypeInfo?.label}`}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
-                      <span className="hidden sm:inline">Aprimorando...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" />
-                      <span>Aprimorar</span>
-                    </>
-                  )}
-                </motion.button>
-              </div>
-            </div>
-          </div>
-
-          {/* Suggestions */}
-          <PromptSuggestions
-            isVisible={showSuggestions}
-            selectedCategory={selectedCategory}
-            onSuggestionClick={handleSuggestionClick}
-          />
-        </motion.div>
-
-        {/* Enhancement Preview */}
-        {selectedTypeInfo && (
-          <motion.div
-            className="text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-full border border-indigo-200 dark:border-indigo-700">
-              <selectedTypeInfo.icon className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600 dark:text-indigo-400" />
-              <span className="text-xs sm:text-sm font-medium text-indigo-700 dark:text-indigo-300">
-                {categoryLabels[selectedCategory]} • {selectedTypeInfo.label}
-              </span>
-            </div>
-          </motion.div>
-        )}
+        <PromptEnhancementPreview
+          selectedTypeInfo={selectedTypeInfo}
+          selectedCategory={selectedCategory}
+        />
       </form>
     </motion.div>
   );
