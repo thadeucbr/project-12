@@ -5,9 +5,12 @@ import { vi } from 'vitest';
 import type { Prompt } from '../types';
 
 // Mock framer-motion
+import { MotionProps } from '../types/FramerMotion';
+
+// Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: (props: any) => <div {...props} />,
+    div: (props: MotionProps) => <div {...props} />,
   },
 }));
 

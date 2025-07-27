@@ -1,5 +1,3 @@
-import { promptEnhancementService } from './apiService';
-
 interface AnalyticsData {
   totalAccesses: number;
   todayAccesses: number;
@@ -22,7 +20,7 @@ class AnalyticsService {
     this.timeout = 30000; // 30 seconds
   }
 
-  private async makeRequest(method: string, url: string, body?: any): Promise<any> {
+  private async makeRequest(method: string, url: string, body?: unknown): Promise<unknown> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
@@ -46,9 +44,9 @@ class AnalyticsService {
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (_error) {
       clearTimeout(timeoutId);
-      throw error;
+      throw _error;
     }
   }
 
@@ -59,8 +57,8 @@ class AnalyticsService {
         `${this.baseUrl}/analytics/track`,
         data
       );
-    } catch (error) {
-      console.error('Erro ao rastrear acesso:', error);
+    } catch (_error) {
+      console.error('Erro ao rastrear acesso:', _error);
     }
   }
 
@@ -71,8 +69,8 @@ class AnalyticsService {
         `${this.baseUrl}/analytics/stats`
       );
       return response as AnalyticsData;
-    } catch (error) {
-      console.error('Erro ao buscar estatísticas:', error);
+    } catch (_error) {
+      console.error('Erro ao buscar estatísticas:', _error);
       return null;
     }
   }

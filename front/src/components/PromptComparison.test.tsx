@@ -1,13 +1,16 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { PromptComparison } from './PromptComparison';
 import { vi } from 'vitest';
 
 // Mock framer-motion
+import { MotionProps } from '../types/FramerMotion';
+
+// Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: (props: any) => <div {...props} />,
-    button: (props: any) => <button {...props} />,
+    div: (props: MotionProps) => <div {...props} />,
+    button: (props: MotionProps) => <button {...props} />,
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));

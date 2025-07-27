@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Sparkles, RotateCcw, Type, Code, Lightbulb, Target, Image, Video, Wand2, Scissors, Download, Share2, Eye, Brush, Heart, ShoppingBag, Film, FileText, Play, Store } from 'lucide-react';
+import { Copy, Check, Sparkles, RotateCcw, Type, Code, Lightbulb, Target, Wand2, Scissors, Download, Share2, Eye, Brush, Heart, ShoppingBag, Film, FileText, Play, Store } from 'lucide-react';
 import type { Prompt } from '../types';
 
 interface EnhancedPromptProps {

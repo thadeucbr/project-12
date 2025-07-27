@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Loader2, Zap, Type, Code, Lightbulb, Target, Image, Video, Palette, Camera, Edit, Scissors, Wand2, Sparkles, Eye, Brush, Heart, ShoppingBag, Film, FileText, Play, Store } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Loader2, Type, Code, Lightbulb, Target, Palette, Camera, Scissors, Wand2, Sparkles, Eye, Brush, Heart, ShoppingBag, Film, FileText, Play, Store } from 'lucide-react';
 import { PromptSuggestions } from './PromptSuggestions';
 import type { Prompt } from '../types';
 

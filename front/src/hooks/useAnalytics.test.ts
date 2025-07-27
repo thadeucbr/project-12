@@ -40,7 +40,7 @@ describe('useAnalytics', () => {
   });
 
   it('should call trackAccess on trackPageView', async () => {
-    const { result } = renderHook(() => useAnalytics());
+    const { result: _result } = renderHook(() => useAnalytics());
 
     // Wait for useEffect to run and for the async operation inside it to complete
     await act(async () => {

@@ -10,12 +10,23 @@ vi.mock('../contexts/ThemeContext', () => ({
 }));
 
 // Mock framer-motion to avoid animation issues in tests
+import { MotionProps } from '../types/FramerMotion';
+
+// Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', () => ({
   motion: {
-    header: ({ whileHover, whileTap, layout, ...props }: any) => <header {...props} />,
-    div: ({ whileHover, whileTap, layout, ...props }: any) => <div {...props} />,
-    button: ({ whileHover, whileTap, layout, ...props }: any) => <button {...props} />,
-    span: ({ whileHover, whileTap, layout, ...props }: any) => <span {...props} />,
+    header: ({ ...props }: MotionProps) => {
+      return <header {...props} />;
+    },
+    div: ({ ...props }: MotionProps) => {
+      return <div {...props} />;
+    },
+    button: ({ ...props }: MotionProps) => {
+      return <button {...props} />;
+    },
+    span: ({ ...props }: MotionProps) => {
+      return <span {...props} />;
+    },
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));

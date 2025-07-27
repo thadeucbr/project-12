@@ -4,8 +4,10 @@ import { ErrorMessage } from './ErrorMessage';
 import { vi } from 'vitest';
 
 // Mock framer-motion to avoid animation issues in tests
+import { MotionProps } from '../types/FramerMotion';
+
 vi.mock('framer-motion', () => {
-  const filterMotionProps = (props: any) => {
+  const filterMotionProps = (props: MotionProps) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { whileHover, whileTap, layout, ...cleanProps } = props;
     return cleanProps;
@@ -13,8 +15,8 @@ vi.mock('framer-motion', () => {
 
   return {
     motion: {
-      div: (props: any) => <div {...filterMotionProps(props)} />,
-      button: (props: any) => <button {...filterMotionProps(props)} />,
+      div: (props: MotionProps) => <div {...filterMotionProps(props)} />,
+      button: (props: MotionProps) => <button {...filterMotionProps(props)} />,
     },
     AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   };

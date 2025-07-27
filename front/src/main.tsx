@@ -8,10 +8,10 @@ import { promptEnhancementService } from './services/apiService';
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
-      .then((registration) => {
+      .then((_registration) => { // eslint-disable-line @typescript-eslint/no-unused-vars
         // SW registered
       })
-      .catch((registrationError) => {
+      .catch((_registrationError) => { // eslint-disable-line @typescript-eslint/no-unused-vars
         // SW registration failed
       });
   });

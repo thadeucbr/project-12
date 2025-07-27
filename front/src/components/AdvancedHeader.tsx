@@ -12,7 +12,6 @@ import {
   Settings,
   ChevronDown,
   Activity,
-  TrendingUp,
   Menu,
   X
 } from 'lucide-react';

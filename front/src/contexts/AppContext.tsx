@@ -10,6 +10,7 @@ import type {
   CustomTheme,
   APIIntegration
 } from '../types';
+import { checkAchievements } from '../utils/achievements';
 
 interface AppState {
   prompts: Prompt[];
@@ -135,7 +136,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
         )
       };
 
-    case 'DELETE_PROMPT':
+    case 'DELETE_PROMPT': {
       const deletedPrompt = state.prompts.find(p => p.id === action.payload);
       return {
         ...state,
@@ -147,6 +148,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
           totalCharacters: Math.max(0, state.userStats.totalCharacters - (deletedPrompt?.characterCount || 0))
         }
       };
+    }
 
     case 'CLEAR_PROMPTS':
       return {
@@ -161,7 +163,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
         }
       };
 
-    case 'TOGGLE_FAVORITE':
+    case 'TOGGLE_FAVORITE': {
       const isFavorite = state.favorites.includes(action.payload);
       return {
         ...state,
@@ -175,6 +177,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
             : state.userStats.favoritePrompts + 1
         }
       };
+    }
 
     case 'ADD_COLLECTION':
       return {
@@ -211,7 +214,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
         }
       };
 
-    case 'ADD_TO_COLLECTION':
+    case 'ADD_TO_COLLECTION': {
       return {
         ...state,
         collections: state.collections.map(c => 
@@ -229,8 +232,9 @@ function appReducer(state: AppState, action: AppAction): AppState {
             : p
         )
       };
+    }
 
-    case 'REMOVE_FROM_COLLECTION':
+    case 'REMOVE_FROM_COLLECTION': {
       return {
         ...state,
         collections: state.collections.map(c => 
@@ -248,6 +252,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
             : p
         )
       };
+    }
 
     case 'UPDATE_STATS':
       return {
@@ -355,8 +360,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       try {
         const data = JSON.parse(savedData);
         dispatch({ type: 'LOAD_DATA', payload: data });
-      } catch (error) {
-        console.error('Erro ao carregar dados salvos:', error);
+      } catch (_error) {
+        console.error('Erro ao carregar dados salvos:', _error);
       }
     }
   }, []);
@@ -395,7 +400,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Helper functions
   const addPrompt = (prompt: Prompt) => {
     dispatch({ type: 'ADD_PROMPT', payload: prompt });
-    checkAchievements(state.userStats.totalPrompts + 1);
+    checkAchievements(state.userStats.totalPrompts + 1, state.achievements, unlockAchievement);
   };
 
   const updatePrompt = (id: string, updates: Partial<Prompt>) => {
@@ -466,7 +471,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     try {
       const importedData = JSON.parse(data);
       dispatch({ type: 'LOAD_DATA', payload: importedData });
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Dados de importação inválidos');
     }
   };
@@ -485,58 +490,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           pending: false 
         } 
       });
-    } catch (error) {
+    } catch (_error) {
       dispatch({ type: 'SET_SYNC_STATUS', payload: { lastSync: null, pending: false } });
-      throw error;
+      throw _error;
     }
   };
 
-  const checkAchievements = (totalPrompts: number) => {
-    const achievements = [
-      {
-        id: 'first-prompt',
-        name: 'Primeiro Passo',
-        description: 'Criou seu primeiro prompt',
-        icon: '🎯',
-        rarity: 'common' as const,
-        threshold: 1
-      },
-      {
-        id: 'prompt-master',
-        name: 'Mestre dos Prompts',
-        description: 'Criou 10 prompts',
-        icon: '🏆',
-        rarity: 'rare' as const,
-        threshold: 10
-      },
-      {
-        id: 'prompt-legend',
-        name: 'Lenda dos Prompts',
-        description: 'Criou 50 prompts',
-        icon: '👑',
-        rarity: 'epic' as const,
-        threshold: 50
-      },
-      {
-        id: 'prompt-god',
-        name: 'Deus dos Prompts',
-        description: 'Criou 100 prompts',
-        icon: '⚡',
-        rarity: 'legendary' as const,
-        threshold: 100
-      }
-    ];
+  
 
-    achievements.forEach(achievement => {
-      if (totalPrompts >= achievement.threshold && 
-          !state.achievements.find(a => a.id === achievement.id)) {
-        unlockAchievement({
-          ...achievement,
-          unlockedAt: new Date().toISOString()
-        });
-      }
-    });
-  };
+  
 
   const value: AppContextType = {
     state,

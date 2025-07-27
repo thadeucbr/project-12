@@ -244,7 +244,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                   ].map((range) => (
                     <button
                       key={range.id}
-                      onClick={() => setFilters(prev => ({ ...prev, dateRange: range.id as any }))}
+                      onClick={() => setFilters(prev => ({ ...prev, dateRange: range.id }))}
                       className={`px-3 py-1 text-xs rounded-full transition-colors duration-200 ${
                         filters.dateRange === range.id
                           ? 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300'

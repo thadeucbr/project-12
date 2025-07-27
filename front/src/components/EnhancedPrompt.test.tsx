@@ -5,25 +5,17 @@ import { EnhancedPrompt } from './EnhancedPrompt';
 // Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', () => ({
   motion: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    div: ({ children, ...props }: any) => {
-      // Filter out framer-motion specific props
-      const { animate, initial, transition, exit, whileHover, whileTap, ...filteredProps } = props;
-      return <div {...filteredProps}>{children}</div>;
+    div: ({ children, ...props }: MotionProps) => {
+      return <div {...props}>{children}</div>;
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    button: ({ children, ...props }: any) => {
-      const { animate, initial, transition, exit, whileHover, whileTap, ...filteredProps } = props;
-      return <button {...filteredProps}>{children}</button>;
+    button: ({ children, ...props }: MotionProps) => {
+      return <button {...props}>{children}</button>;
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    span: ({ children, ...props }: any) => {
-      const { animate, initial, transition, exit, whileHover, whileTap, ...filteredProps } = props;
-      return <span {...filteredProps}>{children}</span>;
+    span: ({ children, ...props }: MotionProps) => {
+      return <span {...props}>{children}</span>;
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  AnimatePresence: ({ children }: any) => children,
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock navigator.clipboard

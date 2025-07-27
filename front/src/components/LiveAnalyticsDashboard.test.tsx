@@ -5,10 +5,13 @@ import { analyticsService } from '../services/analyticsService';
 import { vi } from 'vitest';
 
 // Mock framer-motion
+import { MotionProps } from '../types/FramerMotion';
+
+// Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: (props: any) => <div {...props} />,
-    button: (props: any) => <button {...props} />,
+    div: (props: MotionProps) => <div {...props} />,
+    button: (props: MotionProps) => <button {...props} />,
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));

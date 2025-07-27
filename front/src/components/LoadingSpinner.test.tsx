@@ -4,9 +4,12 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { vi } from 'vitest';
 
 // Mock framer-motion to avoid animation issues in tests
+import { MotionProps } from '../types/FramerMotion';
+
+// Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', () => ({
   motion: {
-    div: (props: any) => <div {...props} />,
+    div: (props: MotionProps) => <div {...props} />,
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));

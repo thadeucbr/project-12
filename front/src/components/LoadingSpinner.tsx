@@ -19,7 +19,7 @@ export const LoadingSpinner: React.FC = () => {
     }, 1500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [loadingMessages.length]);
 
   return (
     <div className="flex flex-col items-center justify-center py-12">

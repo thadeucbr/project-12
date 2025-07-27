@@ -5,10 +5,13 @@ import { vi } from 'vitest';
 import type { Prompt } from '../types';
 
 // Mock framer-motion
+import { MotionProps } from '../types/FramerMotion';
+
+// Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ whileHover, whileTap, layout, ...props }: any) => <div {...props} />,
-    button: ({ whileHover, whileTap, layout, ...props }: any) => <button {...props} />,
+    div: (props: MotionProps) => <div {...props} />,
+    button: (props: MotionProps) => <button {...props} />,
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));

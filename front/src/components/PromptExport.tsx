@@ -5,7 +5,6 @@ import {
   FileText, 
   FileJson, 
   FileSpreadsheet,
-  Copy,
   Check,
   X,
   Calendar,
@@ -37,14 +36,17 @@ export const PromptExport: React.FC<PromptExportProps> = ({
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     
     switch (dateRange) {
-      case 'today':
+      case 'today': {
         return prompts.filter(p => new Date(p.timestamp) >= today);
-      case 'week':
+      }
+      case 'week': {
         const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
         return prompts.filter(p => new Date(p.timestamp) >= weekAgo);
-      case 'month':
+      }
+      case 'month': {
         const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
         return prompts.filter(p => new Date(p.timestamp) >= monthAgo);
+      }
       default:
         return prompts;
     }
@@ -143,8 +145,8 @@ export const PromptExport: React.FC<PromptExportProps> = ({
         return;
       }
       
-      let blob: Blob;
-      let filename: string;
+      let blob: Blob | undefined;
+      let filename: string | undefined;
       
       switch (exportFormat) {
         case 'json':
@@ -161,6 +163,10 @@ export const PromptExport: React.FC<PromptExportProps> = ({
           break;
         default:
           throw new Error('Formato não suportado');
+      }
+
+      if (!blob || !filename) {
+        throw new Error('Erro ao gerar o arquivo para exportação.');
       }
       
       // Download do arquivo
@@ -238,7 +244,7 @@ export const PromptExport: React.FC<PromptExportProps> = ({
                   return (
                     <button
                       key={format.id}
-                      onClick={() => setExportFormat(format.id as any)}
+                      onClick={() => setExportFormat(format.id)}
                       className={`p-4 rounded-xl border-2 transition-all ${
                         exportFormat === format.id
                           ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
@@ -275,7 +281,7 @@ export const PromptExport: React.FC<PromptExportProps> = ({
                 ].map((range) => (
                   <button
                     key={range.id}
-                    onClick={() => setDateRange(range.id as any)}
+                    onClick={() => setDateRange(range.id)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                       dateRange === range.id
                         ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'

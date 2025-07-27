@@ -6,16 +6,6 @@ interface ApiResponse {
   error?: string;
 }
 
-class ApiError extends Error {
-  status?: number;
-
-  constructor({ message, status }: { message: string; status?: number }) {
-    super(message);
-    this.name = 'ApiError';
-    this.status = status;
-  }
-}
-
 class PromptEnhancementService {
   private baseUrl: string;
   private timeout: number;
@@ -44,8 +34,6 @@ class PromptEnhancementService {
         if (!response.ok) {
           throw new Error(`Failed to get session token: ${response.status} - ${response.statusText}`);
         }
-      } catch (error) {
-        throw error;
       } finally {
         this.tokenRefreshPromise = null;
       }
@@ -112,7 +100,7 @@ Your task is to refine and expand this basic prompt into a high-quality, detaile
     return finalPrompt;
   }
 
-  private async makeLlmRequest(prompt: string, enhancementType: string, retryCount = 0): Promise<any> {
+  private async makeLlmRequest(prompt: string, enhancementType: string, retryCount = 0): Promise<unknown> {
     const url = `${this.baseUrl}/llm`;
     const body = {
       prompt: this.createPromptTemplate(prompt, enhancementType),
@@ -146,9 +134,9 @@ Your task is to refine and expand this basic prompt into a high-quality, detaile
       }
 
       return await response.json();
-    } catch (error) {
+    } catch (_error) {
       clearTimeout(timeoutId);
-      throw error;
+      throw _error;
     }
   }
 
@@ -187,11 +175,11 @@ Your task is to refine and expand this basic prompt into a high-quality, detaile
         enhancedPrompt: enhancedPrompt.trim(),
       };
 
-    } catch (error) {
+    } catch (_error) {
       // Fallback to a simpler local enhancement in case of API failure
       return {
         success: false,
-        error: `Failed to enhance prompt: ${(error as Error).message}. Please try again later.`,
+        error: `Failed to enhance prompt: ${(_error as Error).message}. Please try again later.`,
         enhancedPrompt: '',
       };
     }

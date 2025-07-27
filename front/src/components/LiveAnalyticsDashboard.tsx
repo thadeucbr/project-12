@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Users, 
   TrendingUp, 
   Zap, 
   Globe, 
@@ -20,12 +19,7 @@ import {
   Brain,
   Lightbulb,
   Code,
-  Image,
-  Video,
-  Edit,
   Calendar,
-  Timer,
-  MapPin,
   Wifi,
   WifiOff
 } from 'lucide-react';
@@ -81,7 +75,7 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
   }, [isOpen]);
 
   const getEnhancementTypeIcon = (type: string) => {
-    const icons: Record<string, any> = {
+    const icons: Record<string, React.ElementType> = {
       detailed: Brain,
       creative: Lightbulb,
       technical: Code,
@@ -128,12 +122,6 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
       return `${(num / 1000).toFixed(1)}K`;
     }
     return num.toLocaleString();
-  };
-
-  const calculateGrowthRate = () => {
-    if (!data) return 0;
-    const estimated = data.totalAccesses * 0.1; // Estima crescimento baseado no total
-    return Math.min(100, Math.max(0, estimated));
   };
 
   const getMostPopularType = () => {

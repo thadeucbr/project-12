@@ -21,7 +21,7 @@ import { getRandomPrompt } from './utils/randomPrompts';
 import type { Prompt } from './types';
 
 function AppContent() {
-  const { state, addPrompt, updatePrompt, toggleFavorite, deletePrompt, clearPrompts } = useApp();
+  const { state, addPrompt, updatePrompt, deletePrompt, clearPrompts } = useApp();
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const [enhancedPrompt, setEnhancedPrompt] = useState<string>('');
   const [currentEnhancementType, setCurrentEnhancementType] = useState<Prompt['enhancementType']>('detailed');
@@ -32,7 +32,7 @@ function AppContent() {
   const [isLiveAnalyticsOpen, setIsLiveAnalyticsOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isComparisonOpen, setIsComparisonOpen] = useState(false);
-  const [comparisonData, setComparisonData] = useState<any>(null);
+  const [comparisonData, setComparisonData] = useState<PromptComparisonData | null>(null);
 
   // Analytics hook
   const { trackPromptCreation } = useAnalytics();
@@ -116,7 +116,7 @@ function AppContent() {
     });
   };
 
-  const handleTemplateSelect = (template: any) => {
+  const handleTemplateSelect = (template: Template) => {
     setCurrentPrompt(template.prompt);
     setCurrentEnhancementType(template.enhancementType);
     setIsTemplatesOpen(false);
