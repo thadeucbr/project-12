@@ -19,6 +19,8 @@ import {
   Brain,
   Lightbulb,
   Code,
+  Video,
+  Edit,
   Calendar,
   Wifi,
   WifiOff
