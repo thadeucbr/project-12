@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Clock, Copy, Trash2, RotateCcw } from 'lucide-react';
 import type { Prompt } from '../../../types';
+import { getMediaType, mediaTypeIcons } from '../utils/historyConstants';
 
 interface HistoryPromptListProps {
   filteredPrompts: Prompt[];

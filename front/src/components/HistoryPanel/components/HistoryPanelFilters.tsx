@@ -1,21 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, Calendar, Tag, Type, Image, Video, Edit } from 'lucide-react';
-import type { Prompt, HistoryFilters } from '../../../types';
-
-interface HistoryPanelFiltersProps {
-  filters: HistoryFilters;
-  setFilters: React.Dispatch<React.SetStateAction<HistoryFilters>>;
-  allTags: string[];
-  toggleTag: (tag: string) => void;
-}
-
-const mediaTypeIcons = {
-  text: Type,
-  image: Image,
-  video: Video,
-  editing: Edit
-};
+import { Search, Filter, Calendar, Tag } from 'lucide-react';
+import type { HistoryFilters } from '../../../types';
+import { mediaTypeIcons } from '../utils/historyConstants';
 
 export const HistoryPanelFilters: React.FC<HistoryPanelFiltersProps> = ({
   filters,
@@ -118,3 +105,4 @@ export const HistoryPanelFilters: React.FC<HistoryPanelFiltersProps> = ({
     </div>
   );
 };
+
