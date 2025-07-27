@@ -54,10 +54,10 @@ export const HistoryPanelFilters: React.FC<HistoryPanelFiltersProps> = ({
           <Filter className="h-4 w-4 text-gray-500" />
           {[
             { id: 'all', label: 'Todos', icon: Filter },
-            { id: 'text', label: 'Texto', icon: Type },
-            { id: 'image', label: 'Imagem', icon: Image },
-            { id: 'video', label: 'Vídeo', icon: Video },
-            { id: 'editing', label: 'Edição', icon: Edit }
+            { id: 'text', label: 'Texto', icon: mediaTypeIcons.text },
+            { id: 'image', label: 'Imagem', icon: mediaTypeIcons.image },
+            { id: 'video', label: 'Vídeo', icon: mediaTypeIcons.video },
+            { id: 'editing', label: 'Edição', icon: mediaTypeIcons.editing }
           ].map((type) => {
             const Icon = type.icon;
             return (
