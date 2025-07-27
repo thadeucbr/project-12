@@ -21,13 +21,6 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
   onCopy,
   enhancementType = 'detailed'
 }) => {
-
-export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({ 
-  prompt, 
-  isVisible, 
-  onCopy,
-  enhancementType = 'detailed'
-}) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
