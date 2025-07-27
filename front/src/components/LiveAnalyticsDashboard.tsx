@@ -5,7 +5,26 @@ import { LiveAnalyticsEnhancementChart } from './LiveAnalyticsDashboard/componen
 import { LiveAnalyticsGlobalImpact } from './LiveAnalyticsDashboard/components/LiveAnalyticsGlobalImpact';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import {
+  TrendingUp,
+  Zap,
+  Globe,
+  Eye,
+  Sparkles,
+  Flame,
+  Star,
+  Award,
+  Crown,
+  Rocket,
+  Heart,
+  Brain,
+  Lightbulb,
+  Code,
+  Video,
+  Edit,
+  Calendar,
+  Target
+} from 'lucide-react';
 import { analyticsService } from '../services/analyticsService';
 
 interface AnalyticsData {
