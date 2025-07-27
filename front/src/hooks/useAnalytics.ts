@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { analyticsService } from '../services/analyticsService';
 
 export const useAnalytics = () => {
