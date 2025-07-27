@@ -42,7 +42,6 @@ export const usePromptEnhancement = (
         enhancedPrompt = apiResponse.enhancedPrompt;
       } else {
         // Fallback para lógica local se a API falhar
-        console.warn('API falhou, usando aprimoramento local:', apiResponse.error);
         enhancedPrompt = getLocalEnhancement(originalPrompt, enhancementType);
       }
 
@@ -77,9 +76,7 @@ export const usePromptEnhancement = (
         setTimeout(() => setError(null), 5000);
       }
 
-    } catch (err) {
-      console.error('Erro no aprimoramento:', err);
-      
+    } catch {
       // Em caso de erro total, tenta fallback local
       try {
         const fallbackEnhanced = getLocalEnhancement(originalPrompt, enhancementType);
@@ -106,7 +103,7 @@ export const usePromptEnhancement = (
         
         // Limpa o erro após alguns segundos
         setTimeout(() => setError(null), 5000);
-      } catch (fallbackErr) {
+      } catch {
         setError('Erro ao processar o prompt. Tente novamente.');
       }
     } finally {

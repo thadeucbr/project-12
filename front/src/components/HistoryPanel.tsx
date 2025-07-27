@@ -212,6 +212,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                     className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    aria-label="Fechar painel"
                   >
                     <X className="h-4 w-4" />
                   </motion.button>

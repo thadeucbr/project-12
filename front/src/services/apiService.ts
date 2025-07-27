@@ -42,12 +42,9 @@ class PromptEnhancementService {
         });
 
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Failed to get session token: ${response.status} - ${response.statusText}. Body: ${errorText}`);
           throw new Error(`Failed to get session token: ${response.status} - ${response.statusText}`);
         }
       } catch (error) {
-        console.error('Error requesting session token:', error);
         throw error;
       } finally {
         this.tokenRefreshPromise = null;
@@ -191,11 +188,10 @@ Your task is to refine and expand this basic prompt into a high-quality, detaile
       };
 
     } catch (error) {
-      console.error('Error enhancing prompt:', error);
       // Fallback to a simpler local enhancement in case of API failure
       return {
         success: false,
-        error: `Failed to enhance prompt: ${error.message}. Please try again later.`,
+        error: `Failed to enhance prompt: ${(error as Error).message}. Please try again later.`,
         enhancedPrompt: '',
       };
     }

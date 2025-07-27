@@ -277,6 +277,7 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
               className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              aria-label={showMobileMenu ? "Fechar menu" : "Abrir menu"}
             >
               {showMobileMenu ? (
                 <X className="h-5 w-5" />
@@ -400,6 +401,7 @@ export const AdvancedHeader: React.FC<AdvancedHeaderProps> = ({
       {/* Click outside to close menus */}
       {(showToolsMenu || showMobileMenu) && (
         <div 
+          data-testid="overlay"
           className="fixed inset-0 z-40" 
           onClick={() => {
             setShowToolsMenu(false);

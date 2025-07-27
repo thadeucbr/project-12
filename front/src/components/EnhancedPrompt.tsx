@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Copy, Check, Sparkles, RotateCcw, Type, Code, Lightbulb, Target, Image, Video, Wand2, Scissors, Download, Share2, Eye, Brush, Heart, ShoppingBag, Film, FileText, Play, Store } from 'lucide-react';
 import type { Prompt } from '../types';
@@ -154,27 +154,49 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
     URL.revokeObjectURL(url);
   };
 
+  const typewriterReplayIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   const toggleFullText = () => {
+    // Always clear any existing interval before potentially starting a new one
+    if (typewriterReplayIntervalRef.current) {
+      clearInterval(typewriterReplayIntervalRef.current);
+      typewriterReplayIntervalRef.current = null;
+    }
+
     setShowFullText(!showFullText);
-    if (!showFullText) {
-      setDisplayedText(prompt);
-      setIsTyping(false);
-    } else {
-      // Restart typewriter effect
+
+    if (!showFullText) { // If currently showing full text, switch to typewriter
       setDisplayedText('');
       setIsTyping(true);
       let index = 0;
-      const typewriter = setInterval(() => {
+      const typingSpeed = 8; // Faster speed for replay
+      
+      typewriterReplayIntervalRef.current = setInterval(() => {
         if (index < prompt.length) {
           setDisplayedText(prompt.slice(0, index + 1));
           index++;
         } else {
           setIsTyping(false);
-          clearInterval(typewriter);
+          if (typewriterReplayIntervalRef.current) { // Clear when typing is complete
+            clearInterval(typewriterReplayIntervalRef.current);
+            typewriterReplayIntervalRef.current = null;
+          }
         }
-      }, 8); // Faster speed for replay
+      }, typingSpeed);
+    } else { // If currently showing typewriter, switch to full text
+      setDisplayedText(prompt);
+      setIsTyping(false);
     }
   };
+
+  // Cleanup for typewriterReplayIntervalRef on unmount
+  useEffect(() => {
+    return () => {
+      if (typewriterReplayIntervalRef.current) {
+        clearInterval(typewriterReplayIntervalRef.current);
+      }
+    };
+  }, []);
 
   if (!isVisible || !prompt) return null;
 

@@ -48,7 +48,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
         className={`rounded-xl border p-4 shadow-sm ${getStyles()}`}
       >
         <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 mt-0.5">
+          <div className="flex-shrink-0 mt-0.5" data-testid="error-icon">
             {getIcon()}
           </div>
           
