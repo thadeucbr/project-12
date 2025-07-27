@@ -136,3 +136,71 @@ export const categoryIcons = {
   video: Camera,
   editing: Wand2
 };
+
+export const typeIcons = {
+  detailed: Type,
+  creative: Lightbulb,
+  technical: Code,
+  concise: Target,
+  'image-realistic': Eye,
+  'image-artistic': Brush,
+  'image-anime': Heart,
+  'image-commercial': ShoppingBag,
+  'video-cinematic': Film,
+  'video-documentary': FileText,
+  'video-animated': Play,
+  'video-commercial': Store,
+  'image-editing': Wand2,
+  'video-editing': Scissors
+};
+
+export const typeColors = {
+  detailed: 'from-blue-500 to-cyan-500',
+  creative: 'from-purple-500 to-pink-500',
+  technical: 'from-green-500 to-emerald-500',
+  concise: 'from-orange-500 to-red-500',
+  'image-realistic': 'from-blue-600 to-indigo-600',
+  'image-artistic': 'from-purple-600 to-pink-600',
+  'image-anime': 'from-pink-500 to-rose-500',
+  'image-commercial': 'from-orange-600 to-red-600',
+  'video-cinematic': 'from-slate-600 to-gray-700',
+  'video-documentary': 'from-blue-700 to-indigo-700',
+  'video-animated': 'from-purple-700 to-pink-700',
+  'video-commercial': 'from-green-700 to-emerald-700',
+  'image-editing': 'from-emerald-500 to-teal-500',
+  'video-editing': 'from-violet-500 to-indigo-600'
+};
+
+export const typeLabels = {
+  detailed: 'Detalhado',
+  creative: 'Criativo',
+  technical: 'Técnico',
+  concise: 'Conciso',
+  'image-realistic': 'Imagem Realista',
+  'image-artistic': 'Imagem Artística',
+  'image-anime': 'Imagem Anime/Desenho',
+  'image-commercial': 'Imagem Comercial',
+  'video-cinematic': 'Vídeo Cinematográfico',
+  'video-documentary': 'Vídeo Documentário',
+  'video-animated': 'Vídeo Animado',
+  'video-commercial': 'Vídeo Comercial',
+  'image-editing': 'Edição de Imagem com IA',
+  'video-editing': 'Edição de Vídeo com IA'
+};
+
+export const typeDescriptions = {
+  detailed: 'Prompt detalhado e abrangente',
+  creative: 'Prompt criativo e inovador',
+  technical: 'Prompt técnico e preciso',
+  concise: 'Prompt direto e objetivo',
+  'image-realistic': 'Otimizado para imagens fotorrealistas',
+  'image-artistic': 'Especializado em arte digital e estilos artísticos',
+  'image-anime': 'Focado em estilo anime, manga e desenho japonês',
+  'image-commercial': 'Direcionado para uso comercial e marketing',
+  'video-cinematic': 'Qualidade cinematográfica com narrativa visual',
+  'video-documentary': 'Estilo documental informativo e educacional',
+  'video-animated': 'Animações e motion graphics dinâmicos',
+  'video-commercial': 'Conteúdo promocional e publicitário',
+  'image-editing': 'Comandos para IA de edição de imagens',
+  'video-editing': 'Comandos para IA de edição de vídeos'
+};
