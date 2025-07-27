@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { typeIcons, typeColors, typeLabels, typeDescriptions } from '../utils/promptConstants';
+import { typeColors } from '../utils/promptConstants';
 import type { Prompt } from '../types';
-import { Copy, Check, Sparkles, RotateCcw, Download, Share2 } from 'lucide-react';
 import { EnhancedPromptHeader } from './EnhancedPrompt/components/EnhancedPromptHeader';
 import { EnhancedPromptTextDisplay } from './EnhancedPrompt/components/EnhancedPromptTextDisplay';
 import { EnhancedPromptQualityIndicators } from './EnhancedPrompt/components/EnhancedPromptQualityIndicators';
@@ -91,7 +90,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
     URL.revokeObjectURL(url);
   };
 
-  const typewriterReplayIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const typewriterReplayIntervalRef = useRef<number | null>(null);
 
   const toggleFullText = () => {
     // Always clear any existing interval before potentially starting a new one
@@ -137,10 +136,7 @@ export const EnhancedPrompt: React.FC<EnhancedPromptProps> = ({
 
   if (!isVisible || !prompt) return null;
 
-  const TypeIcon = typeIcons[enhancementType];
   const typeColor = typeColors[enhancementType];
-  const typeLabel = typeLabels[enhancementType];
-  const typeDescription = typeDescriptions[enhancementType];
 
   const isImageType = enhancementType.startsWith('image-');
   const isVideoType = enhancementType.startsWith('video-');

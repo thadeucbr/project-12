@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Check, Sparkles, RotateCcw, Download, Share2 } from 'lucide-react';
+import { Copy, Check, RotateCcw, Download, Share2 } from 'lucide-react';
 import type { Prompt } from '../../../types';
-import { typeIcons } from '../../../utils/promptConstants';
+import { typeIcons, typeDescriptions } from '../../../utils/promptConstants';
 
 interface EnhancedPromptHeaderProps {
   enhancementType: Prompt['enhancementType'];
