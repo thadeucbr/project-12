@@ -191,7 +191,6 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
               allTags={allTags}
               toggleTag={toggleTag}
             />
-            </div>
 
             <HistoryPromptList
               filteredPrompts={filteredPrompts}
